@@ -23,11 +23,23 @@ public class SpringWebConfig implements WebMvcConfigurer {
     private ApplicationContext applicationContext;
 
     @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**").addResourceLocations("/resources/core/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/resources/core/js/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("/webjars/");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations("/resources/core/css/");
+
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("/resources/core/js/");
+
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
+
+        // Esta línea asegura que funcione correctamente desde webapp
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("classpath:/META-INF/resources/", "/resources/", "/WEB-INF/resources/");
     }
+
+
+
 
     // https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html
     // Spring + Thymeleaf

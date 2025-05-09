@@ -31,6 +31,15 @@ public class ControladorLogin {
         return new ModelAndView("login", modelo);
     }
 
+    @RequestMapping(path = "/recovery", method = RequestMethod.GET)
+    public String mostrarRecovery() {
+        return "recovery";  // Asegúrate de que el archivo recovery.html esté en la carpeta correspondiente
+    }
+    @RequestMapping(path = "/settings", method = RequestMethod.GET)
+    public String mostrarSettings() {
+        return "settings";  // Asegúrate de que el archivo recovery.html esté en la carpeta correspondiente
+    }
+
     @RequestMapping(path = "/validar-login", method = RequestMethod.POST)
     public ModelAndView validarLogin(@ModelAttribute("datosLogin") DatosLogin datosLogin, HttpServletRequest request) {
         ModelMap model = new ModelMap();
