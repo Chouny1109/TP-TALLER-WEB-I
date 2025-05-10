@@ -36,6 +36,10 @@ public class SpringWebConfig implements WebMvcConfigurer {
         // Esta línea asegura que funcione correctamente desde webapp
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("classpath:/META-INF/resources/", "/resources/", "/WEB-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+
     }
 
 
