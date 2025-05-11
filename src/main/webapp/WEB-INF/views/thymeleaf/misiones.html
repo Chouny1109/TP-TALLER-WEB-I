@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Misiones</title>
+
+    <!-- Boostrap core css -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- custom style -->
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+    <link rel="stylesheet" th:href="@{/css/misiones.css}">
+</head>
+
+<body>
+<header class="header">
+    <div class="header-content">
+        <a th:href="@{/home}"><img th:src="@{/resources/imgs/arrow.svg}" alt=""></a>
+        <h2>Misiones</h2>
+    </div>
+</header>
+
+<main>
+
+<!--Itero el model que le mando del controlador y completo con la informacion del mismo-->
+    <div class="container">
+        <div class="card" th:each="mision : ${misiones}">
+            <div class="card-container">
+                <span class="card-title" th:text="${mision}"></span>
+                <div class="card-buttons">
+                    <button type="button" class="card-button">Canjear</button>
+                    <button type="button" class="card-button">Ir</button>
+                </div>
+            </div>
+            <progress class="card-progress" max="100" value="10"></progress>
+        </div>
+    </div>
+
+</main>
+
+</body>
+
+<!-- Boostrap core js -->
+<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{js/main.js}"></script>
+</body>
+</html>
