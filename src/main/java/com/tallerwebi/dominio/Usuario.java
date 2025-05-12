@@ -16,6 +16,7 @@ public class Usuario {
     private String password;
     private String rol;
     private Boolean activo = false;
+    private Integer nivel = 0;
 
     public String getNombreUsuario() { return nombreUsuario;}
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario;}
