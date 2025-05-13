@@ -1,9 +1,6 @@
 package com.tallerwebi.dominio;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Usuario {
@@ -14,7 +11,9 @@ public class Usuario {
     private String nombreUsuario;
     private String email;
     private String password;
-    private String rol;
+    @Enumerated(EnumType.STRING) // o EnumType.ORDINAL, pero mejor STRING
+    @Column(name = "rol")
+    private ROL_USUARIO rol;
     private Boolean activo = false;
     private Integer nivel = 0;
 
@@ -38,10 +37,10 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-    public String getRol() {
+    public ROL_USUARIO getRol() {
         return rol;
     }
-    public void setRol(String rol) {
+    public void setRol(ROL_USUARIO rol) {
         this.rol = rol;
     }
     public Boolean getActivo() {

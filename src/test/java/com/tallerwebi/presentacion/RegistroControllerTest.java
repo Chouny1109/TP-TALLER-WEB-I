@@ -1,0 +1,73 @@
+package com.tallerwebi.presentacion;
+
+import com.tallerwebi.dominio.ServicioLogin;
+import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+
+public class RegistroControllerTest {
+
+    private RegistroController registroController;
+
+    private Usuario usuarioMock;
+
+    private ServicioLogin servicioLoginMock;
+
+
+    @BeforeEach
+    public void init(){
+
+        usuarioMock = mock(Usuario.class);
+        when(usuarioMock.getEmail()).thenReturn("dami@unlam.com");
+        when(usuarioMock.getPassword()).thenReturn("1234");
+        servicioLoginMock = mock(ServicioLogin.class);
+        registroController = new RegistroController(servicioLoginMock);
+
+    }
+    @Test
+    public void registrameSiUsuarioNoExisteDeberiaCrearUsuarioYVolverAlLogin() throws UsuarioExistente {
+
+        // ejecucion
+        ModelAndView modelAndView = registroController.registrarme(usuarioMock, "1234");
+
+        // validacion
+        assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/login"));
+        verify(servicioLoginMock, times(1)).registrar(usuarioMock);
+    }
+
+    @Test
+    public void registrarmeSiUsuarioExisteDeberiaVolverAFormularioYMostrarError() throws UsuarioExistente {
+        // preparacion
+        doThrow(UsuarioExistente.class).when(servicioLoginMock).registrar(usuarioMock);
+
+        // ejecucion
+        ModelAndView modelAndView = registroController.registrarme(usuarioMock, "1234");
+
+        // validacion
+        assertThat(modelAndView.getViewName(), equalToIgnoringCase("nuevo-usuario"));
+        assertThat(modelAndView.getModel().get("error").toString(), equalToIgnoringCase("El usuario ya existe"));
+    }
+
+    @Test
+    public void errorEnRegistrarmeDeberiaVolverAFormularioYMostrarError() throws UsuarioExistente {
+        // preparacion
+        doThrow(RuntimeException.class).when(servicioLoginMock).registrar(usuarioMock);
+
+        // ejecucion
+        ModelAndView modelAndView = registroController.registrarme(usuarioMock, "1234");
+
+        // validacion
+        assertThat(modelAndView.getViewName(), equalToIgnoringCase("nuevo-usuario"));
+        assertThat(modelAndView.getModel().get("error").toString(), equalToIgnoringCase("Error al registrar el nuevo usuario"));
+    }
+}

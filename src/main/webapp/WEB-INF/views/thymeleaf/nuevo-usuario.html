@@ -125,8 +125,8 @@
           <input th:field="*{password}" type="password" id="password" class="form-control" required/>
           </div>
           <div class="mb-3 text-start">
-            <label for="passwordConfirm">Confirmar contraseña</label>
-            <input name="passwordConfirm" type="password" id="passwordConfirm" class="form-control" required/>
+            <label for="passConfirm">Confirmar contraseña</label>
+            <input name="passConfirm" type="password" id="passConfirm" class="form-control" required/>
           </div>
           <button id="btn-registrarme" class="btn btn-lg btn-primary btn-block w-75 fs-5 mt-4" Type="Submit">Registrarme</button>
           <p th:if="${error != null}" class="alert alert-danger" th:text="'Error ' + ${error}">
