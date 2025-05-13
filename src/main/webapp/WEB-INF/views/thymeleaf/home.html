@@ -16,45 +16,204 @@
 
 </head>
 
-<body>
 
 <header>
-    <div class="nav-container">
-        <span class="material-symbols--star-rounded"></span>
-        <p class="nivel">5</p>
-        <!-- Izquierda: Foto + Nombre -->
-        <div class="profile-wrapper">
-
-            <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic">
-            <span class="username ">Usuario123</span>
+    <div class="nav-container d-flex justify-content-between align-items-center p-3 bg-light">
+        <div class="d-flex align-items-center">
+            <span class="material-symbols--star-rounded me-2"></span>
+            <p class="nivel mb-0">5</p>
         </div>
 
-        <!-- Derecha: Vidas y Monedas -->
-        <div class="status-icons">
-            <div class="status-item">
+        <div class="profile-wrapper d-flex align-items-center">
+            <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+            <span class="username">Usuario123</span>
+        </div>
+
+        <div class="status-icons d-flex align-items-center">
+            <div class="status-item me-3">
                 <span class="mdi--heart"></span>
                 <span>3</span>
             </div>
-            <div class="status-item">
+            <div class="status-item me-3">
                 <span class="mdi--star-four-points-circle"></span>
                 <span>150</span>
             </div>
-            <a href="settings" class="material-symbols--settings-rounded" aria-label="Configuración"></a>
+            <a href="settings.html" class="material-symbols--settings-rounded"></a>
+        </div>
+    </div>
+    <div class="container-ul ">
+        <ul class="ul-items ">
+            <li class="ul-item"><a class="ul-link" th:href="@{/avatar}">Avatars</a></li>
+            <li class="ul-item"><a class="ul-link" th:href="@{/misiones}">Misiones</a></li>
+            <li class="ul-item"><a class="ul-link" th:href="@{/tienda}">Tienda</a></li>
+        </ul>
+    </div>
+</header>
+
+<main class="container my-4 " >
+    <div class="contenedor-principal">
+        <div class="contenedor-1">
+            <div>
+                <div class="nivel-container">
+                    <div class="nivel-circulo" style="background-color: #4caf50; color: white;">5</div>
+                    <div class="barra"><div class="barra-progreso" style="width: 50%;"></div></div>
+                    <!-- Aquí 50% por 500/1000 -->
+                    <div class="nivel-circulo">6</div>
+
+                </div>
+                <div class="xp-container">
+                    <div class="xp-label">500xp</div>
+                </div>
+            </div>
+            <div class="iconos">
+                <div class="">
+                    <div class="icono"><a th:href="@{/amigos}" class=" fa-solid--user-friends"></a></div>
+                    <p>Amigos</p>
+                </div>
+
+                <div>
+                    <div class="icono"><a th:href="@{/trofeos}" class=" solar--cup-star-bold"></a></div>
+                    <p>Trofeos</p>
+                </div>
+
+                <div>
+                    <div class="icono"><a th:href="@{/misTrampas}" class=" mingcute--magic-hat-2-fill"></a></div>
+                    <p>Mis Trampas</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="contenedor2">
+
+
+            <div class="carta-externa">
+                <div class="titulo">Partidas en curso...</div>
+                <div class="partidas">
+                    <div class="carta-interna">
+
+                        <div class="lista-partidas scroll-partidas"></div>
+                        <div class="partida">
+                            <div class="info-jugador">
+                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilFranklin.jpg}"></div>
+                                <div>Usuario_02</div>
+                            </div>
+                            <button class="estado-turno tu-turno">¡Tu turno!</button>
+                        </div>
+                        <div class="partida">
+                            <div class="info-jugador">
+                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilAndrea.jpg}"></div>
+                                <div>Usuario_04</div>
+                            </div>
+                            <button class="estado-turno tu-turno">¡Tu turno!</button>
+                        </div>
+                        <div class="partida">
+                            <div class="info-jugador">
+                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilCallou.jpg}"></div>
+                                <div>Usuario_01</div>
+                            </div>
+                            <div class="estado-turno esperando">Esperando...</div>
+                        </div>
+
+                        <div class="partida">
+                            <div class="info-jugador">
+                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilMadMax.jpg}"></div>
+                                <div>Usuario_03</div>
+                            </div>
+                            <div class="estado-turno esperando">Esperando...</div>
+                        </div>
+
+                        <div class="partida">
+                            <div class="info-jugador">
+                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilPSY.jpg}"></div>
+                                <div>Usuario_05</div>
+                            </div>
+                            <div class="estado-turno esperando">Esperando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="ranking-card-container">
+                <div class="ranking-title">
+                    <h2>Ranking</h2>
+                </div>
+
+                <!-- Contenedor para los primeros 10 puestos -->
+                <div class="ranking-card">
+                    <ul class="ranking-list">
+                        <li class="ranking-item">
+                            <div class="ranking-position">1</div>
+                            <div class="ranking-name">Jugador 1</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">2</div>
+                            <div class="ranking-name">Jugador 2</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">3</div>
+                            <div class="ranking-name">Jugador 3</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">4</div>
+                            <div class="ranking-name">Jugador 4</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">5</div>
+                            <div class="ranking-name">Jugador 5</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">6</div>
+                            <div class="ranking-name">Jugador 6</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">7</div>
+                            <div class="ranking-name">Jugador 7</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">8</div>
+                            <div class="ranking-name">Jugador 8</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">9</div>
+                            <div class="ranking-name">Jugador 9</div>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-position">10</div>
+                            <div class="ranking-name">Jugador 10</div>
+                        </li>
+                    </ul>
+                    <!-- Puesto del usuario al final de la lista -->
+                    <div class="ranking-item user-item">
+                        <div class="ranking-position">20</div>
+                        <div class="ranking-name">Tu Nombre</div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
 
     </div>
 
-</header>
+    <div class="modo-juego-container">
+        <select class="modo-juego" name="modoJuego" id="modoJuego">
+            <option selected disabled>MODO DE JUEGO</option>
+            <option value="1v1">1v1</option>
+            <option value="torneo">torneo</option>
+            <option value="rapido">Rápido</option>
+        </select>
 
-<main>
-    <ul class="ul-items bg-light">
-        <li class="ul-item"><a class="ul-link" th:href="@{/misiones}">Avatars</a></li>
-        <li class="ul-item"><a class="ul-link" th:href="@{/misiones} ">Misiones</a></li>
-        <li class="ul-item"><a class="ul-link" th:href="@{/tienda} ">Tienda</a></li>
-    </ul>
+        <a th:href="@{/partida/cargar}" class="boton-jugar">JUGAR</a>
+    </div>
+
 </main>
 
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.min.js}"></script>
+<!-- Bootstrap JS desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

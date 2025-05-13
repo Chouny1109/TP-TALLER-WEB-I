@@ -4,6 +4,7 @@ body {
     padding: 0;
     width: min(1200px,100%);
     margin: 0 auto;
+
 }
 
 .nav-container {
@@ -11,7 +12,7 @@ body {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     /* Ajusta el ancho del nav */
-    margin: 25px auto;
+    margin: 20px auto;
     /* Reduce el espacio superior */
     padding: 20px 20px 30px 20px;
     /* Añadí más espacio abajo (30px) para que la imagen sobresalga */
@@ -85,13 +86,11 @@ body {
 }
 
 .username {
-    font-weight: 600;
+    font-weight: bold;
     font-size: 28px;
     color: #333;
+    margin-left: -180px;
 
-    margin-top: 20px;
-    margin-left: 250px;
-    /* espacio para que el texto no se solape con la imagen */
 }
 
 .status-icons {
@@ -125,29 +124,465 @@ body {
     margin-right: 10px;
     width: 100px;
 }
-.ul-items{
-    list-style: none;
-    background-color: rgba(0, 0, 0, 0.062);
+.container-ul {
+    background-color: rgb(159, 236, 156);
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     display: flex;
-    gap: 2.5rem;
-    padding: .5rem 2rem;
-    width: fit-content;
-    border-radius: 10px;
-    margin-left: auto;
+    justify-content: center;
+    padding: 4px 12px;
+    width: 800px; /* más angosto */
+    margin: 10px 80px 0 auto;
+    /* alineado a la derecha */
 }
 
-.ul-link{
+.ul-items {
+    list-style: none;
+    display: flex;
+    gap: 6rem; /* más separación entre botones */
+    border-radius: 20px;
+    margin: 0;
+    padding: 0.3rem 0.8rem;
+
+}
+
+.ul-link {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-decoration: none;
-    font-size: large;
-    color: white;
-    padding: .7rem 1rem;
-    background-color: rgba(0, 0, 0, 0.274) ;
-    border-radius: 15px;
+    font-size: 1rem;
+    color: rgb(133, 133, 133);
+    padding: 0.4rem 3.5rem;
+    background-color: rgb(203, 255, 204);
+    border-radius: 30px;
     display: block;
-    transition: background-color .2s ease;
+    transition: background-color 0.2s ease;
 }
 
-.ul-link:hover{
-    background-color: rgba(0, 0, 0, 0.397) ;
+.ul-link:hover {
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
+}
+.fa-solid--user-friends {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512'%3E%3Cpath fill='%23fff' d='M192 256c61.9 0 112-50.1 112-112S253.9 32 192 32S80 82.1 80 144s50.1 112 112 112m76.8 32h-8.3c-20.8 10-43.9 16-68.5 16s-47.6-6-68.5-16h-8.3C51.6 288 0 339.6 0 403.2V432c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48v-28.8c0-63.6-51.6-115.2-115.2-115.2M480 256c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96s43 96 96 96m48 32h-3.8c-13.9 4.8-28.6 8-44.2 8s-30.3-3.2-44.2-8H432c-20.4 0-39.2 5.9-55.7 15.4c24.4 26.3 39.7 61.2 39.7 99.8v38.4c0 2.2-.5 4.3-.6 6.4H592c26.5 0 48-21.5 48-48c0-61.9-50.1-112-112-112'/%3E%3C/svg%3E");
+}
+.solar--cup-star-bold {
+    display: inline-block;
+    width: 50px;
+    height:50px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M22 8.162v.073c0 .86 0 1.291-.207 1.643s-.584.561-1.336.98l-.793.44c.546-1.848.729-3.834.796-5.532l.01-.221l.002-.052c.651.226 1.017.395 1.245.711c.283.393.283.915.283 1.958m-20 0v.073c0 .86 0 1.291.207 1.643s.584.561 1.336.98l.794.44c-.547-1.848-.73-3.834-.797-5.532l-.01-.221l-.001-.052c-.652.226-1.018.395-1.246.711C2 6.597 2 7.12 2 8.162'/%3E%3Cpath fill='%23fff' fill-rule='evenodd' d='M12 2c1.784 0 3.253.157 4.377.347c1.139.192 1.708.288 2.184.874s.45 1.219.4 2.485c-.172 4.349-1.11 9.78-6.211 10.26V19.5h1.43a1 1 0 0 1 .98.804l.19.946H18a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1 0-1.5h2.65l.19-.946a1 1 0 0 1 .98-.804h1.43v-3.534c-5.1-.48-6.038-5.912-6.21-10.26c-.051-1.266-.076-1.9.4-2.485c.475-.586 1.044-.682 2.183-.874A26.4 26.4 0 0 1 12 2m.952 4.199l-.098-.176C12.474 5.34 12.284 5 12 5s-.474.34-.854 1.023l-.098.176c-.108.194-.162.29-.246.354c-.085.064-.19.088-.4.135l-.19.044c-.738.167-1.107.25-1.195.532s.164.577.667 1.165l.13.152c.143.167.215.25.247.354s.021.215 0 .438l-.02.203c-.076.785-.114 1.178.115 1.352c.23.174.576.015 1.267-.303l.178-.082c.197-.09.295-.135.399-.135s.202.045.399.135l.178.082c.691.319 1.037.477 1.267.303s.191-.567.115-1.352l-.02-.203c-.021-.223-.032-.334 0-.438s.104-.187.247-.354l.13-.152c.503-.588.755-.882.667-1.165c-.088-.282-.457-.365-1.195-.532l-.19-.044c-.21-.047-.315-.07-.4-.135c-.084-.064-.138-.16-.246-.354' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+.mingcute--magic-hat-2-fill {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z'/%3E%3Cpath fill='%23fff' d='M12 7c-2.035 0-3.925.352-5.344.96c-.707.303-1.344.69-1.818 1.17C4.36 9.614 4 10.248 4 11s.36 1.386.838 1.87c.474.48 1.11.867 1.818 1.17c1.419.608 3.309.96 5.344.96s3.925-.352 5.344-.96c.707-.303 1.344-.69 1.818-1.17c.478-.484.838-1.118.838-1.87s-.36-1.386-.838-1.87c-.474-.48-1.11-.867-1.818-1.17C15.925 7.352 14.035 7 12 7m0 3c1.657 0 3 .448 3 1s-1.343 1-3 1s-3-.448-3-1s1.343-1 3-1m-5.054 5.223c-.068.794-.19 1.559-.325 2.226l-.117.547l-.116.49l-.11.423c-.242.9.15 1.997 1.202 2.358q.165.056.355.116l.407.118C9.18 21.758 10.47 22 12 22s2.82-.242 3.758-.499l.407-.118q.191-.06.355-.116c1.051-.361 1.444-1.459 1.202-2.358l-.11-.423l-.116-.49l-.117-.547a20 20 0 0 1-.325-2.226C15.6 15.728 13.84 16 12 16s-3.599-.272-5.054-.777m3.062-13.55l-.206-.404c-.11-.2-.165-.202-.255-.046l-.067.128l-.04.08A5.64 5.64 0 0 1 7.535 3.65l-.227.146c-.257.158-.286.212-.13.323l.13.085a5.64 5.64 0 0 1 2.01 2.123l.206.404c.11.2.165.202.256.046l.066-.128l.04-.08A5.64 5.64 0 0 1 11.79 4.35l.227-.146c.315-.193.288-.23 0-.408a5.64 5.64 0 0 1-2.01-2.123Zm4.153 3.23l.07-.039a4 4 0 0 0 1.477-1.363l.201-.344c.077-.115.118-.106.188.008l.07.123c.314.58.788 1.076 1.376 1.444l.226.132c.192.105.231.136.07.232l-.07.04a3.96 3.96 0 0 0-1.602 1.576l-.07.123c-.07.114-.11.123-.188.008l-.075-.13a3.9 3.9 0 0 0-1.377-1.445l-.226-.132c-.192-.105-.23-.136-.07-.232Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.icono{
+    background-color: rgb(159, 236, 156);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    width: 65px;
+    height: 65px;
+    padding: 10px;
+
+
+
+}
+.iconos{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 220px;
+    justify-content: center;
+    margin-top: 50px;
+
+
+}
+.iconos > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+    width: 70px; /* ajustalo según necesites */
+
+}
+.iconos p{
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+.nivel-container {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px; /* Reducido el tamaño total */
+
+    margin-top: 90px;
+    gap: 0;
+}
+
+.nivel-circulo {
+    width: 40px; /* Tamaño reducido */
+    height: 40px; /* Tamaño reducido */
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px; /* Tamaño de fuente ajustado */
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.barra {
+    flex-grow: 1;
+    height: 8px;
+    background-color: #ddd;
+
+    overflow: hidden;
+    position: relative;
+    margin: 0 -1px; /* superponer levemente los bordes de los círculos */
+    z-index: 1;
+}
+
+.barra-progreso {
+    height: 100%;
+    background-color: #4caf50;
+    transition: width 0.4s ease;
+    /* Ejemplo de progreso al 50% */
+}
+
+.xp-container {
+    display: flex;
+    justify-content: center; /* Centra el texto debajo del primer círculo */
+    margin-top: -10px; /* Ajusta la distancia entre la barra y el texto */
+}
+
+.xp-label {
+    font-size: 12px;
+    color: #333;
+    font-weight: bold;
+}
+
+.ranking-card-container {
+    width: 350px;
+    height: 400px;
+    margin: 0 auto;
+    background-color: #e3eae3;
+    padding: 30px;
+    border-radius: 30px;
+
+}
+
+.ranking-title h2 {
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.ranking-card {
+    background-color: #f4f4f9; /* Color de fondo de la tarjeta */
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+}
+.ranking-card::-webkit-scrollbar {
+    width: 16px; /* Mantiene el tamaño del scrollbar */
+}
+
+.ranking-card::-webkit-scrollbar-track {
+    background: transparent; /* Fondo transparente */
+}
+
+.ranking-card::-webkit-scrollbar-thumb {
+    background-color: #3e8e41; /* Color verde del thumb */
+    border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Remover flechitas del scroll */
+.ranking-card::-webkit-scrollbar-button {
+    display: none; /* Elimina las flechitas */
+}
+
+.ranking-card {
+    scrollbar-width: thin; /* Scrollbar delgada */
+    scrollbar-color: #3e8e41 transparent; /* Color verde del thumb y fondo transparente */
+}
+
+.ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.ranking-position {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    color: white;
+    text-align: center;
+    line-height: 30px;
+}
+
+.ranking-name {
+    font-size: 14px;
+    flex-grow: 1;
+    flex: 1;
+    padding-right: 10px;
+    text-align: right;
+}
+
+.user-item {
+    background-color: #d1e7fd; /* Fondo un poco más oscuro para el usuario */
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+.user-item .ranking-position {
+    background-color: #318434;
+}
+
+.user-item .ranking-name {
+    font-weight: bold;
+    color: #0056b3;
+}
+
+/* Ajustamos la carta externa */
+.carta-externa {
+    background-color: #e3eae3;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 450px;
+    height: 400px;
+    padding: 30px;
+    margin: 25px auto;
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+    margin-right: 40px;
+}
+
+/* Titulo dentro de la carta */
+.titulo {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-left: 10px;
+}
+
+/* Carta interna con overflow y borde */
+.carta-interna {
+    background-color: white;
+    border-radius: 15px;
+    padding: 15px;
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%; /* Mantiene el tamaño dentro de la carta */
+}
+
+/* Ajustamos la clase partida para agregar borde y padding */
+.partidas {
+    padding: 15px;
+    background-color: white;
+    flex-grow: 1;
+    border: 2px solid white; /* Borde blanco en las partidas */
+    border-radius: 10px; /* Bordes redondeados */
+    overflow-y: auto; /* Asegura que el contenido sea desplazable */
+}
+
+/* Estilo para las partidas individuales */
+.partida {
+    background-color: #e8f4fc;
+    border-radius: 30px;
+    padding: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Estilos para la información del jugador */
+.info-jugador {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Estilo para el estado del turno */
+.estado-turno {
+    font-size: 14px;
+    padding: 5px 15px;
+}
+
+.esperando {
+    color: #555;
+}
+
+.tu-turno {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 30px;
+}
+
+.tu-turno:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para el scrollbar */
+.carta-interna::-webkit-scrollbar {
+    width: 16px; /* Mantiene el tamaño del scrollbar */
+}
+
+.carta-interna::-webkit-scrollbar-track {
+    background: transparent; /* Fondo transparente */
+}
+
+.carta-interna::-webkit-scrollbar-thumb {
+    background-color: #3e8e41; /* Color verde del thumb */
+    border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Remover flechitas del scroll */
+.carta-interna::-webkit-scrollbar-button {
+    display: none; /* Elimina las flechitas */
+}
+
+.carta-interna {
+    scrollbar-color: #3e8e41 transparent; /* Color verde del thumb y fondo transparente */
+}
+
+.foto-perfil {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ccc;
+    flex-shrink: 0;
+}
+
+.foto-perfil img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Contenedor del scroll para alinear a la derecha */
+.contenedor2 {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+/* Contenedor principal */
+.contenedor-principal {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: -15px;
+    padding: 0px 20px 0px 20px; /* Ajuste del padding */
+}
+
+.modo-juego-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Ajusta el margen superior según lo necesites */
+    gap: 20px; /* Espacio entre el select y el botón */
+}
+
+.modo-juego {
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 30px;
+    border: 2px solid #ddd;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    color: #333;
+    font-weight: bold;
+    transition: all 0.3s ease;
+
+    /* Estas son las claves para centrar */
+    text-align: center;
+    text-align-last: center;
+
+    /* Quita estilos del navegador para usar la flechita nativa limpia */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath fill='%23333' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px 7px;
+}
+
+
+.modo-juego option {
+    text-align: center; /* Centra el texto dentro de las opciones */
+}
+
+.modo-juego:hover {
+    border-color: #4caf50; /* Cambia el color del borde al pasar el mouse */
+    box-shadow: 0 4px 10px rgba(0, 128, 0, 0.2); /* Efecto de sombra en hover */
+}
+
+.boton-jugar {
+    display: inline-block;
+    padding: 12px 40px;
+    background-color: #4caf50; /* Fondo verde */
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 30px;
+    text-decoration: none;
+    text-align: center;
+    width: 550px; /* El botón tendrá el mismo ancho que el select */
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.boton-jugar:hover {
+    background-color: #27fb2e; /* Cambia el color del botón al pasar el mouse */
+    color: #ffffff;
+
 }
