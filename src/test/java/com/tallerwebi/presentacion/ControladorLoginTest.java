@@ -26,13 +26,18 @@ public class ControladorLoginTest {
 	private ServicioLogin servicioLoginMock;
 
 
+
 	@BeforeEach
 	public void init(){
 		datosLoginMock = new DatosLogin("dami@unlam.com", "1234");
 		usuarioMock = mock(Usuario.class);
+		when(usuarioMock.getNombreUsuario()).thenReturn("dami123");
 		when(usuarioMock.getEmail()).thenReturn("dami@unlam.com");
+
+
 		requestMock = mock(HttpServletRequest.class);
 		sessionMock = mock(HttpSession.class);
+		when(requestMock.getSession()).thenReturn(sessionMock);
 		servicioLoginMock = mock(ServicioLogin.class);
 		registroController = new RegistroController(servicioLoginMock);
 		controladorLogin = new ControladorLogin(servicioLoginMock);
@@ -57,16 +62,18 @@ public class ControladorLoginTest {
 		// preparacion
 		Usuario usuarioEncontradoMock = mock(Usuario.class);
 		when(usuarioEncontradoMock.getRol()).thenReturn(ROL_USUARIO.ADMIN);
-
+		when(usuarioEncontradoMock.getNombreUsuario()).thenReturn("dami123");
 		when(requestMock.getSession()).thenReturn(sessionMock);
 		when(servicioLoginMock.consultarUsuario(anyString(), anyString())).thenReturn(usuarioEncontradoMock);
-		
+
+		when(sessionMock.getAttribute("USUARIO")).thenReturn(usuarioEncontradoMock);
 		// ejecucion
 		ModelAndView modelAndView = controladorLogin.validarLogin(datosLoginMock, requestMock);
 		
 		// validacion
 		assertThat(modelAndView.getViewName(), equalToIgnoringCase("redirect:/home"));
 		verify(sessionMock, times(1)).setAttribute("ROL", usuarioEncontradoMock.getRol());
+		verify(sessionMock, times(1)).setAttribute("USUARIO", usuarioEncontradoMock);
 	}
 
 }
