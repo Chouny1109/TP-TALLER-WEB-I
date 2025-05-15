@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +38,8 @@ public class RegistroController {
 
     @RequestMapping(path = "/registrarme", method = RequestMethod.POST)
     public ModelAndView registrarme(@ModelAttribute("usuario") Usuario usuario,
-                                    @RequestParam("passConfirm") String passConfirm) {
+                                    @RequestParam("passConfirm") String passConfirm,
+                                    RedirectAttributes redirectAttributes) {
         ModelMap model = new ModelMap();
 
         if (!usuario.getPassword().equals(passConfirm)) {
@@ -58,6 +60,7 @@ public class RegistroController {
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
         }
+        redirectAttributes.addFlashAttribute("exito", "¡Registrado correctamente!");
         return new ModelAndView("redirect:/login");  // Redirige al login después de registrar
     }
 

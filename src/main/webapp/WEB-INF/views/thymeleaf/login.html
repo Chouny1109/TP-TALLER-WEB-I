@@ -110,6 +110,8 @@
         <div class="col-md-5 d-flex justify-content-center align-items-center ">
 
             <div id="loginbox" class="d-flex flex-column justify-content-center align-items-center text-center ">
+                <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+
                 <span class="mdi--hand-wave"></span>
             <form action="#" th:action="@{/validar-login}" method="POST" th:object="${datosLogin}">
                     <h1 class=" fw-bold mb-4 " style="color: #524d4d; font-size: 50px;">¡Hola de nuevo!</h1>

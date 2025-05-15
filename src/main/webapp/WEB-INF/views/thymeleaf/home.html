@@ -26,7 +26,7 @@
 
         <div class="profile-wrapper d-flex align-items-center">
             <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
-            <span class="username">Usuario123</span>
+            <span class="username" th:text="${nombreUsuario}"></span>
         </div>
 
         <div class="status-icons d-flex align-items-center">
