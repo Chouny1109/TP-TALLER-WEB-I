@@ -17,6 +17,15 @@ public class Usuario {
     private Boolean activo = false;
     private Integer nivel = 0;
 
+    public Usuario(String nombreUsuario, String email,String password) {
+        this.nombreUsuario = nombreUsuario;
+        this.email = email;
+        this.password = password;
+    }
+
+    public Usuario() {
+    }
+
     public String getNombreUsuario() { return nombreUsuario;}
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario;}
     public Long getId() {
