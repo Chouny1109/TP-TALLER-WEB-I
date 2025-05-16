@@ -1,4 +1,4 @@
-package com.tallerwebi.presentacion;
+package com.tallerwebi.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

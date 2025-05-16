@@ -1,7 +1,7 @@
-package com.tallerwebi.presentacion;
+package com.tallerwebi.controller;
 
 import com.tallerwebi.components.InputField;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.model.Usuario;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

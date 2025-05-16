@@ -1,6 +1,6 @@
-package com.tallerwebi.presentacion;
+package com.tallerwebi.controller;
 
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.model.Usuario;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

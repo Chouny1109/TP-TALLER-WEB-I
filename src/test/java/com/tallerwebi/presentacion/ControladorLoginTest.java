@@ -1,9 +1,11 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.ROL_USUARIO;
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.Usuario;
-import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.controller.ControladorLogin;
+import com.tallerwebi.controller.RegistroController;
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
+import com.tallerwebi.service.ServicioLogin;
+import com.tallerwebi.model.DatosLogin;
+import com.tallerwebi.model.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;

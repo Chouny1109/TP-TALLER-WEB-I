@@ -32,7 +32,7 @@
                 <span class="card-title" th:text="${mision}"></span>
                 <div class="card-buttons">
                     <button type="button" class="card-button">Canjear</button>
-                    <button type="button" class="card-button">Ir</button>
+                    <a th:href="@{/partida/cargar}" class="card-button">Ir</a>
                 </div>
             </div>
             <progress class="card-progress" max="100" value="10"></progress>
