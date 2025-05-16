@@ -1,7 +1,8 @@
 package com.tallerwebi.controller;
 
-import com.tallerwebi.service.ServicioLogin;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.service.ServicioLogin;
+
 import com.tallerwebi.model.DatosLogin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,7 @@ public class ControladorLogin {
     private ServicioLogin servicioLogin;
 
     @Autowired
-    public ControladorLogin(ServicioLogin servicioLogin){
+    public ControladorLogin(ServicioLogin servicioLogin) {
         this.servicioLogin = servicioLogin;
     }
 

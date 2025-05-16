@@ -1,11 +1,15 @@
-package com.tallerwebi.presentacion;
+package com.tallerwebi.controller;
 
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.ServicioRegistro;
-import com.tallerwebi.dominio.Usuario;
+
+
+
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.model.Usuario;
+
+import com.tallerwebi.model.DatosRegistro;
+import com.tallerwebi.service.ServicioRegistro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

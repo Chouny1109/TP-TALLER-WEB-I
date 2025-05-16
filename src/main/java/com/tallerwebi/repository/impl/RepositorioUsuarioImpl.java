@@ -8,6 +8,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 @Repository("repositorioUsuario")
 public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
@@ -20,12 +24,21 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
     @Override
     public Usuario buscarUsuario(String email, String password) {
-
         final Session session = sessionFactory.getCurrentSession();
-        return (Usuario) session.createCriteria(Usuario.class)
-                .add(Restrictions.eq("email", email))
-                .add(Restrictions.eq("password", password))
-                .uniqueResult();
+
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
+        Root<Usuario> root = query.from(Usuario.class);
+
+        query.select(root)
+                .where(
+                        builder.and(
+                                builder.equal(root.get("email"), email),
+                                builder.equal(root.get("password"), password)
+                        )
+                );
+
+        return session.createQuery(query).uniqueResult();
     }
 
     @Override
@@ -36,10 +49,18 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
     @Override
     public Usuario buscar(String email) {
-        return (Usuario) sessionFactory.getCurrentSession().createCriteria(Usuario.class)
-                .add(Restrictions.eq("email", email))
-                .uniqueResult();
+        Session session = sessionFactory.getCurrentSession();
+
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
+        Root<Usuario> root = query.from(Usuario.class);
+
+        query.select(root)
+                .where(builder.equal(root.get("email"), email));
+
+        return session.createQuery(query).uniqueResult();
     }
+
 
     @Override
     public void modificar(Usuario usuario) {

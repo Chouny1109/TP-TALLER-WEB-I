@@ -1,4 +1,4 @@
-package com.tallerwebi.dominio;
+package com.tallerwebi.model;
 
 public class ResultadoRegistro {
     public Boolean exitoso = null;

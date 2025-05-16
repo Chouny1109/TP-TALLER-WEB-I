@@ -3,21 +3,21 @@ package com.tallerwebi.dominio;
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
-import com.tallerwebi.presentacion.DatosLogin;
-import com.tallerwebi.presentacion.DatosRegistro;
-import com.tallerwebi.presentacion.RegistroController;
+import com.tallerwebi.model.ResultadoRegistro;
+import com.tallerwebi.model.Usuario;
+
+import com.tallerwebi.model.DatosRegistro;
+
+import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioRegistro;
+import com.tallerwebi.service.impl.ServicioRegistroImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.swing.text.StyledEditorKit;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;

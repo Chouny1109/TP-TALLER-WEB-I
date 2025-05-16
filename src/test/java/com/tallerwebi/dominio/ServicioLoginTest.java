@@ -3,7 +3,12 @@ import static org.mockito.Mockito.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import com.tallerwebi.presentacion.DatosLogin;
+import com.tallerwebi.model.DatosLogin;
+
+import com.tallerwebi.model.Usuario;
+import com.tallerwebi.repository.RepositorioUsuario;
+
+import com.tallerwebi.service.impl.ServicioLoginImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

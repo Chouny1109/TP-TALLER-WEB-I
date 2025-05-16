@@ -1,11 +1,14 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.ServicioRegistro;
-import com.tallerwebi.dominio.Usuario;
+
+
+import com.tallerwebi.controller.RegistroController;
+import com.tallerwebi.model.Usuario;
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.model.DatosRegistro;
+import com.tallerwebi.service.ServicioRegistro;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
