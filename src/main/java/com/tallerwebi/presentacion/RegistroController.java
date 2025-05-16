@@ -1,7 +1,10 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.ServicioLogin;
+import com.tallerwebi.dominio.ServicioRegistro;
 import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.dominio.excepcion.EmailInvalido;
+import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,11 +21,11 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class RegistroController {
 
-    private ServicioLogin servicioLogin;
+    private ServicioRegistro servicioRegistro;
 
     @Autowired
-    public RegistroController(ServicioLogin servicioLogin){
-        this.servicioLogin = servicioLogin;
+    public RegistroController(ServicioRegistro servicioRegistro) {
+        this.servicioRegistro = servicioRegistro;
     }
 
 
@@ -31,32 +34,34 @@ public class RegistroController {
     @RequestMapping(path = "/nuevo-usuario", method = RequestMethod.GET)
     public ModelAndView mostrarFormularioRegistro() {
         ModelMap model = new ModelMap();
-        model.put("usuario", new Usuario());
+        model.put("datosRegistro", new DatosRegistro());
         return new ModelAndView("nuevo-usuario", model);
     }
 
 
     @RequestMapping(path = "/registrarme", method = RequestMethod.POST)
-    public ModelAndView registrarme(@ModelAttribute("usuario") Usuario usuario,
-                                    @RequestParam("passConfirm") String passConfirm,
+    public ModelAndView registrarme(@ModelAttribute("datosRegistro") DatosRegistro datosRegistro,
                                     RedirectAttributes redirectAttributes) {
         ModelMap model = new ModelMap();
 
-        if (!usuario.getPassword().equals(passConfirm)) {
-            model.put("error", "Las contraseñas no coinciden");
-            return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con el mensaje de error
-        }
-        String email = usuario.getEmail();
-        if (!email.contains("@") || !email.contains(".com")) {
-            model.put("error", "El email debe contener '@' y '.com'");
-            return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con el mensaje de error
-        }
+        Usuario usuario = new Usuario();
+        usuario.setEmail(datosRegistro.getEmail());
+        usuario.setPassword(datosRegistro.getPassword());
+        usuario.setNombreUsuario(datosRegistro.getNombreUsuario());
+
         try {
-            servicioLogin.registrar(usuario);  // Registra el usuario
+            servicioRegistro.registrar(usuario, datosRegistro.getConfirmarPassword());  // Registra el usuario
         } catch (UsuarioExistente e) {
             model.put("error", "El usuario ya existe");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
-        } catch (Exception e) {
+        } catch (EmailInvalido e) {
+            model.put("error", "El email debe contener '@' y '.com'");
+            return new ModelAndView("nuevo-usuario", model);
+        } catch (PasswordsNotEquals e){
+            model.put("error", "Las contraseñas no coinciden");
+            return new ModelAndView("nuevo-usuario", model);
+        }
+        catch (Exception e) {
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
         }

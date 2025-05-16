@@ -1,0 +1,181 @@
+package com.tallerwebi.dominio;
+
+import com.tallerwebi.dominio.excepcion.EmailInvalido;
+import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
+import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.presentacion.DatosLogin;
+import com.tallerwebi.presentacion.DatosRegistro;
+import com.tallerwebi.presentacion.RegistroController;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.swing.text.StyledEditorKit;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+
+
+public class ServicioRegistroTest {
+
+    private RepositorioUsuario repositorioUsuario;
+    private ServicioRegistro servicioRegistro;
+    private DatosRegistro datosRegistroMock;
+    private Usuario usuariomock ;
+
+    @BeforeEach
+    public void init() {
+        repositorioUsuario = mock(RepositorioUsuario.class);
+        servicioRegistro = new ServicioRegistroImpl(repositorioUsuario);
+        datosRegistroMock = mock(DatosRegistro.class);
+
+        String password = "1234";
+        String nombreUsuario = "dami";
+
+        when(datosRegistroMock.getPassword()).thenReturn(password);
+        when(datosRegistroMock.getNombreUsuario()).thenReturn(nombreUsuario);
+
+        usuariomock = mock(Usuario.class);
+        when(usuariomock.getPassword()).thenReturn(password);
+        when(usuariomock.getNombreUsuario()).thenReturn(nombreUsuario);
+    }
+
+    //* ------------------------------------ TEST ------------------------------------*//
+
+    //* ------------------------------------ TEST REGISTRO EXITOSO ------------------------------------*//
+
+    @Test
+    public void siNoExisteUsuarioSeDebeCrearUsuarioYVolverAlLogin() throws UsuarioExistente, PasswordsNotEquals, EmailInvalido {
+        givenNoExisteUsuario();
+        String email = "dami@gmail.com";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+
+        ResultadoRegistro registrado = whenRegistroUsuario();
+        thenRegistroExtitoso(registrado);
+    }
+
+    @Test
+    public void siPasswordCoincideConConfirmadoPasswordDevuelveElLogin() throws PasswordsNotEquals, EmailInvalido, UsuarioExistente {
+        givenNoExisteUsuario();
+        String email = "dami@gmail.com";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+
+        ResultadoRegistro registrado = whenRegistroUsuario();
+        thenRegistroExtitoso(registrado);
+    }
+
+    //* ------------------------------------ TEST REGISTRO NO EXITOSO ------------------------------------*//
+
+    @Test
+    public void siExisteUsuarioNoSeDebeCrearUsuarioYVuelveAlRegistroYMostrarError() throws UsuarioExistente, PasswordsNotEquals, EmailInvalido {
+        String email = "dami@gmail.com";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+        givenExisteUsuario();
+        ResultadoRegistro registrado = whenRegistroUsuario();
+        thenRegistroNoExtitosoRegistroNoExitosoYLanzaExcepcion(registrado, UsuarioExistente.class);
+
+    }
+    @Test
+    public void siPasswordNoCoincideConConfirmarPassword() throws PasswordsNotEquals, EmailInvalido, UsuarioExistente {
+        givenNoExisteUsuario();
+        String email = "dami@gmail.com";
+        String password = "12345";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+
+        ResultadoRegistro registrado = whenRegistroUsuario();
+        thenRegistroNoExtitosoRegistroNoExitosoYLanzaExcepcion(registrado, PasswordsNotEquals.class);
+    }
+
+
+    @Test
+    public void siElEmailNoTieneArrobaVuelveAlRegistroYMostrarError() throws EmailInvalido, PasswordsNotEquals, UsuarioExistente {
+        givenNoExisteUsuario();
+        String email = "damigamil.com";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+        ResultadoRegistro registrado = whenRegistroUsuario();
+        thenRegistroNoExtitosoRegistroNoExitosoYLanzaExcepcion(registrado, EmailInvalido.class);
+    }
+
+    @Test
+    public void siElEmailNoTienePuntoComVuelveAlRegistroYMostrarError() throws EmailInvalido, PasswordsNotEquals, UsuarioExistente {
+        givenNoExisteUsuario();
+        String email = "dami@gamil";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        when(usuariomock.getEmail()).thenReturn(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+        ResultadoRegistro registrado = whenRegistroUsuario();
+
+        thenRegistroNoExtitosoRegistroNoExitosoYLanzaExcepcion(registrado,  EmailInvalido.class);
+    }
+
+
+    //* ------------------------------------ GIVEN ------------------------------------*//
+    private void givenNoExisteUsuario() {
+            when(repositorioUsuario.buscar(anyString())).thenReturn(null);
+
+    }
+
+    private void givenExisteUsuario() throws PasswordsNotEquals, EmailInvalido, UsuarioExistente {
+
+        when(repositorioUsuario.buscarUsuario(eq(datosRegistroMock.getEmail()), anyString())).thenReturn(new Usuario());
+
+    }
+
+    //* ------------------------------------ WHEN ------------------------------------*//
+
+    private ResultadoRegistro whenRegistroUsuario() throws UsuarioExistente, PasswordsNotEquals, EmailInvalido {
+        ResultadoRegistro resultado = new ResultadoRegistro();
+        try {
+            servicioRegistro.registrar(usuariomock, datosRegistroMock.getConfirmarPassword());
+            resultado.setExitoso(Boolean.TRUE);
+        } catch (Exception e) {
+            resultado.error = e;
+        }
+        return resultado;
+
+    }
+
+    //* ------------------------------------ THEN ------------------------------------*//
+    private void thenRegistroNoExtitosoRegistroNoExitosoYLanzaExcepcion(ResultadoRegistro registrado, Class<? extends Exception> exception) {
+        assertThat(registrado.huboError(),is(Boolean.TRUE));
+        assertThat(registrado.getError(),instanceOf(exception));
+    }
+
+    private void thenRegistroExtitoso(ResultadoRegistro registrado)  {
+        assertThat(registrado.fueExitoso(),is(Boolean.TRUE));
+    }
+
+
+
+
+}

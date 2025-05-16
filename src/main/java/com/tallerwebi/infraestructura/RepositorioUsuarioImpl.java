@@ -29,8 +29,9 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
     }
 
     @Override
-    public void guardar(Usuario usuario) {
+    public Boolean guardar(Usuario usuario) {
         sessionFactory.getCurrentSession().save(usuario);
+        return true;
     }
 
     @Override

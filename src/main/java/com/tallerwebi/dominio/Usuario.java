@@ -57,4 +57,17 @@ public class Usuario {
     public void activar() {
         activo = true;
     }
+
+    @Override
+    public int hashCode() {
+        return email != null ? email.toLowerCase().hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return email != null && email.equalsIgnoreCase(usuario.email);
+    }
 }
