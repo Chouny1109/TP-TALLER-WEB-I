@@ -2,7 +2,7 @@ package com.tallerwebi.integracion;
 
 import com.tallerwebi.integracion.config.HibernateTestConfig;
 import com.tallerwebi.integracion.config.SpringWebTestConfig;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.model.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +69,7 @@ public class ControladorLoginTest {
 		ModelAndView modelAndView = result.getModelAndView();
         assert modelAndView != null;
         assertThat(modelAndView.getViewName(), equalToIgnoringCase("login"));
-		assertThat(modelAndView.getModel().get("datosLogin").toString(),  containsString("com.tallerwebi.presentacion.DatosLogin"));
+		assertThat(modelAndView.getModel().get("datosLogin").toString(),  containsString("com.tallerwebi.model.DatosLogin"));
 
 	}
 }

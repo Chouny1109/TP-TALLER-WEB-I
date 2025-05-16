@@ -1,17 +1,16 @@
-package com.tallerwebi.presentacion;
+package com.tallerwebi.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/partida")
-public class PartidaController {
+@RequestMapping("/recovery")
+public class RecoveryController {
 
-    @GetMapping("/cargar")
-    public String cargarPartida() {
-
-        return "cargarPartida";
+    @GetMapping
+    public String cargarRecovery() {
+        return "recovery";
     }
 
 }

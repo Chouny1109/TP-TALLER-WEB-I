@@ -1,7 +1,7 @@
-package com.tallerwebi.infraestructura;
+package com.tallerwebi.repository.impl;
 
-import com.tallerwebi.dominio.RepositorioUsuario;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.model.Usuario;
+import com.tallerwebi.repository.RepositorioUsuario;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;

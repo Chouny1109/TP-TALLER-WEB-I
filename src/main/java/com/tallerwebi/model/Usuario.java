@@ -1,4 +1,6 @@
-package com.tallerwebi.dominio;
+package com.tallerwebi.model;
+
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 
 import javax.persistence.*;
 
@@ -11,13 +13,14 @@ public class Usuario {
     private String nombreUsuario;
     private String email;
     private String password;
-    @Enumerated(EnumType.STRING) // o EnumType.ORDINAL, pero mejor STRING
-    @Column(name = "rol")
     private ROL_USUARIO rol;
     private Boolean activo = false;
-    private Integer nivel = 0;
 
-    public Usuario(String nombreUsuario, String email,String password) {
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
@@ -26,8 +29,10 @@ public class Usuario {
     public Usuario() {
     }
 
-    public String getNombreUsuario() { return nombreUsuario;}
-    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario;}
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
     public Long getId() {
         return id;
     }
@@ -66,4 +71,5 @@ public class Usuario {
     public void activar() {
         activo = true;
     }
+
 }

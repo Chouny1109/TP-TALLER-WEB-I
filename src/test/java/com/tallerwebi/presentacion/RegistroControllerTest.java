@@ -1,15 +1,13 @@
 package com.tallerwebi.presentacion;
 
-import com.tallerwebi.dominio.ServicioLogin;
-import com.tallerwebi.dominio.Usuario;
+import com.tallerwebi.controller.RegistroController;
+import com.tallerwebi.service.ServicioLogin;
+import com.tallerwebi.model.Usuario;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
@@ -19,13 +17,9 @@ import static org.mockito.Mockito.doThrow;
 public class RegistroControllerTest {
 
     private RegistroController registroController;
-
     private Usuario usuarioMock;
-
     private ServicioLogin servicioLoginMock;
-
     private RedirectAttributes redirectAttributesMock;
-
 
     @BeforeEach
     public void init(){
@@ -36,8 +30,6 @@ public class RegistroControllerTest {
         servicioLoginMock = mock(ServicioLogin.class);
         registroController = new RegistroController(servicioLoginMock);
         redirectAttributesMock = mock(RedirectAttributes.class);
-
-
     }
     @Test
     public void registrameSiUsuarioNoExisteDeberiaCrearUsuarioYVolverAlLogin() throws UsuarioExistente {
