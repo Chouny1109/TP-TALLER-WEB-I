@@ -49,17 +49,16 @@
 
         }
 
-        .mdi--hand-wave {
+
+        .clarity--email-solid-badged {
             display: inline-block;
             width: 50px;
             height: 50px;
             margin-bottom: 20px;
             background-repeat: no-repeat;
             background-size: 100% 100%;
-            transform: scaleX(-1);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23595454' d='M23 17c0 3.31-2.69 6-6 6v-1.5c2.5 0 4.5-2 4.5-4.5zM1 7c0-3.31 2.69-6 6-6v1.5c-2.5 0-4.5 2-4.5 4.5zm7-2.68l-4.59 4.6c-3.22 3.22-3.22 8.45 0 11.67s8.45 3.22 11.67 0l7.07-7.09c.49-.47.49-1.26 0-1.75a1.25 1.25 0 0 0-1.77 0l-4.42 4.42l-.71-.71l6.54-6.54c.49-.49.49-1.28 0-1.77s-1.29-.49-1.79 0L14.19 13l-.69-.73l6.87-6.89c.49-.49.49-1.28 0-1.77s-1.28-.49-1.77 0l-6.89 6.89l-.71-.7l5.5-5.48c.5-.49.5-1.28 0-1.77s-1.28-.49-1.77 0l-7.62 7.62a4 4 0 0 1-.33 5.28l-.71-.71a3 3 0 0 0 0-4.24l-.35-.35l4.07-4.07c.49-.49.49-1.28 0-1.77c-.5-.48-1.29-.48-1.79.01'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Cpath fill='%23585858' d='M26 12.34A7.49 7.49 0 0 1 22.5 6H3.92a2 2 0 0 0-.53.08l14.45 14.39Z' class='clr-i-solid--badged clr-i-solid-path-1--badged'/%3E%3Cpath fill='%23585858' d='M30 13.5a7.5 7.5 0 0 1-2-.29l-8.71 8.68a2 2 0 0 1-2.82 0L2 7.5a2 2 0 0 0-.07.5v20a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V12.39A7.45 7.45 0 0 1 30 13.5M5.3 28H3.91v-1.43l7.27-7.21l1.41 1.41Zm26.61 0h-1.4l-7.29-7.23l1.41-1.41l7.27 7.21Z' class='clr-i-solid--badged clr-i-solid-path-2--badged'/%3E%3Ccircle cx='30' cy='6' r='5' fill='%23585858' class='clr-i-solid--badged clr-i-solid-path-3--badged clr-i-badge'/%3E%3Cpath fill='none' d='M0 0h36v36H0z'/%3E%3C/svg%3E");
         }
-
         #loginbox {
             width: 100%;
             max-width: 100%;
@@ -102,27 +101,13 @@
         <div class="col-md-5 d-flex justify-content-center align-items-center ">
 
             <div id="loginbox" class="d-flex flex-column justify-content-center align-items-center text-center ">
-                <span class="mdi--hand-wave"></span>
+                <span class="clarity--email-solid-badged"></span>
+                <div id="form-2" >
+                    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+                    <a style="color: #524d4d; font-size: 15px" th:href="@{/login}">Volver al login</a>
 
-                <!-- Formulario de Recuperación de Contraseña (Paso 1) -->
-                <div id="form-1">
-                    <form id="recovery-form" action="#" th:action="@{/recovery/send-email}" method="POST">
-                        <h1 class="fw-bold mb-4" style="color: #524d4d; font-size: 50px;">
-                            <span class="fw-light">¡Opps!</span> ¿Olvidaste tu contraseña?
-                        </h1>
-                        <p class="px-5">Por favor, introduce tu direccion de correo electronico y te enviaremos un enlace para restablecer la contraseña.</p>
-
-                        <div class="mb-3 text-center">
-                            <label for="email" class="form-label text-start d-block" style="width: 450px; margin: 0 auto;">Email</label>
-                            <input name="email" id="email" type="email" class="form-control mx-auto" style="width: 450px;" required/>
-                            <div style="width: 450px; margin: 4px auto 0 auto; text-align: right;">
-                                <a href="login" id="login" class="fs-6" style="color: #808080;">Iniciar sesión</a>
-                            </div>
-                        </div>
-
-                        <button id="btn-continue" class="btn btn-lg btn-primary btn-block w-75 fs-5 mt-4" type="submit">Continuar</button>
-                    </form>
                 </div>
+
 
             </div>
         </div>

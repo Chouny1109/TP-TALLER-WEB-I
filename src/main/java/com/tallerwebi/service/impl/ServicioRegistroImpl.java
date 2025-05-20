@@ -31,7 +31,7 @@ public class ServicioRegistroImpl implements ServicioRegistro {
         if (!usuario.getEmail().contains("@") || !usuario.getEmail().contains(".com")) {
             throw new EmailInvalido();
         }
-        if (!usuario.getPassword().equals(confirmarPassword)) {
+        if (!usuario.getPassword().trim().equals(confirmarPassword.trim())) {
             throw new PasswordsNotEquals();
         }
         if (usuarioEncontrado != null) {
