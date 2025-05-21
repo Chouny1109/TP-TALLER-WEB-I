@@ -15,7 +15,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "com.tallerwebi.dominio", "com.tallerwebi.repository","com.tallerwebi.controller","com.tallerwebi.model","com.tallerwebi.service"})
+@ComponentScan({ "com.tallerwebi.dominio","com.tallerwebi.util", "com.tallerwebi.repository","com.tallerwebi.controller","com.tallerwebi.model","com.tallerwebi.service"})
 public class SpringWebConfig implements WebMvcConfigurer {
 
     // Spring + Thymeleaf need this

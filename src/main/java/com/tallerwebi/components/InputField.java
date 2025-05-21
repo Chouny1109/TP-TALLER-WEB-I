@@ -4,23 +4,13 @@ public class InputField {
     private String type;
     private String name;
     private String label;
-    private Boolean readOnly;
     private String value;
 
-    public InputField(String type, String name,String label,String value,Boolean readOnly) {
+    public InputField(String type, String name,String label,String value) {
         this.type = type;
         this.name = name;
         this.label = label;
-        this.readOnly = readOnly;
         this.value = value;
-    }
-
-    public Boolean getReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(Boolean readOnly) {
-        this.readOnly = readOnly;
     }
 
     public String getType() {
