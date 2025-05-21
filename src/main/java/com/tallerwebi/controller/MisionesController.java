@@ -1,10 +1,17 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.model.Mision;
+import com.tallerwebi.model.Usuario;
+import com.tallerwebi.service.ServicioMisiones;
+import com.tallerwebi.util.SessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,18 +20,25 @@ import java.util.List;
 @RequestMapping("/misiones")
 public class MisionesController {
 
-    private static final List<String> misiones = new ArrayList<>(Arrays.asList(
-             ("Mision 1"),
-             ("Mision 2"),
-             ("Mision 3"),
-             ("Mision 4")
-    ));
+    private final ServicioMisiones servicioMisiones;
+    private final SessionUtil sessionUtil;
 
-    //Manera moderna de mandar datos a  la vista
-    @GetMapping()
-    public String misiones(Model model) {
-        //agrego los atributos al map
-        model.addAttribute("misiones", misiones);
-        return ("misiones");
+    public MisionesController(ServicioMisiones servicioMisiones, SessionUtil sessionUtil) {
+        this.servicioMisiones = servicioMisiones;
+        this.sessionUtil = sessionUtil;
+    }
+
+    @GetMapping
+    public ModelAndView misiones(HttpServletRequest request) {
+
+        ModelMap modelMap = new ModelMap();
+
+        Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
+
+        List<Mision> misionesDelUsuario = this.servicioMisiones.obtenerLasMisionesDelUsuario(logueado.getId());
+
+        modelMap.addAttribute("misiones", misionesDelUsuario);
+
+        return new ModelAndView("misiones", modelMap);
     }
 }

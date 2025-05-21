@@ -28,8 +28,5 @@ public class ServicioLoginImpl implements ServicioLogin {
     public Usuario consultarUsuario (String email, String password) {
         return repositorioUsuario.buscarUsuario(email, password);
     }
-
-
-
 }
 
