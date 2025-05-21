@@ -1,10 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title>Amigos</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <style>
+        body {
+            user-select: none;
+            min-height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ==== NAVBAR ==== */
+        .navbar-custom {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px 30px;
+            margin: 20px auto 30px auto;
+            max-width: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+
+        .navbar-title {
+            color: #333;
+            font-weight: 800;
+            font-size: 1.7rem;
+            margin: 0;
+            padding-right: calc(50%);
+        }
+
+        /* ==== SEARCH INPUT ==== */
+
+        .search-input:focus {
+            outline: rgb(159, 236, 156);
+            box-shadow: 0 0 0 2px #d0d0d0;
+        }
+
+
+        .navbar-title {
+            color: #333;
+            font-weight: 800;
+            font-size: 1.7rem;
+            margin: 0;
+
+        }
+
+
+
+        .search-input {
+            max-width: 250px;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: black;
+            background-color: #ffffff;
+            caret-color: white;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .search-input::placeholder {
+            color: black;
+            font-weight: 700;
+            opacity: 0.8;
+        }
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px #67b761;
+            border-color: white;
+            background-color: transparent;
+            color: black;
+        }
+
+        /* Layout main: margen superior más grande para centrar vertical */
+        .main-container {
+            max-width: 900px;
+            margin: 60px auto 40px auto; /* más abajo para centrar */
+            display: flex;
+            gap: 25px;
+            background-color: rgb(159, 236, 156);;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            min-height: 450px;
+        }
+
+        /* Sidebar nav */
+        .sidebar {
+            flex-basis: 220px;
+            background-color: rgb(203, 255, 204);
+            border-radius: 12px;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            justify-items: center;
+        }
+        .sidebar a {
+            color: black;
+            background-color: white;
+            padding: 18px 24px;
+            margin: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        .sidebar a.active,
+        .sidebar a:hover {
+            background-color: rgba(0, 128, 0, 0.2);;
+            color: black;
+        }
+
+        /* Content section blanco */
+        .content {
+            flex-grow: 1;
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgb(0 0 0 / 0.05);
+        }
+        .content h3 {
+            color: #4caf50;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* List group overrides */
+        .list-group-item {
+            border: none;
+            border-bottom: 1.5px solid #cbffcc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #4f964f;
+            user-select: none;
+            padding: 15px 20px;
+        }
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        .list-group-item:hover {
+            background-color: #dbffdb;
+        }
+
+        .amigo-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .amigo-info img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #9fec9c;
+        }
+
+        .btn-desafiar {
+            background-color: #9fec9c;
+            border: none;
+            color: white;
+            font-weight: 800;
+            border-radius: 16px;
+            padding: 10px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-desafiar:hover {
+            background-color: #67b761;
+        }
+    </style>
 </head>
 <body>
+<!-- Navbar -->
+<nav class="navbar navbar-custom">
+    <a th:href="@{/home}">
+        <svg  xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000" class="bi bi-arrow-left-circle grid" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+        </svg>
+    </a>
+    <h2 class="navbar-title">AMIGOS</h2>
+    <input
+            type="search"
+            class="search-input"
+            placeholder="Busca amigos"
+            aria-label="Buscar amigos"
+    />
+</nav>
 
+<!-- Main container -->
+<div class="main-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <a href="#" >Mis amigos</a>
+        <a href="#">Añadir amigo</a>
+        <a href="#">Solicitudes</a>
+        <a href="#">Chats</a>
+
+    </nav>
+
+
+    <section class="content">
+        <h3>Mis amigos</h3>
+        <ul class="list-group overflow-auto" style="max-height: 320px;">
+            <li class="list-group-item">
+                <div class="amigo-info">
+                    <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+                    Usuario_10
+                </div>
+                <button class="btn-desafiar">Desafiar</button>
+            </li>
+            <li class="list-group-item">
+                <div class="amigo-info">
+                    <img th:src="@{/resources/imgs/perfilAndrea.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+                    Usuario_23
+                </div>
+                <button class="btn-desafiar">Desafiar</button>
+            </li>
+            <li class="list-group-item">
+                <div class="amigo-info">
+                    <img th:src="@{/resources/imgs/perfilMadMax.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+                    Usuario_02
+                </div>
+                <button class="btn-desafiar">Desafiar</button>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+></script>
 </body>
 </html>
