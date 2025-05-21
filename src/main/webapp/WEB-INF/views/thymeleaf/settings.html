@@ -37,16 +37,20 @@
                     </div>
                 </div>
                 <form th:action="@{/settings/update}" id="form-setting" method="post">
+
                     <div th:each="input:${inputFields}">
                         <div class="form-element">
                             <label th:for="${input.name}" th:text="${input.label}"></label>
                             <div class="input-container">
+
                                 <input th:type="${input.type}" th:name="${input.name}"
                                        th:id="${input.name}" th:value="${input.value}"
-                                       th:attr="data-original=${input.value}" required>
-                                <button type="button" th:attr="data-target=${input.name}" disabled>
+                                       th:attr="data-original=${input.value}" required readonly>
+
+                                <button type="button" th:attr="data-target=${input.name}">
                                     <img th:src="@{/resources/imgs/settingEdit.svg}" alt="">
                                 </button>
+
                             </div>
                         </div>
                     </div>

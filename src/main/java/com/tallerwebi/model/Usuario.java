@@ -3,6 +3,8 @@ package com.tallerwebi.model;
 import com.tallerwebi.dominio.enums.ROL_USUARIO;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -19,18 +21,24 @@ public class Usuario {
     private Boolean activo = false;
     private Integer nivel = 0;
 
+
+    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Mision> misiones;
+
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
+        this.misiones = new ArrayList<>();
     }
 
     public Usuario() {
-
     }
+
 
     public String getNombreUsuario() { return nombreUsuario;}
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario;}
+
     public Long getId() {
         return id;
     }
@@ -62,6 +70,10 @@ public class Usuario {
         this.activo = activo;
     }
 
+    public Integer getNivel() {
+        return nivel;
+    }
+
     public boolean activo() {
         return activo;
     }
@@ -81,5 +93,9 @@ public class Usuario {
         if (!(o instanceof Usuario)) return false;
         Usuario usuario = (Usuario) o;
         return email != null && email.equalsIgnoreCase(usuario.email);
+    }
+
+    public List<Mision> getMisiones() {
+        return this.misiones;
     }
 }
