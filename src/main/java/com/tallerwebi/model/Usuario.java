@@ -62,6 +62,10 @@ public class Usuario {
         this.activo = activo;
     }
 
+    public Integer getNivel() {
+        return nivel;
+    }
+
     public boolean activo() {
         return activo;
     }
