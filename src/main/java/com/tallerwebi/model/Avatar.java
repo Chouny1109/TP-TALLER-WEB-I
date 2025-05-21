@@ -6,6 +6,11 @@ public class Avatar {
     private Habilidad Habilidad;
     private Boolean estado = false;
 
+    public Avatar(String nombre, Integer valor) {
+        this.nombre = nombre;
+        this.valor = valor;
+    }
+
     public String getNombre() {
         return nombre;
     }
