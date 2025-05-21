@@ -25,6 +25,7 @@ public class SettingControllerTest {
     private HttpServletRequest request;
     private SettingsController settingsController;
     private DatosSetting datosSetting;
+    private InputField inputFields;
 
     private final Usuario usuarioMock = new Usuario();
     private final List<InputField> inputsFieldMock = List.of(new InputField("email", "email", "Email", usuarioMock.getEmail()));
@@ -38,6 +39,7 @@ public class SettingControllerTest {
         usuarioMock.setId(1L);
         usuarioMock.setEmail("lucieze02@icloud.com");
         datosSetting = new DatosSetting();
+        inputFields = mock(InputField.class);
     }
 
     @Test
@@ -50,10 +52,9 @@ public class SettingControllerTest {
     }
 
     private void thenSeDevuelveLaVistaCorrespondiente(ModelAndView mav) {
-        assertThat(mav.getViewName(), equalToIgnoringCase("setting"));
-        assertThat(mav.getModel().get("inputsField"), equalTo(inputsFieldMock));
+        assertThat(mav.getViewName(), equalToIgnoringCase("settings"));
+        assertThat(mav.getModel().get("inputFields"), equalTo(inputsFieldMock));
         assertThat(mav.getModel().get("usuarioLogueado"), equalTo(usuarioMock));
-
     }
 
     private ModelAndView whenSeCargaLaVistaSetting() {
@@ -64,6 +65,7 @@ public class SettingControllerTest {
         when(sessionUtil.getUsuarioLogueado(request)).thenReturn(usuarioMock);
         when(servicioSetting.obtenerInputsForm(usuarioMock)).thenReturn(inputsFieldMock);
     }
+
 
     @Test
     public void cuandoSeActualizaElUsuarioRedirigeAYActualizaLaSesion() {
