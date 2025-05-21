@@ -19,6 +19,7 @@ public class Usuario {
     @Column(name = "rol")
     private ROL_USUARIO rol;
     private Boolean activo = false;
+    private Integer nivel = 0;
 
 
     @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
