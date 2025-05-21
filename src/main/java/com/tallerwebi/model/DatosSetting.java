@@ -11,6 +11,9 @@ public class DatosSetting {
         this.password = password;
     }
 
+    public DatosSetting() {
+    }
+
     public String getUserName() {
         return userName;
     }

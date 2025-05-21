@@ -98,4 +98,8 @@ public class Usuario {
     public List<Mision> getMisiones() {
         return this.misiones;
     }
+
+    public void setMisiones(List<Mision> misiones) {
+        this.misiones = misiones;
+    }
 }
