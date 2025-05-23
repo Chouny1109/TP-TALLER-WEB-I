@@ -52,7 +52,8 @@ import java.util.Properties;
         "com.tallerwebi.repository",
         "com.tallerwebi.controller",
         "com.tallerwebi.service",
-        "com.tallerwebi.config"
+        "com.tallerwebi.config",
+        "com.tallerwebi.util"
 })
 
 public class SpringWebConfig implements WebMvcConfigurer {

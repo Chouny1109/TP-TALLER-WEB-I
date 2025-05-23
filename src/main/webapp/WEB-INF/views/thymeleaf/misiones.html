@@ -6,12 +6,9 @@
 
     <title>Misiones</title>
 
-    <!-- Boostrap core css -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.2.0/css/bootstrap.min.css}"/>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- custom style -->
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
     <link rel="stylesheet" th:href="@{/css/misiones.css}">
 </head>
 
@@ -23,13 +20,13 @@
     </div>
 </header>
 
-<main>
+<main class="main">
 
-<!--Itero el model que le mando del controlador y completo con la informacion del mismo-->
-    <div class="container">
+    <!--Itero el model que le mando del controlador y completo con la informacion del mismo-->
+    <div class="container" th:if="${misiones != null && misiones.size() > 0}">
         <div class="card" th:each="mision : ${misiones}">
             <div class="card-container">
-                <span class="card-title" th:text="${mision}"></span>
+                <span class="card-title" th:text="${mision.titulo}"></span>
                 <div class="card-buttons">
                     <button type="button" class="card-button">Canjear</button>
                     <a th:href="@{/partida/cargar}" class="card-button">Ir</a>
@@ -38,13 +35,8 @@
             <progress class="card-progress" max="100" value="10"></progress>
         </div>
     </div>
-
+    <p th:if="${misiones==null or misiones.size()==0}">Actualmente no tenes misiones para mostrar.</p>
 </main>
 
-</body>
-
-<!-- Boostrap core js -->
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
-<script type="text/javascript" th:src="@{js/main.js}"></script>
 </body>
 </html>
