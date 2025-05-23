@@ -13,10 +13,13 @@ import com.tallerwebi.service.ServicioRegistro;
 import com.tallerwebi.service.impl.ServicioRegistroImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,6 +29,7 @@ import static org.hamcrest.Matchers.is;
 
 
 public class ServicioRegistroTest {
+
 
     private RepositorioUsuario repositorioUsuario;
     private ServicioRegistro servicioRegistro;
@@ -44,9 +48,10 @@ public class ServicioRegistroTest {
         when(datosRegistroMock.getPassword()).thenReturn(password);
         when(datosRegistroMock.getNombreUsuario()).thenReturn(nombreUsuario);
 
-        usuariomock = mock(Usuario.class);
-        when(usuariomock.getPassword()).thenReturn(password);
-        when(usuariomock.getNombreUsuario()).thenReturn(nombreUsuario);
+        usuariomock = new Usuario();
+        usuariomock.setPassword(password);
+        usuariomock.setNombreUsuario(nombreUsuario);
+
     }
 
     //* ------------------------------------ TEST ------------------------------------*//
@@ -59,7 +64,7 @@ public class ServicioRegistroTest {
         String email = "dami@gmail.com";
         String password = "1234";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
 
@@ -73,13 +78,30 @@ public class ServicioRegistroTest {
         String email = "dami@gmail.com";
         String password = "1234";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
 
         ResultadoRegistro registrado = whenRegistroUsuario();
         thenRegistroExtitoso(registrado);
     }
+
+    @Test
+    public void contraseñaDebeGuardarseEncriptada() throws UsuarioExistente, PasswordsNotEquals, EmailInvalido {
+        givenNoExisteUsuario();
+        String email = "dami@gmail.com";
+        String password = "1234";
+        when(datosRegistroMock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
+        when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
+
+        when(repositorioUsuario.guardar(any())).thenReturn(true);
+        whenRegistroUsuario();
+
+        thenPasswordDebeEstarEncriptado(password);
+    }
+
+
 
     //* ------------------------------------ TEST REGISTRO NO EXITOSO ------------------------------------*//
 
@@ -88,7 +110,7 @@ public class ServicioRegistroTest {
         String email = "dami@gmail.com";
         String password = "1234";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
         givenExisteUsuario();
@@ -102,7 +124,7 @@ public class ServicioRegistroTest {
         String email = "dami@gmail.com";
         String password = "12345";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
 
@@ -117,7 +139,7 @@ public class ServicioRegistroTest {
         String email = "damigamil.com";
         String password = "1234";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
         ResultadoRegistro registrado = whenRegistroUsuario();
@@ -130,7 +152,7 @@ public class ServicioRegistroTest {
         String email = "dami@gamil";
         String password = "1234";
         when(datosRegistroMock.getEmail()).thenReturn(email);
-        when(usuariomock.getEmail()).thenReturn(email);
+        usuariomock.setEmail(email);
         when(datosRegistroMock.getConfirmarPassword()).thenReturn(password);
 
         ResultadoRegistro registrado = whenRegistroUsuario();
@@ -141,13 +163,16 @@ public class ServicioRegistroTest {
 
     //* ------------------------------------ GIVEN ------------------------------------*//
     private void givenNoExisteUsuario() {
-            when(repositorioUsuario.buscar(anyString())).thenReturn(null);
+
+        when(repositorioUsuario.buscar(anyString())).thenReturn(null);
+
 
     }
 
     private void givenExisteUsuario() throws PasswordsNotEquals, EmailInvalido, UsuarioExistente {
 
-        when(repositorioUsuario.buscarUsuario(eq(datosRegistroMock.getEmail()), anyString())).thenReturn(new Usuario());
+        when(repositorioUsuario.buscar(anyString())).thenReturn(new Usuario());
+
 
     }
 
@@ -175,6 +200,14 @@ public class ServicioRegistroTest {
         assertThat(registrado.fueExitoso(),is(Boolean.TRUE));
     }
 
+    private void thenPasswordDebeEstarEncriptado(String password) {
+        ArgumentCaptor<Usuario> captor = ArgumentCaptor.forClass(Usuario.class);
+        verify(repositorioUsuario).guardar(captor.capture());
+        Usuario usuarioGuardado = captor.getValue();
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        assertTrue(encoder.matches(password, usuarioGuardado.getPassword()));
+    }
 
 
 

@@ -10,28 +10,28 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
+
         <spring.version>5.2.22.RELEASE</spring.version>
-        <servletapi.version>4.0.4</servletapi.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <thymeleaf.spring.version>3.0.15.RELEASE</thymeleaf.spring.version>
+        <hsqldb.version>2.3.2</hsqldb.version>
+
         <webjars.version>5.2.0</webjars.version>
-        <hamcrest.version>2.2</hamcrest.version>
+        <servletapi.version>4.0.1</servletapi.version>
+
         <junit.version>5.9.0</junit.version>
         <mockito.version>5.3.1</mockito.version>
-        <hibernate.version>5.4.24.Final</hibernate.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <playwright.version>1.36.0</playwright.version>
-        <hsqldb.version>2.3.2</hsqldb.version>
-        <webjars.version>5.2.0</webjars.version>
     </properties>
 
     <dependencies>
-
+        <!-- Spring MVC, ORM, JDBC -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
-
 
         <dependency>
             <groupId>org.springframework</groupId>
@@ -45,18 +45,21 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <!-- HSQLDB para base de datos en memoria -->
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${hsqldb.version}</version>
         </dependency>
 
+        <!-- Thymeleaf con integración Spring 5 -->
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring5</artifactId>
             <version>${thymeleaf.spring.version}</version>
         </dependency>
 
+        <!-- Bootstrap Webjars -->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
@@ -69,13 +72,15 @@
             <version>0.52</version>
         </dependency>
 
+        <!-- Servlet API (scope provided porque el servidor lo provee) -->
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <version>${servletapi.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- Spring Test -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -83,6 +88,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -90,49 +96,108 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
+            <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
 
+        <!-- Hamcrest para tests -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
             <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>2.2</version> <!-- o la que uses -->
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
 
-
+        <!-- Hibernate Core -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!-- Playwright para tests de integración -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>${playwright.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- compile only, deployed container will provide this -->
-        <!--
+
+        <!-- Spring Security Crypto para PasswordEncoder -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${servletapi.version}</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>5.4.10</version>
         </dependency>
-        -->
+        <!-- JavaMail 1.6.2 excluyendo la dependencia 'activation' antigua -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Dependencia clásica con implementación JAF necesaria para JavaMail y Spring 5 -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
+
+        <!-- Soporte Spring para mail -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- Logback para logging -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.13</version>
+        </dependency>
+
+        <!-- javax.annotation -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -146,6 +211,7 @@
         </resources>
 
         <plugins>
+            <!-- Compilador -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -156,6 +222,7 @@
                 </configuration>
             </plugin>
 
+            <!-- WAR plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -165,20 +232,19 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin para ejecutar las pruebas -->
+            <!-- Pruebas -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version> <!-- Ajusta la versión según tus necesidades -->
-
+                <version>3.0.0-M5</version>
                 <configuration>
-                    <!-- Configuración específica para las pruebas -->
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
                 </configuration>
             </plugin>
 
+            <!-- Jetty -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
@@ -190,11 +256,23 @@
                     </httpConnector>
                     <webApp>
                         <contextPath>/spring</contextPath>
+                        <war>${project.build.directory}/${project.build.finalName}.war</war>
                     </webApp>
+                    <useTestClasspath>false</useTestClasspath>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>spring.profiles.active</name>
+                            <value>prod</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
 
+
+
+
         </plugins>
+
     </build>
 
 </project>

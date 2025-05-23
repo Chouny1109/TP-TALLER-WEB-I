@@ -1,12 +1,16 @@
 package com.tallerwebi.integracion;
 
+import com.tallerwebi.integracion.config.MockServicioRecoveryConfig;
 import com.tallerwebi.integracion.config.HibernateTestConfig;
+import com.tallerwebi.integracion.config.MailTestConfig;
 import com.tallerwebi.integracion.config.SpringWebTestConfig;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.service.ServicioRecovery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -26,13 +30,17 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {SpringWebTestConfig.class, HibernateTestConfig.class})
+@ContextConfiguration(classes = {SpringWebTestConfig.class, HibernateTestConfig.class, MailTestConfig.class,  MockServicioRecoveryConfig.class})
 public class ControladorLoginTest {
 
 	private Usuario usuarioMock;
 
+
+	@Autowired
+	private ServicioRecovery servicioRecovery;
 	@Autowired
 	private WebApplicationContext wac;
 	private MockMvc mockMvc;
@@ -43,6 +51,7 @@ public class ControladorLoginTest {
 		usuarioMock = mock(Usuario.class);
 		when(usuarioMock.getEmail()).thenReturn("dami@unlam.com");
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+
 	}
 
 	@Test
