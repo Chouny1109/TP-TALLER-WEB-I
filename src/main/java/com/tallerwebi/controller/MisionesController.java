@@ -1,5 +1,6 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioMisiones;
@@ -29,7 +30,7 @@ public class MisionesController {
     }
 
     @GetMapping
-    public ModelAndView misiones(HttpServletRequest request) {
+    public ModelAndView misiones(HttpServletRequest request) throws UsuarioNoExistente {
 
         ModelMap modelMap = new ModelMap();
 

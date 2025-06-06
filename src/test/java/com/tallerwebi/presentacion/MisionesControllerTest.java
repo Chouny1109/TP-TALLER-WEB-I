@@ -1,6 +1,7 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.MisionesController;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioMisiones;
@@ -37,13 +38,13 @@ public class MisionesControllerTest {
     }
 
     @Test
-    public void caundoCargoLaVistaMisionesMeDevuelveUnModelAndView() {
+    public void caundoCargoLaVistaMisionesMeDevuelveUnModelAndView() throws UsuarioNoExistente {
         Usuario logueado = givenDadoUnUsuarioLogueadoConMisiones();
         ModelAndView mav = whenCargoLaVista(request);
         thenLaVistaMeDevueleveUnModelAnView(mav, logueado);
     }
 
-    private Usuario givenDadoUnUsuarioLogueadoConMisiones() {
+    private Usuario givenDadoUnUsuarioLogueadoConMisiones() throws UsuarioNoExistente {
         Usuario logueado = new Usuario();
         logueado.setId(1L);
 
@@ -53,7 +54,7 @@ public class MisionesControllerTest {
         return logueado;
     }
 
-    private ModelAndView whenCargoLaVista(HttpServletRequest request) {
+    private ModelAndView whenCargoLaVista(HttpServletRequest request) throws UsuarioNoExistente {
         return misionesController.misiones(request);
     }
 

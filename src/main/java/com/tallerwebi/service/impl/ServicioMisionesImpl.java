@@ -1,10 +1,13 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.repository.RepositorioMisiones;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioMisiones;
 import org.hsqldb.lib.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,18 +18,22 @@ import java.util.List;
 @Transactional
 public class ServicioMisionesImpl implements ServicioMisiones {
 
-    private RepositorioUsuario repositorioUsuario;
+    private final RepositorioMisiones repositorioMisiones;
+    private final RepositorioUsuario repositorioUsuario;
 
-    public ServicioMisionesImpl(RepositorioUsuario repositorioUsuario) {
+    public ServicioMisionesImpl(RepositorioMisiones repositorioMisiones, RepositorioUsuario repositorioUsuario) {
+        this.repositorioMisiones = repositorioMisiones;
         this.repositorioUsuario = repositorioUsuario;
     }
 
     @Override
-    public List<Mision> obtenerLasMisionesDelUsuario(Long id) {
-        Usuario buscado = this.repositorioUsuario.buscarUsuarioPorId(id);
-        if (buscado != null) {
-            return buscado.getMisiones();
+    public List<Mision> obtenerLasMisionesDelUsuario(Long id) throws UsuarioNoExistente {
+        Usuario buscado = repositorioUsuario.buscarUsuarioPorId(id);
+
+        if (buscado == null) {
+            throw new UsuarioNoExistente();
         }
-        return Collections.emptyList();
+
+        return repositorioMisiones.misionesDeUsuario(id);
     }
 }
