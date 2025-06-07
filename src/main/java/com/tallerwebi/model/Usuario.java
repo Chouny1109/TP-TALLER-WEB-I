@@ -20,7 +20,8 @@ public class Usuario {
     private ROL_USUARIO rol;
     private Boolean activo = false;
     private Integer nivel = 0;
-
+    @ManyToMany
+    private List<Partida> partida;
 
     @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Mision> misiones;
