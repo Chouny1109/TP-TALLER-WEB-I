@@ -19,15 +19,9 @@ public class HibernateConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-<<<<<<< Updated upstream
-        dataSource.setUrl("jdbc:mysql://localhost:3306/tallerweb?useSSL=false&serverTimezone=UTC");
-        dataSource.setUsername("root");
-        dataSource.setPassword("");
-=======
         dataSource.setUrl("jdbc:mysql://yamanote.proxy.rlwy.net:54862/railway?useSSL=false&serverTimezone=UTC");
         dataSource.setUsername("root");
         dataSource.setPassword("CZFcLihtQKVjpAJHMfuQEbFqvnYPNXUr");
->>>>>>> Stashed changes
         return dataSource;
     }
 
@@ -46,17 +40,12 @@ public class HibernateConfig {
         return new HibernateTransactionManager(sessionFactory);
     }
 
-
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
-<<<<<<< Updated upstream
-        properties.setProperty("hibernate.hbm2ddl.auto", "update"); // te conviene "update" mientras desarrollás
-=======
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
->>>>>>> Stashed changes
         return properties;
     }
 }
