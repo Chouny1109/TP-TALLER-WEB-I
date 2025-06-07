@@ -2,21 +2,34 @@ package com.tallerwebi.model;
 
 import com.tallerwebi.dominio.enums.TIPO_PREGUNTA;
 
-import java.util.LinkedHashMap;
+import javax.persistence.*;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+@Entity
 public class Pregunta {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String enunciado;
-    private List<String> opciones;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Respuesta> respuesta;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Tipo_Pregunta")
     private TIPO_PREGUNTA tipoPregunta;
 
-    public Pregunta(String enunciado, List<String> opciones, TIPO_PREGUNTA tipoPregunta) {
+    public Pregunta(String enunciado, List<Respuesta> respuesta, TIPO_PREGUNTA tipoPregunta) {
         this.enunciado = enunciado;
-        this.opciones = opciones;
+        this.respuesta = respuesta;
         this.tipoPregunta = tipoPregunta;
+    }
+
+    public Pregunta() {
+
     }
 
     // Getters y setters
@@ -24,25 +37,16 @@ public class Pregunta {
         return enunciado;
     }
 
-    public List<String> getOpciones() {
-        return opciones;
-    }
 
     public TIPO_PREGUNTA getTipoPregunta(){
         return tipoPregunta;
     }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Pregunta)) return false;
-        Pregunta that = (Pregunta) o;
-        return Objects.equals(enunciado, that.enunciado) &&
-                Objects.equals(opciones, that.opciones) &&
-                tipoPregunta == that.tipoPregunta;
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(enunciado, opciones, tipoPregunta);
+    public Long getId() {
+        return id;
     }
 }
