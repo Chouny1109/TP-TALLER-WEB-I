@@ -1,8 +1,10 @@
 package com.tallerwebi.config;
 
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -13,15 +15,28 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+@PropertySource("classpath:application.properties")
 public class HibernateConfig {
+
+    @Value("${db.driver}")
+    private String DB_DRIVER;
+
+    @Value("${db.url}")
+    private String DB_URL;
+
+    @Value("${db.username}")
+    private String DB_USERNAME;
+
+    @Value("${db.password}")
+    private String DB_PASSWORD;
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://yamanote.proxy.rlwy.net:54862/railway?useSSL=false&serverTimezone=UTC");
-        dataSource.setUsername("root");
-        dataSource.setPassword("CZFcLihtQKVjpAJHMfuQEbFqvnYPNXUr");
+        dataSource.setDriverClassName(DB_DRIVER);
+        dataSource.setUrl(DB_URL);
+        dataSource.setUsername(DB_USERNAME);
+        dataSource.setPassword(DB_PASSWORD);
         return dataSource;
     }
 
