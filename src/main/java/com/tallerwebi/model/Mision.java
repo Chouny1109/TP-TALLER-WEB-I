@@ -66,6 +66,14 @@ public class Mision {
         this.recompensa = recompensa;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     @Override
     public String toString() {
         return "Mision{" +

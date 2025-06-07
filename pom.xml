@@ -33,6 +33,13 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.3.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
@@ -198,6 +205,12 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version> <!-- o la última versión estable -->
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -258,7 +271,7 @@
                         <contextPath>/spring</contextPath>
                         <war>${project.build.directory}/${project.build.finalName}.war</war>
                     </webApp>
-                    <useTestClasspath>false</useTestClasspath>
+                    <useTestClasspath>true</useTestClasspath>
                     <systemProperties>
                         <systemProperty>
                             <name>spring.profiles.active</name>

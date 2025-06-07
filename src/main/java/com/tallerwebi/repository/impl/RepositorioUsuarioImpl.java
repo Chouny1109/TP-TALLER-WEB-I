@@ -1,6 +1,7 @@
 package com.tallerwebi.repository.impl;
 
 import com.tallerwebi.model.Mision;
+import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioUsuario;
 import org.hibernate.Session;
@@ -24,24 +25,24 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         this.sessionFactory = sessionFactory;
     }
 
-    @Override
-    public Usuario buscarUsuario(String email, String password) {
-        final Session session = sessionFactory.getCurrentSession();
-
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
-        Root<Usuario> root = query.from(Usuario.class);
-
-        query.select(root)
-                .where(
-                        builder.and(
-                                builder.equal(root.get("email"), email),
-                                builder.equal(root.get("password"), password)
-                        )
-                );
-
-        return session.createQuery(query).uniqueResult();
-    }
+//    @Override
+//    public Usuario buscarUsuario(String email, String password) {
+//        final Session session = sessionFactory.getCurrentSession();
+//
+//        CriteriaBuilder builder = session.getCriteriaBuilder();
+//        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
+//        Root<Usuario> root = query.from(Usuario.class);
+//
+//        query.select(root)
+//                .where(
+//                        builder.and(
+//                                builder.equal(root.get("email"), email),
+//                                builder.equal(root.get("password"), password)
+//                        )
+//                );
+//
+//        return session.createQuery(query).uniqueResult();
+//    }
 
     @Override
     public Boolean guardar(Usuario usuario) {
@@ -53,14 +54,18 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
     public Usuario buscar(String email) {
         Session session = sessionFactory.getCurrentSession();
 
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
-        Root<Usuario> root = query.from(Usuario.class);
+        return (Usuario) session.createCriteria(Usuario.class)
+                .add(Restrictions.eq("email", email))
+                .uniqueResult();
 
-        query.select(root)
-                .where(builder.equal(root.get("email"), email));
-
-        return session.createQuery(query).uniqueResult();
+//        CriteriaBuilder builder = session.getCriteriaBuilder();
+//        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
+//        Root<Usuario> root = query.from(Usuario.class);
+//
+//        query.select(root)
+//                .where(builder.equal(root.get("email"), email));
+//
+//        return session.createQuery(query).uniqueResult();
     }
 
     @Override

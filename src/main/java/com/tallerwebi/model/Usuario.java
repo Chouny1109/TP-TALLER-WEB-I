@@ -12,17 +12,23 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String nombreUsuario;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.STRING) // o EnumType.ORDINAL, pero mejor STRING
     @Column(name = "rol")
     private ROL_USUARIO rol;
     private Boolean activo = false;
+    @Column(unique = true)
+    private String token;
     private Integer nivel = 0;
+    @ManyToMany
+    private List<Partida> partida;
 
-
-    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER, targetEntity = Mision.class)
     private List<Mision> misiones;
 
     public Usuario(String nombreUsuario, String email, String password) {
@@ -101,5 +107,13 @@ public class Usuario {
 
     public void setMisiones(List<Mision> misiones) {
         this.misiones = misiones;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

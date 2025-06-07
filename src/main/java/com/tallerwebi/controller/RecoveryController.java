@@ -4,6 +4,7 @@ import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.TokenInvalido;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
+import com.tallerwebi.model.DatosLogin;
 import com.tallerwebi.model.DatosRecovery;
 import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 
@@ -71,7 +73,7 @@ public class RecoveryController {
         }
 
         DatosRecovery datosRecovery = new DatosRecovery();
-        datosRecovery.setEmail(recoveryToken.getEmail()); // opcional, para prellenar el email
+        datosRecovery.setEmail(recoveryToken.getUsuario().getEmail()); // opcional, para prellenar el email
 
         mv.setViewName("recovery2"); // nombre de la vista que tiene el formulario de nueva contraseña
         mv.addObject("datosRecovery", datosRecovery);
@@ -82,18 +84,28 @@ public class RecoveryController {
 
     @PostMapping("/cambio-de-contrasena")
     public ModelAndView cambiarPassword(@ModelAttribute DatosRecovery datosRecovery,
-                                        @RequestParam("token") String token) throws PasswordsNotEquals, UsuarioNoExistente {
+                                        @RequestParam("token") String token, RedirectAttributes redirectAttributes) throws PasswordsNotEquals, UsuarioNoExistente {
+
 
         System.out.println("Email recibido: " + datosRecovery.getEmail());
         ModelAndView mv = new ModelAndView();
+//        RecoveryToken recoveryToken = servicioRecovery.obtenerToken(token);
+//
         RecoveryToken recoveryToken = servicioRecovery.obtenerToken(token);
 
+        if (recoveryToken == null) {
+            mv.setViewName("recovery");
+            mv.addObject("datosRecovery", datosRecovery);
+            mv.addObject("token", token);
+            mv.addObject("error", "Token NULO.");
+            return mv;
 
+        }
         try {
             Usuario usuario = servicioRecovery.cambiarPassword(datosRecovery, token);
-            mv.setViewName("login");
-            mv.addObject("mensaje", "Contraseña cambiada con éxito. Por favor, inicia sesión.");
-            return mv;
+            redirectAttributes.addFlashAttribute("exito", "Cambio de contraseña exitoso!");
+            return new ModelAndView("redirect:/login");
+
         } catch (PasswordsNotEquals e) {
             mv.setViewName("recovery2");
             mv.addObject("datosRecovery", datosRecovery);

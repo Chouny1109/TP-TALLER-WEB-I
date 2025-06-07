@@ -59,7 +59,6 @@ import java.util.Properties;
 public class SpringWebConfig implements WebMvcConfigurer {
 
 
-
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -70,6 +69,7 @@ public class SpringWebConfig implements WebMvcConfigurer {
 
     @PostConstruct
     public void postConstruct() {
+        System.out.println("SpringWebConfig cargado correctamente");
         System.out.println("🔍 Perfil activo: " + Arrays.toString(env.getActiveProfiles()));
         System.out.println("Perfil activo: " + Arrays.toString(env.getActiveProfiles()));
     }

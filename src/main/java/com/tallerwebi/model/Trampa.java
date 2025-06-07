@@ -1,8 +1,19 @@
 package com.tallerwebi.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Trampa")
 public class Trampa {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nombre;
     private Integer valor;
+
+    public Trampa() {}
 
     public Trampa(String nombre, Integer valor) {
         this.nombre = nombre;
@@ -11,4 +22,6 @@ public class Trampa {
 
     public String getNombre() { return nombre; }
     public Integer getValor() { return valor; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setValor(Integer valor) { this.valor = valor; }
 }

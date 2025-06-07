@@ -1,20 +1,20 @@
 package com.tallerwebi.model;
 
-import com.tallerwebi.dominio.enums.TIPO_HABILIDAD;
-
 import javax.persistence.*;
 
 @Entity
-public class Habilidad {
+public class Respuesta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String descripcion;
+    private Boolean opcionCorrecta;
 
-    private String nombre;
+    @ManyToOne
+    @JoinColumn(name = "pregunta_id")
+    private Pregunta pregunta;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Tipo_Habilidad")
-    private TIPO_HABILIDAD tipoHabilidad;
 
     public void setId(Long id) {
         this.id = id;

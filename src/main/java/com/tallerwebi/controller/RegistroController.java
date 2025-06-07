@@ -3,6 +3,7 @@ package com.tallerwebi.controller;
 
 
 
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
@@ -52,6 +53,7 @@ public class RegistroController {
         usuario.setEmail(datosRegistro.getEmail());
         usuario.setPassword(datosRegistro.getPassword());
         usuario.setNombreUsuario(datosRegistro.getNombreUsuario());
+        usuario.setRol(ROL_USUARIO.JUGADOR);
 
         try {
             servicioRegistro.registrar(usuario, datosRegistro.getConfirmarPassword());  // Registra el usuario
