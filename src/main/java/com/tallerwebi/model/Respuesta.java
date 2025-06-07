@@ -15,6 +15,7 @@ public class Respuesta {
     @JoinColumn(name = "pregunta_id")
     private Pregunta pregunta;
 
+
     public void setId(Long id) {
         this.id = id;
     }

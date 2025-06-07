@@ -27,12 +27,9 @@ public class PartidaController {
     /*
     @GetMapping("/preguntas")
     public ModelAndView preguntas() {
-        ModelMap modelo = new ModelMap();
-        Map<Integer, Pregunta> preguntas = obtenerPreguntas();
-        modelo.put("preguntas", preguntas);
-
-        return new ModelAndView("preguntas", modelo);
+        return new ModelAndView("preguntas");
     }
+
 
     private Map<Integer, Pregunta> obtenerPreguntas() {
         Map<Integer, Pregunta> preguntas = new LinkedHashMap<>();
@@ -42,4 +39,5 @@ public class PartidaController {
         return preguntas;
     }
     */
+
 }

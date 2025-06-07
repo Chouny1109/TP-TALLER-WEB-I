@@ -7,15 +7,14 @@ import java.util.List;
 
 @Entity
 public class Pregunta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String enunciado;
 
-    @OneToMany(mappedBy = "pregunta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Respuesta> respuestas;
-
     private CATEGORIA_PREGUNTA tipoPregunta;
 
     public Pregunta(String enunciado, List<Respuesta> respuestas, CATEGORIA_PREGUNTA tipoPregunta) {
@@ -33,9 +32,6 @@ public class Pregunta {
         return enunciado;
     }
 
-    public List<Respuesta> respuestas() {
-        return respuestas;
-    }
 
     public void setId(Long id) {
         this.id = id;

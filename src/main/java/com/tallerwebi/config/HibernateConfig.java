@@ -15,16 +15,16 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class HibernateConfig {
 
-
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3308/tallerweb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/tallerweb?useSSL=false&serverTimezone=UTC");
         dataSource.setUsername("root");
         dataSource.setPassword("");
         return dataSource;
     }
+
 
     @Bean
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {

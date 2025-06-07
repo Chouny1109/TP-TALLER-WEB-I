@@ -22,7 +22,14 @@ public class PartidaControllerTest {
 
     }
 
+<<<<<<< HEAD
+
+    /*
+    @Test
+    void testLlegaALaVistaYRetornaLaPreguntaCorrectamente(){
+=======
     /*void testLlegaALaVistaYRetornaLaPreguntaCorrectamente(){
+>>>>>>> c85b898 (WIP: cambios en PartidaController, Pregunta, Respuesta)
         // GIVEN
         // WHEN
         ModelAndView mav = whenQuieroIrALaVistaPreguntas();

@@ -9,19 +9,20 @@ public class Avatar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private Integer valor;
-    private Boolean estado;
 
-    public Avatar() {
-        this.estado = false;
-    }
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Habilidad Habilidad;
+    private Boolean estado = false;
 
     public Avatar(String nombre, Integer valor) {
-        this.nombre = nombre;
         this.valor = valor;
-        this.estado = false;
+        this.nombre = nombre;
+    }
+
+    public Avatar() {
+        
     }
 
     public String getNombre() { return nombre; }
@@ -31,4 +32,14 @@ public class Avatar {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
     public void setEstado(Boolean estado) { this.estado = estado; }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
 }
