@@ -30,9 +30,7 @@ public class PartidaController {
         return new ModelAndView("preguntas");
     }
 
-<<<<<<< HEAD
 
-=======
     private Map<Integer, Pregunta> obtenerPreguntas() {
         Map<Integer, Pregunta> preguntas = new LinkedHashMap<>();
 
@@ -41,5 +39,5 @@ public class PartidaController {
         return preguntas;
     }
     */
->>>>>>> c85b898 (WIP: cambios en PartidaController, Pregunta, Respuesta)
+
 }
