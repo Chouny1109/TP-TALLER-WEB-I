@@ -7,6 +7,7 @@ import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.DatosRecovery;
 import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.repository.RepositorioRecovery;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioRecovery;
 import org.springframework.context.annotation.Profile;
@@ -31,15 +32,17 @@ import java.util.UUID;
 public class ServicioRecoveryImpl implements ServicioRecovery {
 
     private final RepositorioUsuario repositorioUsuario;
+    private final RepositorioRecovery repositorioRecovery;
     private JavaMailSender mailSender;
     private PasswordEncoder passwordEncoder;
-    private Map<String, RecoveryToken> tokens;
 
-    public ServicioRecoveryImpl(RepositorioUsuario repositorioUsuario, JavaMailSender mailSender) {
+
+    public ServicioRecoveryImpl(RepositorioUsuario repositorioUsuario, RepositorioRecovery repositorioRecovery, JavaMailSender mailSender) {
         this.repositorioUsuario = repositorioUsuario;
+        this.repositorioRecovery = repositorioRecovery;
         this.mailSender = mailSender;
         this.passwordEncoder = new BCryptPasswordEncoder();
-        this.tokens = new HashMap<String, RecoveryToken>();
+
     }
 
 
@@ -55,11 +58,10 @@ public class ServicioRecoveryImpl implements ServicioRecovery {
 
         RecoveryToken recoveryToken = new RecoveryToken(
                 token,
-                email
+                usuario
         );
 
-        // guarda en el map
-        tokens.put(token, recoveryToken);
+        this.repositorioRecovery.guardar(recoveryToken);
 
         // Crea link de recuperacion
 
@@ -89,22 +91,32 @@ public class ServicioRecoveryImpl implements ServicioRecovery {
         if (!datosRecovery.getPassword().equals(datosRecovery.getConfirmPassword())) {
             throw new PasswordsNotEquals();
         }
+
         Usuario usuario = repositorioUsuario.buscar(datosRecovery.getEmail());
         if (usuario == null) {
             throw new UsuarioNoExistente();
         }
 
-        RecoveryToken recoveryToken = tokens.get(token);
-        if (recoveryToken == null){
+        System.out.println("Token recibido: '" + token + "'");
+        RecoveryToken recoveryToken = this.repositorioRecovery.buscarToken(token);
+        System.out.println("Token recuperado: " + (recoveryToken != null ? recoveryToken.getToken() : "null"));
+
+
+        if (recoveryToken == null || recoveryToken.getUsado()){
             throw new TokenInvalido();
         }
-              if( !recoveryToken.getEmail().equals(datosRecovery.getEmail())) {
+              if( !recoveryToken.getUsuario().getEmail().equals(datosRecovery.getEmail())) {
             throw new EmailInvalido();
+        }
+        if (recoveryToken.getExpiracion().isBefore(LocalDateTime.now())) {
+            throw new TokenInvalido();  // o crear una excepción específica para token expirado
         }
 
         usuario.setPassword(passwordEncoder.encode(datosRecovery.getPassword()));
         repositorioUsuario.modificar(usuario);
 
+        recoveryToken.setUsado(true);
+        this.repositorioRecovery.actualizar(recoveryToken);
 
         return usuario;
     }
@@ -112,6 +124,6 @@ public class ServicioRecoveryImpl implements ServicioRecovery {
 
     @Override
     public RecoveryToken obtenerToken(String token) {
-        return this.tokens.get(token);
+        return this.repositorioRecovery.buscarToken(token);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 @Service
@@ -26,6 +27,12 @@ public class ServicioLoginImpl implements ServicioLogin {
         this.passwordEncoder = passwordEncoder;
         this.repositorioUsuario = repositorioUsuario;
     }
+    @PostConstruct
+    public void init() {
+        System.out.println("Login: PasswordEncoder inyectado: " + (passwordEncoder != null));
+        System.out.println("Login: RepositorioUsuario inyectado: " + (repositorioUsuario != null));
+    }
+
 
     @Override
     public Usuario consultarUsuario (String email, String password) {
