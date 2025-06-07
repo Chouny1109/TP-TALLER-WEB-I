@@ -198,6 +198,12 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version> <!-- o la última versión estable -->
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -258,7 +264,7 @@
                         <contextPath>/spring</contextPath>
                         <war>${project.build.directory}/${project.build.finalName}.war</war>
                     </webApp>
-                    <useTestClasspath>false</useTestClasspath>
+                    <useTestClasspath>true</useTestClasspath>
                     <systemProperties>
                         <systemProperty>
                             <name>spring.profiles.active</name>
