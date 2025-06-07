@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 @Service
@@ -25,6 +26,12 @@ public class ServicioRegistroImpl implements ServicioRegistro {
 
         this.repositorioUsuario = repositorioUsuario;
         this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    @PostConstruct
+    public void init() {
+        System.out.println("Registro: PasswordEncoder inyectado: " + (passwordEncoder != null));
+        System.out.println("Registro: RepositorioUsuario inyectado: " + (repositorioUsuario != null));
     }
 
 
