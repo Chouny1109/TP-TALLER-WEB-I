@@ -106,7 +106,10 @@
 
                 <!-- Formulario de Recuperación de Contraseña (Paso 1) -->
                 <div id="form-1">
-                    <form id="recovery-form" action="#" th:action="@{/recovery/send-email}" method="POST">
+                    <form id="recovery-form" th:action="@{/recovery/send-email}" method="POST" th:object="${datosRecovery}" >
+
+                        <p th:if="${error != null}" class="alert alert-danger mt-4" th:text="'Error ' + ${error}"></p>
+
                         <h1 class="fw-bold mb-4" style="color: #524d4d; font-size: 50px;">
                             <span class="fw-light">¡Opps!</span> ¿Olvidaste tu contraseña?
                         </h1>
@@ -114,7 +117,7 @@
 
                         <div class="mb-3 text-center">
                             <label for="email" class="form-label text-start d-block" style="width: 450px; margin: 0 auto;">Email</label>
-                            <input name="email" id="email" type="email" class="form-control mx-auto" style="width: 450px;" required/>
+                            <input th:field="*{email}" id="email" type="email" class="form-control mx-auto" style="width: 450px;" required/>
                             <div style="width: 450px; margin: 4px auto 0 auto; text-align: right;">
                                 <a href="login" id="login" class="fs-6" style="color: #808080;">Iniciar sesión</a>
                             </div>
@@ -132,7 +135,7 @@
 <!-- Boostrap core js -->
 <script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
 
-<script type="text/javascript" th:src="@{js/main.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
 
 </body>
 </html>

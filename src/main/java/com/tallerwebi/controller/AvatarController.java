@@ -10,20 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/avatar")
 public class AvatarController {
 
-
-
     @GetMapping
     public String cargarAvatar() {
-
         return "avatar";
-
-
     }
+
     @PostMapping
     public String actualizarAvatar(Model model) {
-
         return "redirect:/tienda";
-
     }
 
 }

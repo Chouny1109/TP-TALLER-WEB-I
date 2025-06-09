@@ -2,9 +2,14 @@ package com.tallerwebi.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,14 +18,61 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
-@EnableWebMvc
+import java.util.Arrays;
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import javax.annotation.PostConstruct;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Properties;
 @Configuration
-@ComponentScan({ "com.tallerwebi.dominio","com.tallerwebi.util", "com.tallerwebi.repository","com.tallerwebi.controller","com.tallerwebi.model","com.tallerwebi.service"})
+@EnableWebMvc
+@ComponentScan({
+        "com.tallerwebi.dominio",
+        "com.tallerwebi.repository",
+        "com.tallerwebi.controller",
+        "com.tallerwebi.service",
+        "com.tallerwebi.config",
+        "com.tallerwebi.util"
+})
+
 public class SpringWebConfig implements WebMvcConfigurer {
 
-    // Spring + Thymeleaf need this
+
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private Environment env;
+
+
+
+    @PostConstruct
+    public void postConstruct() {
+        System.out.println("SpringWebConfig cargado correctamente");
+        System.out.println("🔍 Perfil activo: " + Arrays.toString(env.getActiveProfiles()));
+        System.out.println("Perfil activo: " + Arrays.toString(env.getActiveProfiles()));
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -30,58 +82,77 @@ public class SpringWebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/js/**")
                 .addResourceLocations("/resources/core/js/");
 
+        registry.addResourceHandler("/imgs/**")
+                .addResourceLocations("/resources/imgs/");
+
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
 
-        // Esta línea asegura que funcione correctamente desde webapp
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("classpath:/META-INF/resources/", "/resources/", "/WEB-INF/resources/");
-
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
-
     }
 
-    // https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html
-    // Spring + Thymeleaf
+
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setEnableSpringELCompiler(true);
+        return templateEngine;
+    }
+
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
-        // SpringResourceTemplateResolver automatically integrates with Spring's own
-        // resource resolution infrastructure, which is highly recommended.
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/views/thymeleaf/");
         templateResolver.setSuffix(".html");
-        // HTML is the default value, added here for the sake of clarity.
         templateResolver.setTemplateMode(TemplateMode.HTML);
-        // Template cache is true by default. Set to false if you want
-        // templates to be automatically updated when modified.
-        templateResolver.setCacheable(true);
+        templateResolver.setCacheable(false); // DESACTIVAR CACHE mientras debuggeamos
         return templateResolver;
     }
 
-    // Spring + Thymeleaf
-    @Bean
-    public SpringTemplateEngine templateEngine() {
-        // SpringTemplateEngine automatically applies SpringStandardDialect and
-        // enables Spring's own MessageSource message resolution mechanisms.
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver());
-        // Enabling the SpringEL compiler with Spring 4.2.4 or newer can
-        // speed up execution in most scenarios, but might be incompatible
-        // with specific cases when expressions in one template are reused
-        // across different data types, so this flag is "false" by default
-        // for safer backwards compatibility.
-        templateEngine.setEnableSpringELCompiler(true);
-        return templateEngine;
-    }
-    // Spring + Thymeleaf
-    // Configure Thymeleaf View Resolver
     @Bean
     public ThymeleafViewResolver viewResolver() {
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
-        viewResolver.setTemplateEngine(templateEngine());
-        return viewResolver;
+        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setTemplateEngine(templateEngine());
+        resolver.setCharacterEncoding("UTF-8");
+        resolver.setContentType("text/html; charset=UTF-8");
+        resolver.setOrder(1);
+        return resolver;
     }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @Profile("prod")
+    public JavaMailSender javaMailSender() {
+        System.out.println("🔥 Configurando JavaMailSender para perfil PROD");
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
+        mailSender.setUsername("preguntadostallerweb@gmail.com");
+        System.out.println("Antes de setPassword");
+        mailSender.setPassword("lmmundepvudwfxot");
+        System.out.println("Password set to: " + mailSender.getPassword());// Tu password de app
+        mailSender.setProtocol("smtp");
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+        mailSender.setJavaMailProperties(props);
+
+        return mailSender;
+    }
+
+
 
 }

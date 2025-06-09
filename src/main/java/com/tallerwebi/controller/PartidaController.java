@@ -24,4 +24,20 @@ public class PartidaController {
         return new ModelAndView("cargarPartida", modelo);
     }
 
+    /*
+    @GetMapping("/preguntas")
+    public ModelAndView preguntas() {
+        return new ModelAndView("preguntas");
+    }
+
+
+    private Map<Integer, Pregunta> obtenerPreguntas() {
+        Map<Integer, Pregunta> preguntas = new LinkedHashMap<>();
+
+        preguntas.put(1, new Pregunta("¿Color favorito?", Arrays.asList("Rojo", "Verde", "Azul"), TIPO_PREGUNTA.ENTRETENIMIENTO));
+
+        return preguntas;
+    }
+    */
+
 }

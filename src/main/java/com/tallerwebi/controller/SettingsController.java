@@ -49,7 +49,7 @@ public class SettingsController {
 
         this.servicioSetting.actualizarUsuario(usuarioLogueado.getEmail(), datosSetting);
 
-        this.sessionUtil.setUsuarioEnSession(request,servicioSetting.obtenerUsuarioPorId(usuarioLogueado.getId()));
+        this.sessionUtil.setUsuarioEnSession(request, servicioSetting.obtenerUsuarioPorId(usuarioLogueado.getId()));
 
         return ("redirect:/settings");
     }

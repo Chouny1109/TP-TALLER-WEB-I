@@ -13,6 +13,7 @@ import static org.mockito.Mockito.*;
 
 public class PartidaControllerTest {
 
+
     @Test
     public void siElUsuarioEstaLogeado_seCargaLaPartida() {
         HttpServletRequest request = givenUsuarioEnSesion();
@@ -20,6 +21,7 @@ public class PartidaControllerTest {
         thenSeCargaLaVistaConElJugador(mav);
 
     }
+
     private HttpServletRequest givenUsuarioEnSesion() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
@@ -44,4 +46,6 @@ public class PartidaControllerTest {
 
         assertEquals("Nicolas127", jugador.getNombreUsuario());
     }
+    
+
 }

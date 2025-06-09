@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Pregunta</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nerko+One&family=Outfit:wght@100..900&display=swap');
+
+        body{
+            font-family: 'Outfit', sans-serif;
+
+        }
+        .pregunta{
+            margin: auto auto 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            background-color: grey;
+            width: 70% ;
+            height: 250px;
+            font-size:40px;
+            color: white;
+            text-align: center;
+        }
+        .botonOpcion{
+            text-decoration: none;
+            background-color: #c9c9c9;
+            border-radius: 10px;
+            border-style: none;
+            margin: 7px;
+            font-size: 20px;
+            transition: 0.2s;
+            color: #524d4d;
+        }
+        .botonOpcion:hover {
+            background-color: #94949c;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+            color: white;
+        }
+        .tipoPregunta{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #dddddd;
+            border-radius: 20px;
+            font-size: 20px;
+            padding: 5px 10px 10px 10px;
+            transform: translateY(30px) translateX(-60px);
+        }
+        .segundosRestantes{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+             background-color: #dddddd;
+             border-radius: 50px;
+            text-align: center;
+             width: 50px;
+             height: 50px;
+             font-size: 20px;
+             transform: translateY(30px) translateX(0px);
+         }
+        .counter-item {
+            text-align: center;
+        }
+        .counter-circle {
+            width: 2.3em;
+            height: 2.3em;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #444;
+        }
+        .counter-circle img{
+            width: 1.5em;
+        }
+        .counter-value {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between w-50 m-auto">
+            <p class="tipoPregunta"><span th:text="${preguntas.get(1).getTipoPregunta()}"></span> </p>
+            <p class="segundosRestantes">9s</p>
+        </div>
+        <div class="pregunta">
+            <p th:text="${preguntas.get(1).getEnunciado()}"></p>
+        </div>
+        <div class="poderes d-flex gap-5 justify-content-center">
+            <div class="counter-item">
+                <div class="counter-circle">
+                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+                </div>
+                <div class="counter-value">1</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-circle">
+                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+                </div>
+                <div class="counter-value">1</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-circle">
+                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+                </div>
+                <div class="counter-value">1</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-circle">
+                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+                </div>
+                <div class="counter-value">1</div>
+            </div>
+        </div>
+        <form action="#" class="d-grid w-50 m-auto" th:each="opcion : ${preguntas.get(1).getOpciones()}">
+            <button type="submit" class="botonOpcion" name="respuesta" th:value="${opcion}" th:text="${opcion}"></button>
+        </form>
+    </div>
+</body>
+</html>

@@ -6,7 +6,7 @@ public class InputField {
     private String label;
     private String value;
 
-    public InputField(String type, String name,String label,String value) {
+    public InputField(String type, String name, String label, String value) {
         this.type = type;
         this.name = name;
         this.label = label;
@@ -43,6 +43,16 @@ public class InputField {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "InputField{" +
+                "label='" + label + '\'' +
+                ", type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                '}';
     }
 }
 

@@ -11,18 +11,21 @@ import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.impl.ServicioLoginImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ServicioLoginTest {
 
     private DatosLogin datosLogin;
     private RepositorioUsuario repositorioUsuario;
     private ServicioLoginImpl servicioLogin;
-
+    private PasswordEncoder passwordEncoder;
     @BeforeEach
     public void init() {
         datosLogin = mock(DatosLogin.class);
         repositorioUsuario = mock(RepositorioUsuario.class);
-        servicioLogin = new ServicioLoginImpl(repositorioUsuario);
+        passwordEncoder = new BCryptPasswordEncoder();
+        servicioLogin = new ServicioLoginImpl(repositorioUsuario, passwordEncoder);
 
         // valores por defecto para datosLogin (pueden ser sobreescritos en tests)
         when(datosLogin.getEmail()).thenReturn("damiunlam@gmail.com");
@@ -62,12 +65,16 @@ public class ServicioLoginTest {
     //* ------------------------------------ GIVEN ------------------------------------*//
 
     private void givenExisteUsuario(String email, String password) {
+
         Usuario usuarioMock = new Usuario();
-        when(repositorioUsuario.buscarUsuario(email, password)).thenReturn(usuarioMock);
+        usuarioMock.setEmail(email);
+        usuarioMock.setPassword(passwordEncoder.encode(password)); // guarda la contraseña hasheada
+
+        when(repositorioUsuario.buscar(email)).thenReturn(usuarioMock);
     }
 
     private void givenNoExisteUsuario() {
-        when(repositorioUsuario.buscarUsuario(anyString(), anyString())).thenReturn(null);
+        when(repositorioUsuario.buscar(anyString())).thenReturn(null);
     }
 
     //* ------------------------------------ WHEN ------------------------------------*//

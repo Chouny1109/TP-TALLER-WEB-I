@@ -9,24 +9,41 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioLogin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
-@Service("servicioLogin")
+@Service
 @Transactional
 public class ServicioLoginImpl implements ServicioLogin {
 
     private final RepositorioUsuario repositorioUsuario;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ServicioLoginImpl(RepositorioUsuario repositorioUsuario){
+    public ServicioLoginImpl(RepositorioUsuario repositorioUsuario, PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.repositorioUsuario = repositorioUsuario;
     }
+    @PostConstruct
+    public void init() {
+        System.out.println("Login: PasswordEncoder inyectado: " + (passwordEncoder != null));
+        System.out.println("Login: RepositorioUsuario inyectado: " + (repositorioUsuario != null));
+    }
+
 
     @Override
     public Usuario consultarUsuario (String email, String password) {
-        return repositorioUsuario.buscarUsuario(email, password);
+
+        Usuario usuario = repositorioUsuario.buscar(email);
+        if (usuario != null && passwordEncoder.matches(password, usuario.getPassword())) {
+            return usuario;
+        }
+        return null;
+
+
     }
 }
 
