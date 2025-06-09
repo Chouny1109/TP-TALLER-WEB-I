@@ -36,4 +36,10 @@ public class ServicioMisionesImpl implements ServicioMisiones {
 
         return repositorioMisiones.misionesDeUsuario(id);
     }
+
+    @Override
+    public void asignarMisionesDiarias() {
+
+
+    }
 }

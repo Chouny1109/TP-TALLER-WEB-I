@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface ServicioMisiones {
     List<Mision> obtenerLasMisionesDelUsuario(Long id) throws UsuarioNoExistente;
+
+    void asignarMisionesDiarias();
 }

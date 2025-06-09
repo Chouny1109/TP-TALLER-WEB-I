@@ -18,6 +18,6 @@ public class RepositorioMisionesImpl implements RepositorioMisiones {
 
     @Override
     public List<Mision> misionesDeUsuario(Long id) {
-    return List.of();
+        return List.of();
     }
 }
