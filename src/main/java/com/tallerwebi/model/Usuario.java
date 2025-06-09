@@ -31,6 +31,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL,fetch = FetchType.EAGER, targetEntity = Mision.class)
     private List<Mision> misiones;
 
+    @ManyToMany
+    private List<Avatar> avatars;
+
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;

@@ -1,5 +1,6 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Usuario;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ public class HomeController {
         if (usuario != null) {
             mav.addObject("nombreUsuario", usuario.getNombreUsuario());
         }
+
+        mav.addObject("modos", TIPO_PARTIDA.values());
         return mav;
     }
 

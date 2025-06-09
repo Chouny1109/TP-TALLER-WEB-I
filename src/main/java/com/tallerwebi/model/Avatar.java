@@ -1,5 +1,7 @@
 package com.tallerwebi.model;
 
+import com.tallerwebi.dominio.enums.ESTADO_AVATAR;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,7 +16,10 @@ public class Avatar {
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Habilidad Habilidad;
-    private Boolean estado = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estadoAvatar")
+    private ESTADO_AVATAR estado = ESTADO_AVATAR.BLOQUEADO;
 
     public Avatar(String nombre, Integer valor) {
         this.valor = valor;
@@ -27,11 +32,12 @@ public class Avatar {
 
     public String getNombre() { return nombre; }
     public Integer getValor() { return valor; }
-    public Boolean getEstado() { return estado; }
+    public ESTADO_AVATAR getEstado() { return estado; }
 
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
-    public void setEstado(Boolean estado) { this.estado = estado; }
+
+    public void setEstado(ESTADO_AVATAR estado) { this.estado = estado; }
 
 
     public void setId(Long id) {

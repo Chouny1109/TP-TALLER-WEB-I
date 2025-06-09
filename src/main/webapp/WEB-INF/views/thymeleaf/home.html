@@ -200,15 +200,19 @@
     </div>
 
     <div class="modo-juego-container">
-        <select class="modo-juego" name="modoJuego" id="modoJuego">
-            <option selected disabled>MODO DE JUEGO</option>
-            <option value="1v1">1v1</option>
-            <option value="torneo">torneo</option>
-            <option value="rapido">Rápido</option>
-        </select>
+        <form th:action="@{/partida/cargar}" method="POST">
+            <select class="modo-juego" name="modoJuego" id="modoJuego" required>
+                <option selected disabled value="">MODO DE JUEGO</option>
+                <option th:each="modo : ${modos}"
+                        th:value="${modo}"
+                        th:text="${#strings.capitalize(modo.name().toLowerCase())}">
+                </option>
+            </select>
 
-        <a th:href="@{/partida/cargar}" class="boton-jugar">JUGAR</a>
+            <button type="submit" class="boton-jugar">JUGAR</button>
+        </form>
     </div>
+
 
 </main>
 

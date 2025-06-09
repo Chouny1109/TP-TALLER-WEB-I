@@ -10,6 +10,7 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioRecovery;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioRecovery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -36,7 +37,7 @@ public class ServicioRecoveryImpl implements ServicioRecovery {
     private JavaMailSender mailSender;
     private PasswordEncoder passwordEncoder;
 
-
+@Autowired
     public ServicioRecoveryImpl(RepositorioUsuario repositorioUsuario, RepositorioRecovery repositorioRecovery, JavaMailSender mailSender) {
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioRecovery = repositorioRecovery;

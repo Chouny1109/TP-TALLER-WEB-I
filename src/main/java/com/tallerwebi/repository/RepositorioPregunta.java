@@ -4,7 +4,7 @@ import com.tallerwebi.model.Pregunta;
 
 import java.util.List;
 
-public interface RepositorioPreguntaImpl {
+public interface RepositorioPregunta {
     Pregunta buscarPreguntaPorId();
     List<Pregunta> listasPreguntasRandomParaPartida();
 

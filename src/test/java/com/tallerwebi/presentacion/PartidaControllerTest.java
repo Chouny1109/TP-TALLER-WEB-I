@@ -1,7 +1,9 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.PartidaController;
+import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.service.ServicioPartida;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,11 +15,16 @@ import static org.mockito.Mockito.*;
 
 public class PartidaControllerTest {
 
+    private ServicioPartida servicioPartida;
+    public PartidaControllerTest() {
+        servicioPartida = mock(ServicioPartida.class);
+    }
 
     @Test
     public void siElUsuarioEstaLogeado_seCargaLaPartida() {
         HttpServletRequest request = givenUsuarioEnSesion();
-        ModelAndView mav = whenCargarPartida(request);
+
+        ModelAndView mav = whenCargarPartida(request, TIPO_PARTIDA.MULTIJUGADOR);
         thenSeCargaLaVistaConElJugador(mav);
 
     }
@@ -34,9 +41,9 @@ public class PartidaControllerTest {
         return request;
     }
 
-    private ModelAndView whenCargarPartida(HttpServletRequest request) {
-        PartidaController partidaController = new PartidaController();
-        return partidaController.cargarPartida(request);
+    private ModelAndView whenCargarPartida(HttpServletRequest request, TIPO_PARTIDA tipo) {
+        PartidaController partidaController = new PartidaController(servicioPartida);
+        return partidaController.cargarPartida(request, tipo);
     }
 
     private void thenSeCargaLaVistaConElJugador(ModelAndView mav) {

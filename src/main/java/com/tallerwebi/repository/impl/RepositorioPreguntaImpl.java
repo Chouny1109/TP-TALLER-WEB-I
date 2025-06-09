@@ -1,11 +1,15 @@
 package com.tallerwebi.repository.impl;
 
 import com.tallerwebi.model.Pregunta;
-import com.tallerwebi.repository.RepositorioPreguntaImpl;
+import com.tallerwebi.repository.RepositorioPregunta;
+import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-public class RepositorioPreguntaImp implements RepositorioPreguntaImpl {
+@Repository("repositorioPregunta")
+@Transactional
+public class RepositorioPreguntaImpl implements RepositorioPregunta {
 
     @Override
     public Pregunta buscarPreguntaPorId() {

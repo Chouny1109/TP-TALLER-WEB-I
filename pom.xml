@@ -211,6 +211,18 @@
             <version>8.0.33</version> <!-- o la última versión estable -->
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>5.2.22.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>5.2.22.RELEASE</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -254,6 +266,9 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
+                    <systemPropertyVariables>
+                        <server.port>8080</server.port>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
@@ -271,7 +286,7 @@
                         <contextPath>/spring</contextPath>
                         <war>${project.build.directory}/${project.build.finalName}.war</war>
                     </webApp>
-                    <useTestClasspath>true</useTestClasspath>
+                    <useTestClasspath>false</useTestClasspath>
                     <systemProperties>
                         <systemProperty>
                             <name>spring.profiles.active</name>

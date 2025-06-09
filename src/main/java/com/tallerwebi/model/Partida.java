@@ -1,5 +1,9 @@
 package com.tallerwebi.model;
 
+import com.tallerwebi.dominio.enums.ESTADO_AVATAR;
+import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
+import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -8,14 +12,25 @@ public class Partida {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Boolean estadoPartida;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estadoPartida")
+    private ESTADO_PARTIDA estadoPartida = ESTADO_PARTIDA.ABIERTA;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipoPartida")
+    private TIPO_PARTIDA tipo;
+
+
 
     @ManyToMany
     private List<Pregunta> preguntas;
+
     @ManyToMany
     private List<Usuario> usuarios;
 
-    public Partida(Boolean estadoPartida) {
+    public Partida(ESTADO_PARTIDA estadoPartida) {
         this.estadoPartida = estadoPartida;
     }
 
@@ -29,5 +44,36 @@ public class Partida {
 
     public Long getId() {
         return id;
+    }
+
+    public TIPO_PARTIDA getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TIPO_PARTIDA tipo) {
+        this.tipo = tipo;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+    public ESTADO_PARTIDA getEstadoPartida() {
+        return estadoPartida;
+    }
+
+    public void setEstadoPartida(ESTADO_PARTIDA estadoPartida) {
+        this.estadoPartida = estadoPartida;
+    }
+    public List<Pregunta> getPreguntas() {
+        return preguntas;
+    }
+
+    public void setPreguntas(List<Pregunta> preguntas) {
+        this.preguntas = preguntas;
     }
 }
