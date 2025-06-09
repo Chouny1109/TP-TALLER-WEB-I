@@ -1,8 +1,7 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.service.ServicioAmigos;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,11 +10,16 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/amigos")
 public class AmigosController {
 
-    @GetMapping
-    public ModelAndView verAmigos(Model model) {
+    private final ServicioAmigos servicioAmigos;
 
-        return new ModelAndView ("amigos");
+    public AmigosController(ServicioAmigos servicioAmigos) {
+        this.servicioAmigos = servicioAmigos;
+    }
+
+    @GetMapping
+    public ModelAndView verAmigos() {
+        ModelAndView mav = new ModelAndView("amigos");
+        mav.addObject("amigos", servicioAmigos.obtenerAmigos());
+        return mav;
     }
 }
-
-
