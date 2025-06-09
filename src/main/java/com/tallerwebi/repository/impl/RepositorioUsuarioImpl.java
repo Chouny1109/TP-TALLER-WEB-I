@@ -18,7 +18,7 @@ import java.util.List;
 @Repository("repositorioUsuario")
 public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     @Autowired
     public RepositorioUsuarioImpl(SessionFactory sessionFactory){
@@ -68,7 +68,6 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 //        return session.createQuery(query).uniqueResult();
     }
 
-
     @Override
     public void modificar(Usuario usuario) {
         sessionFactory.getCurrentSession().update(usuario);
@@ -86,19 +85,6 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
                 .where(builder.equal(root.get("id"), id));
 
         return session.createQuery(query).uniqueResult();
-    }
-
-    @Override
-    public List<Mision> obtenerMisiones(Long id) {
-        Session session = sessionFactory.getCurrentSession();
-
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Mision> query = builder.createQuery(Mision.class);
-        Root<Mision> root = query.from(Mision.class);
-
-        query.select(root)
-                .where(builder.equal(root.get("usuario").get("id"), id));
-        return session.createQuery(query).getResultList();
     }
 
 }

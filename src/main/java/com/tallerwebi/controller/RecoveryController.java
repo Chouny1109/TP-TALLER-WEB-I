@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/recovery")
 public class RecoveryController {
 
-    private ServicioRecovery servicioRecovery;
+    private final ServicioRecovery servicioRecovery;
 
     @Autowired
     public RecoveryController(ServicioRecovery servicioRecovery) {
