@@ -141,11 +141,13 @@
     <div class="d-flex justify-content-between align-items-center">
         <div class="flecha">&#8592;</div>
         <div class="mis-trampas">
-            <div class="trampa"></div>
-            <div class="trampa"></div>
-            <div class="trampa"></div>
-            <div class="trampa"></div>
-            <div class="trampa"></div>
+            <div th:each="trampa : ${misTrampas}" class="trampa" title="[[${trampa.nombre}]]">
+                <!-- Opcionalmente mostrar un ícono o imagen si cada trampa tiene -->
+                <!-- <img th:src="@{${trampa.imagen}}" alt="trampa" style="width: 100%; height: 100%; border-radius: 50%;"> -->
+            </div>
+            <div th:if="${misTrampas == null or #lists.isEmpty(misTrampas)}" class="text-muted w-100 text-center mt-3">
+                No tenés trampas aún.
+            </div>
         </div>
         <div class="flecha">&#8594;</div>
     </div>
