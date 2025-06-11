@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,8 +28,7 @@ public class Partida {
     @ManyToMany
     private List<Pregunta> preguntas;
 
-    @ManyToMany
-    private List<Usuario> usuarios;
+
 
     public Partida(ESTADO_PARTIDA estadoPartida) {
         this.estadoPartida = estadoPartida;
@@ -52,14 +52,6 @@ public class Partida {
 
     public void setTipo(TIPO_PARTIDA tipo) {
         this.tipo = tipo;
-    }
-
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public void setUsuarios(List<Usuario> usuarios) {
-        this.usuarios = usuarios;
     }
 
     public ESTADO_PARTIDA getEstadoPartida() {

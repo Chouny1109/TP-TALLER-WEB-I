@@ -21,11 +21,11 @@
     <div class="nav-container d-flex justify-content-between align-items-center p-3 bg-light">
         <div class="d-flex align-items-center">
             <span class="material-symbols--star-rounded me-2"></span>
-            <p class="nivel mb-0">5</p>
+            <span class="nivel mb-0" th:text="${nivel}"></span>
         </div>
 
         <div class="profile-wrapper d-flex align-items-center">
-            <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+            <img th:src="${avatarImg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
             <span class="username" th:text="${nombreUsuario}"></span>
         </div>
 
@@ -200,7 +200,7 @@
     </div>
 
     <div class="modo-juego-container">
-        <form th:action="@{/partida/cargar}" method="POST">
+        <form th:action="@{/partida/cargar}" method="GET">
             <select class="modo-juego" name="modoJuego" id="modoJuego" required>
                 <option selected disabled value="">MODO DE JUEGO</option>
                 <option th:each="modo : ${modos}"

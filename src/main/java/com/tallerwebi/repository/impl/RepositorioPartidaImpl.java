@@ -4,6 +4,8 @@ import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.RecoveryToken;
+import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioPartida;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,7 +18,7 @@ import javax.transaction.Transactional;
 @Repository("repositorioPartida")
 @Transactional
 public class RepositorioPartidaImpl implements RepositorioPartida {
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     @Autowired
     public RepositorioPartidaImpl(SessionFactory sessionFactory){
@@ -44,4 +46,24 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .add(Restrictions.eq("tipo", tipo))
                 .uniqueResult();
     }
+
+    @Override
+    public void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida) {
+        sessionFactory.getCurrentSession().save(usuarioPartida);
+    }
+    @Override
+    public Usuario obtenerRivalDePartida(Long idPartida, Long idJugadorActual) {
+        Session session = sessionFactory.getCurrentSession();
+
+        UsuarioPartida usuarioPartida = (UsuarioPartida) session.createCriteria(UsuarioPartida.class)
+                .createAlias("partida", "p")
+                .createAlias("usuario", "u")
+                .add(Restrictions.eq("p.id", idPartida))
+                .add(Restrictions.ne("u.id", idJugadorActual))  // distinto al jugador actual
+                .setMaxResults(1)
+                .uniqueResult();
+
+        return usuarioPartida != null ? usuarioPartida.getUsuario() : null;
+    }
+
 }

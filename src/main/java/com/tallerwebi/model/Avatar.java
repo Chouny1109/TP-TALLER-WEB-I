@@ -13,13 +13,14 @@ public class Avatar {
     private Long id;
     private String nombre;
     private Integer valor;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String link;
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Habilidad Habilidad;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "estadoAvatar")
-    private ESTADO_AVATAR estado = ESTADO_AVATAR.BLOQUEADO;
 
     public Avatar(String nombre, Integer valor) {
         this.valor = valor;
@@ -30,14 +31,12 @@ public class Avatar {
         
     }
 
-    public String getNombre() { return nombre; }
-    public Integer getValor() { return valor; }
-    public ESTADO_AVATAR getEstado() { return estado; }
 
     public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() { return nombre; }
+    public Integer getValor() { return valor; }
     public void setValor(Integer valor) { this.valor = valor; }
 
-    public void setEstado(ESTADO_AVATAR estado) { this.estado = estado; }
 
 
     public void setId(Long id) {
@@ -46,6 +45,22 @@ public class Avatar {
 
     public Long getId() {
         return id;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public Habilidad getHabilidad() {
+        return Habilidad;
+    }
+
+    public void setHabilidad(Habilidad habilidad) {
+        Habilidad = habilidad;
     }
 
 }

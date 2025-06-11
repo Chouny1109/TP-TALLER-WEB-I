@@ -8,6 +8,7 @@ import com.tallerwebi.model.Usuario;
 
 import com.tallerwebi.model.DatosRegistro;
 
+import com.tallerwebi.repository.RepositorioAvatar;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioRegistro;
 import com.tallerwebi.service.impl.ServicioRegistroImpl;
@@ -35,11 +36,12 @@ public class ServicioRegistroTest {
     private ServicioRegistro servicioRegistro;
     private DatosRegistro datosRegistroMock;
     private Usuario usuariomock ;
-
+    private RepositorioAvatar repositorioAvatar;
     @BeforeEach
     public void init() {
         repositorioUsuario = mock(RepositorioUsuario.class);
-        servicioRegistro = new ServicioRegistroImpl(repositorioUsuario);
+        repositorioAvatar = mock(RepositorioAvatar.class);
+        servicioRegistro = new ServicioRegistroImpl(repositorioUsuario, repositorioAvatar);
         datosRegistroMock = mock(DatosRegistro.class);
 
         String password = "1234";

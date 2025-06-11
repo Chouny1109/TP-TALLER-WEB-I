@@ -4,6 +4,7 @@ import com.tallerwebi.controller.PartidaController;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioPartida;
+import com.tallerwebi.service.impl.ServicioUsuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,8 +17,10 @@ import static org.mockito.Mockito.*;
 public class PartidaControllerTest {
 
     private ServicioPartida servicioPartida;
+    private ServicioUsuario servicioUsuario;
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
+        servicioUsuario = mock(ServicioUsuario.class);
     }
 
     @Test
@@ -42,7 +45,7 @@ public class PartidaControllerTest {
     }
 
     private ModelAndView whenCargarPartida(HttpServletRequest request, TIPO_PARTIDA tipo) {
-        PartidaController partidaController = new PartidaController(servicioPartida);
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario);
         return partidaController.cargarPartida(request, tipo);
     }
 

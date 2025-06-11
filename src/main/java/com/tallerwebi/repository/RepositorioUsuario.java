@@ -2,6 +2,7 @@ package com.tallerwebi.repository;
 
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.UsuarioAvatar;
 
 import java.util.List;
 
@@ -12,5 +13,8 @@ public interface RepositorioUsuario {
     Usuario buscar(String email);
     void modificar(Usuario usuario);
     Usuario buscarUsuarioPorId(Long id);
+    String obtenerImagenAvatarSeleccionado(Long id);
+    void asignarAvatarPorDefecto(UsuarioAvatar ua);
+    Usuario obtenerUsuarioConPartidas(Long idUsuario);
 }
 

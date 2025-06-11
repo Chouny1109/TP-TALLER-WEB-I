@@ -1,10 +1,13 @@
 package com.tallerwebi.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -12,15 +15,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Endpoint que los clientes usarán para conectarse al WebSocket
-        registry.addEndpoint("/chat-websocket").withSockJS();
+        registry.addEndpoint("/chat-websocket")
+                .addInterceptors(new AuthHandshakeInterceptor()) // <--- Agregado
+                .setHandshakeHandler(new CustomHandshakeHandler()) // <--- Agregado
+                .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // Prefijos para mensajes salientes y entrantes
         config.enableSimpleBroker("/topic", "/queue");
         config.setApplicationDestinationPrefixes("/app");
-        config.setUserDestinationPrefix("/user");
+        config.setUserDestinationPrefix("/user"); // <--- clave para convertAndSendToUser
+    }
+
+    @Override
+    public boolean configureMessageConverters(List<org.springframework.messaging.converter.MessageConverter> messageConverters) {
+        messageConverters.add(new MappingJackson2MessageConverter());
+        return true;
     }
 }

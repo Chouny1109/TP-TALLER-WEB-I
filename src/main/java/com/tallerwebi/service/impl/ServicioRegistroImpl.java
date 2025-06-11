@@ -1,10 +1,14 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.ESTADO_AVATAR;
+import com.tallerwebi.model.Avatar;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 
+import com.tallerwebi.model.UsuarioAvatar;
+import com.tallerwebi.repository.RepositorioAvatar;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioRegistro;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +23,14 @@ import javax.transaction.Transactional;
 @Transactional
 public class ServicioRegistroImpl implements ServicioRegistro {
     private final RepositorioUsuario repositorioUsuario;
+    private final RepositorioAvatar repositorioAvatar;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ServicioRegistroImpl(RepositorioUsuario repositorioUsuario) {
+    public ServicioRegistroImpl(RepositorioUsuario repositorioUsuario, RepositorioAvatar repositorioAvatar) {
 
         this.repositorioUsuario = repositorioUsuario;
+        this.repositorioAvatar = repositorioAvatar;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -52,6 +58,17 @@ public class ServicioRegistroImpl implements ServicioRegistro {
         String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(passwordEncriptada);
 
-        return repositorioUsuario.guardar(usuario);
+        Boolean registrado = repositorioUsuario.guardar(usuario);
+        if (registrado) {
+            Avatar avatar = this.repositorioAvatar.obtenerAvatar(1L);
+
+            UsuarioAvatar relacion = new UsuarioAvatar();
+            relacion.setAvatar(avatar);
+            relacion.setUsuario(usuario);
+            relacion.setEstado(ESTADO_AVATAR.SELECCIONADO);
+
+            this.repositorioUsuario.asignarAvatarPorDefecto(relacion);
+        }
+        return registrado;
     }
 }

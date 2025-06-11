@@ -5,6 +5,9 @@ import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Usuario {
@@ -32,8 +35,7 @@ public class Usuario {
 
     private Integer nivel = 0;
 
-    @ManyToMany
-    private List<Partida> partida;
+
 
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.
@@ -42,10 +44,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<UsuarioMision> misiones;
 
-    @ManyToMany
-    private List<Avatar> avatars;
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -134,13 +135,6 @@ public class Usuario {
         this.nivel = nivel;
     }
 
-    public List<Partida> getPartida() {
-        return partida;
-    }
-
-    public void setPartida(List<Partida> partida) {
-        this.partida = partida;
-    }
 
     public List<UsuarioMision> getMisiones() {
         return misiones;
