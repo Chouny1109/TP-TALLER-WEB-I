@@ -26,7 +26,7 @@
     <div class="container" th:if="${misiones != null && misiones.size() > 0}">
         <div class="card" th:each="mision : ${misiones}">
             <div class="card-container">
-                <span class="card-title" th:text="${mision.titulo}"></span>
+                <span class="card-title" th:text="${mision.descripcion}"></span>
                 <div class="card-buttons">
                     <button type="button" class="card-button">Canjear</button>
                     <a th:href="@{/partida/cargar}" class="card-button">Ir</a>

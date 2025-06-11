@@ -8,8 +8,11 @@ import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 
 import com.tallerwebi.model.UsuarioAvatar;
+import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.repository.RepositorioAvatar;
+import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.service.ServicioRegistro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,13 +29,20 @@ public class ServicioRegistroImpl implements ServicioRegistro {
     private final RepositorioUsuario repositorioUsuario;
     private final RepositorioAvatar repositorioAvatar;
     private final PasswordEncoder passwordEncoder;
+    private final ServicioMisionesUsuario servicioMisionesUsuario;
+    private final RepositorioMisionUsuario repositorioMisionUsuario;
 
     @Autowired
-    public ServicioRegistroImpl(RepositorioUsuario repositorioUsuario, RepositorioAvatar repositorioAvatar) {
+    public ServicioRegistroImpl(RepositorioUsuario repositorioUsuario,
+                                RepositorioAvatar repositorioAvatar,
+                                ServicioMisionesUsuario servicioMisionesUsuario,
+                                RepositorioMisionUsuario repositorioMisionUsuario) {
 
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioAvatar = repositorioAvatar;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.servicioMisionesUsuario = servicioMisionesUsuario;
+        this.repositorioMisionUsuario = repositorioMisionUsuario;
     }
 
     @PostConstruct
@@ -59,6 +70,7 @@ public class ServicioRegistroImpl implements ServicioRegistro {
         usuario.setPassword(passwordEncriptada);
 
         Boolean registrado = repositorioUsuario.guardar(usuario);
+
         if (registrado) {
             Avatar avatar = this.repositorioAvatar.obtenerAvatar(1L);
 
@@ -68,6 +80,12 @@ public class ServicioRegistroImpl implements ServicioRegistro {
             relacion.setEstado(ESTADO_AVATAR.SELECCIONADO);
 
             this.repositorioUsuario.asignarAvatarPorDefecto(relacion);
+        }
+
+        if (registrado) {
+            Usuario usuarioBd = this.repositorioUsuario.buscar(usuario.getEmail());
+            List<UsuarioMision> misiones = this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd, this.servicioMisionesUsuario.generarMisionesAleatorias());
+            this.repositorioMisionUsuario.saveAll(misiones);
         }
         return registrado;
     }

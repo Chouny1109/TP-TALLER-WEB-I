@@ -3,6 +3,7 @@ package com.tallerwebi.model;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "usuario_mision")
 public class UsuarioMision {
     @Id
     @GeneratedValue(
@@ -18,19 +19,20 @@ public class UsuarioMision {
     @JoinColumn(name = "mision_id")
     private Mision mision;
 
+    @Column(nullable = false)
     private Boolean canjeada;
 
+    @Column(nullable = false)
     private Boolean completada;
 
     public UsuarioMision() {
     }
 
-    public UsuarioMision(Long id, Usuario usuario, Mision mision, Boolean canjeada, Boolean completada) {
-        this.id = id;
+    public UsuarioMision(Usuario usuario, Mision mision) {
         this.usuario = usuario;
         this.mision = mision;
-        this.canjeada = canjeada;
-        this.completada = completada;
+        this.canjeada = false;
+        this.completada = false;
     }
 
     public Long getId() {

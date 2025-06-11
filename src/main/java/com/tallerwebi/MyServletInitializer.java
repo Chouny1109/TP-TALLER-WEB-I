@@ -1,12 +1,9 @@
 package com.tallerwebi;
 
 import com.tallerwebi.config.*;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-@EnableScheduling
+
 public class MyServletInitializer
         extends AbstractAnnotationConfigDispatcherServletInitializer {
 
