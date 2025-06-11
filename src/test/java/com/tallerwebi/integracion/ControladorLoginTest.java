@@ -32,7 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {SpringWebTestConfig.class, HibernateTestConfig.class, MailTestConfig.class,  MockServicioRecoveryConfig.class, WebSocketConfig.class, MockSimpMessagingTemplateConfig.class})
+@ContextConfiguration(classes = {
+		SpringWebTestConfig.class,
+		HibernateTestConfig.class,
+		MailTestConfig.class,
+		MockServicioRecoveryConfig.class,
+		MockSimpMessagingTemplateConfig.class // dejalo si tu código depende del SimpMessagingTemplate
+})
 public class ControladorLoginTest {
 
 	private Usuario usuarioMock;
