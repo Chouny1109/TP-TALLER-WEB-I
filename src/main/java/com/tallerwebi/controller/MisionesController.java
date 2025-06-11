@@ -3,7 +3,9 @@ package com.tallerwebi.controller;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.service.ServicioMisiones;
+import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,28 +26,21 @@ import java.util.List;
 @RequestMapping("/misiones")
 public class MisionesController {
 
-    private final ServicioMisiones servicioMisiones;
+    private final ServicioMisionesUsuario servicioMisionesUsuario;
     private final SessionUtil sessionUtil;
 
-    public MisionesController(ServicioMisiones servicioMisiones, SessionUtil sessionUtil) {
-        this.servicioMisiones = servicioMisiones;
+    public MisionesController(ServicioMisionesUsuario servicioMisionesUsuario, SessionUtil sessionUtil) {
+        this.servicioMisionesUsuario = servicioMisionesUsuario;
         this.sessionUtil = sessionUtil;
-    }
-
-    @PostMapping("/asignar-misiones")
-    public ResponseEntity<String> asignarMisionesDiarias() {
-        this.servicioMisiones.asignarMisionesDiarias();
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping
     public ModelAndView misiones(HttpServletRequest request) throws UsuarioNoExistente {
-
         ModelMap modelMap = new ModelMap();
 
         Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
 
-        List<Mision> misionesDelUsuario = this.servicioMisiones.obtenerLasMisionesDelUsuario(logueado.getId());
+        List<Mision> misionesDelUsuario = this.servicioMisionesUsuario.obtenerLasMisionesDelUsuario(logueado.getId());
 
         modelMap.addAttribute("misiones", misionesDelUsuario);
 

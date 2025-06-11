@@ -9,7 +9,9 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.DatosRegistro;
 
 import com.tallerwebi.repository.RepositorioAvatar;
+import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.service.ServicioRegistro;
 import com.tallerwebi.service.impl.ServicioRegistroImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,11 +39,12 @@ public class ServicioRegistroTest {
     private DatosRegistro datosRegistroMock;
     private Usuario usuariomock ;
     private RepositorioAvatar repositorioAvatar;
+
     @BeforeEach
     public void init() {
         repositorioUsuario = mock(RepositorioUsuario.class);
         repositorioAvatar = mock(RepositorioAvatar.class);
-        servicioRegistro = new ServicioRegistroImpl(repositorioUsuario, repositorioAvatar);
+        servicioRegistro = new ServicioRegistroImpl(repositorioUsuario,repositorioAvatar, mock(ServicioMisionesUsuario.class), mock(RepositorioMisionUsuario.class));
         datosRegistroMock = mock(DatosRegistro.class);
 
         String password = "1234";
