@@ -7,6 +7,7 @@ import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioPartida;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository("repositorioPartida")
 @Transactional
@@ -65,5 +68,22 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
         return usuarioPartida != null ? usuarioPartida.getUsuario() : null;
     }
+
+    @Override
+    public List<Usuario> obtenerJugadoresDePartida(Long idPartida) {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<UsuarioPartida> listaUP = session.createCriteria(UsuarioPartida.class)
+                .createAlias("partida", "p")
+                .createAlias("usuario", "u")
+                .add(Restrictions.eq("p.id", idPartida))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+
+        return listaUP.stream()
+                .map(UsuarioPartida::getUsuario)
+                .collect(Collectors.toList());
+    }
+
 
 }

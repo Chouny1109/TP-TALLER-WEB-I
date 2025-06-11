@@ -6,14 +6,18 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.UUID;
 
-    public class CustomHandshakeHandler extends DefaultHandshakeHandler {
-        @Override
-        protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
-                                          Map<String, Object> attributes) {
-            String username = (String) attributes.get("user");
-            return () -> username; // devuelve un Principal anónimo con el nombre
+public class CustomHandshakeHandler extends DefaultHandshakeHandler {
+    @Override
+    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
+                                      Map<String, Object> attributes) {
+        String username = (String) attributes.get("user");
+        if (username == null || username.isEmpty()) {
+            // Si no se encontró user en atributos, genera un nombre anónimo o rechaza
+            username = "unknownUser_" + UUID.randomUUID();
         }
+        final String finalUsername = username;
+        return () -> finalUsername; // Principal anónimo con el nombre seguro
     }
-
-
+}

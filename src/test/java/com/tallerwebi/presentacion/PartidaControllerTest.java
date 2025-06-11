@@ -6,6 +6,7 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,9 +19,11 @@ public class PartidaControllerTest {
 
     private ServicioPartida servicioPartida;
     private ServicioUsuario servicioUsuario;
+    private final SimpMessagingTemplate messagingTemplate;
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
         servicioUsuario = mock(ServicioUsuario.class);
+        messagingTemplate = mock(SimpMessagingTemplate.class);
     }
 
     @Test
@@ -45,7 +48,7 @@ public class PartidaControllerTest {
     }
 
     private ModelAndView whenCargarPartida(HttpServletRequest request, TIPO_PARTIDA tipo) {
-        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario);
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate);
         return partidaController.cargarPartida(request, tipo);
     }
 

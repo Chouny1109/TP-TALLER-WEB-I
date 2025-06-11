@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.sun.mail.util.LineInputStream;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ServicioPartidaImpl implements ServicioPartida {
@@ -90,12 +92,12 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
                         messagingTemplate.convertAndSendToUser(
                                 jugador1.getNombreUsuario(),
-                                "/queue/rivalEncontrado",
+                                "/queue/partida",
                                 jugador2DTO
                         );
                         messagingTemplate.convertAndSendToUser(
                                 jugador2.getNombreUsuario(),
-                                "/queue/rivalEncontrado",
+                                "/queue/partida",
                                 jugador1DTO
                         );
                     }
@@ -126,6 +128,10 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
+    @Override
+    public List<Usuario> obtenerJugadoresEnPartida(Long id){
+        return this.repositorioPartida.obtenerJugadoresDePartida(id);
+    }
     private void partidaSupervivencia() {
     }
 

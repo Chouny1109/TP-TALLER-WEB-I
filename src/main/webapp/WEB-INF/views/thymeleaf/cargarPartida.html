@@ -91,29 +91,41 @@
         No se encontró rival :(
     </div>
 </div>
-
-<!-- Scripts -->
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
-<script type="text/javascript">
+<script th:inline="javascript">
+    /*<![CDATA[*/
     let stompClient = null;
     let rivalEncontrado = false;
 
+    const usuarioId = /*[[${jugador.id}]]*/ 0;
+
+    // Esto genera un string correctamente interpretado por Thymeleaf
+    let modoJuego = /*[[${modoJuego}]]*/ 'CLASICO';
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
-        // Conexión WebSocket
-        const socket = new SockJS('/' + window.location.pathname.split("/")[1] + '/chat-websocket');
+        console.log("modoJuego:", modoJuego); // <- deberías ver el valor real acá
+
+        const socket = new SockJS(/*[[@{/chat-websocket}]]*/ '/spring/chat-websocket');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
             console.log('Conectado: ' + frame);
 
-            // Suscripción a rivalEncontrado
-            stompClient.subscribe('/user/queue/rivalEncontrado', function (mensaje) {
-                console.log('Mensaje recibido:', mensaje.body);
+            const partidaRequest = {
+                usuarioId: usuarioId,
+                modoJuego: modoJuego
+            };
+
+            stompClient.send("/app/crearOUnirsePartida", {}, JSON.stringify(partidaRequest));
+            console.log("Mensaje enviado:", partidaRequest);
+
+            stompClient.subscribe('/user/queue/partida', function (mensaje) {
+                console.log("Mensaje recibido:", mensaje.body);
                 let rival = JSON.parse(mensaje.body);
                 rivalEncontrado = true;
-                console.log("Rival encontrado:", rival);
+                console.log("JugadorDTO recibido:", jugadorDTO);
 
-                console.log(mensaje.body)
                 document.querySelector('.rival-name').textContent = rival.nombreUsuario;
                 document.querySelector('.question-mark').style.display = 'none';
 
@@ -121,23 +133,28 @@
                 rivalAvatar.src = rival.linkAvatar;
                 rivalAvatar.style.display = 'block';
 
+                const rivalLevelBadge = document.querySelector('.player-container:last-child .badge-number');
+                if (rivalLevelBadge && rival.nivel) {
+                    rivalLevelBadge.textContent = rival.nivel;
+                }
+
                 document.getElementById('searching-text').style.display = 'none';
             });
         });
 
-        // Temporizador de búsqueda de rival
         let countdown = 10;
         const interval = setInterval(() => {
             countdown--;
-            if (countdown <= 0) {
+            if (countdown <= 0 && !rivalEncontrado) {
                 clearInterval(interval);
-                if (!rivalEncontrado) {
-                    document.getElementById('searching-text').style.display = 'none';
-                    document.getElementById('rival-error-message').style.display = 'block';
-                }
+                document.getElementById('searching-text').style.display = 'none';
+                document.getElementById('rival-error-message').style.display = 'block';
             }
         }, 2000);
     });
+    /*]]>*/
 </script>
+
+
 </body>
 </html>
