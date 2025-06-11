@@ -1,8 +1,6 @@
 package com.tallerwebi.controller;
 
 
-
-
 import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.dominio.excepcion.EmailInvalido;
 import com.tallerwebi.dominio.excepcion.PasswordsNotEquals;
@@ -34,8 +32,6 @@ public class RegistroController {
     }
 
 
-
-
     @RequestMapping(path = "/nuevo-usuario", method = RequestMethod.GET)
     public ModelAndView mostrarFormularioRegistro() {
         ModelMap model = new ModelMap();
@@ -63,11 +59,10 @@ public class RegistroController {
         } catch (EmailInvalido e) {
             model.put("error", "El email debe contener '@' y '.com'");
             return new ModelAndView("nuevo-usuario", model);
-        } catch (PasswordsNotEquals e){
+        } catch (PasswordsNotEquals e) {
             model.put("error", "Las contraseñas no coinciden");
             return new ModelAndView("nuevo-usuario", model);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
         }
