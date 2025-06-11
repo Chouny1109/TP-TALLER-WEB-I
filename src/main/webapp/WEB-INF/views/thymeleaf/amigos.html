@@ -123,7 +123,6 @@
             color: black;
         }
 
-        /* Content section blanco */
         .content {
             flex-grow: 1;
             background-color: white;
@@ -133,6 +132,7 @@
             flex-direction: column;
             box-shadow: 0 2px 10px rgb(0 0 0 / 0.05);
         }
+
         .content h3 {
             color: #4caf50;
             font-weight: 700;
@@ -141,34 +141,53 @@
             text-align: center;
         }
 
-        /* List group overrides */
-        .list-group-item {
-            border: none;
-            border-bottom: 1.5px solid #cbffcc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #4f964f;
-            user-select: none;
-            padding: 15px 20px;
-        }
-        .list-group-item:last-child {
-            border-bottom: none;
-        }
+        /* List group overrides (horizontal scroll compatible) */
+
+
         .list-group-item:hover {
             background-color: #dbffdb;
+        }
+
+        /* Fuerza el layout de los amigos a vertical */
+        .content .d-flex.overflow-auto {
+            flex-direction: column !important;
+            overflow-y: auto;
+            overflow-x: hidden;
+            gap: 16px; /* Espacio entre amigos */
+            max-height: 320px; /* Si querés limitar el alto y que se pueda scrollear */
+            padding-right: 10px; /* Espaciado extra para que no se corte el scroll */
+        }
+
+
+        .list-group-item {
+            border: none;
+            background-color: #f6fff6;
+            border: 1.5px solid #cbffcc;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between; /* nombre a la izquierda, botón a la derecha */
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #4f964f;
+            user-select: none;
+            padding: 10px 20px;
+            min-width: 100%;
+            max-width: 100%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
         }
 
         .amigo-info {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 14px;
         }
+
         .amigo-info img {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 2px solid #9fec9c;
         }
@@ -179,14 +198,17 @@
             color: white;
             font-weight: 800;
             border-radius: 16px;
-            padding: 10px 24px;
-            font-size: 1rem;
+            padding: 6px 18px;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .btn-desafiar:hover {
             background-color: #67b761;
         }
+
+
     </style>
 </head>
 <body>
@@ -210,44 +232,111 @@
 <div class="main-container">
     <!-- Sidebar -->
     <nav class="sidebar">
-        <a href="#" >Mis amigos</a>
-        <a href="#">Añadir amigo</a>
-        <a href="#">Solicitudes</a>
-        <a href="#">Chats</a>
+        <a href="#" data-seccion="seccion-amigos" class="active">Mis amigos</a>
+        <a href="#" data-seccion="seccion-anadir">Añadir amigo</a>
+        <a href="#" data-seccion="seccion-solicitudes">Solicitudes</a>
+        <a href="#" data-seccion="seccion-chats">Chats</a>
 
     </nav>
 
 
-    <section class="content">
+    <section class="content" >
+        <div id="seccion-amigos">
         <h3>Mis amigos</h3>
-        <ul class="list-group overflow-auto" style="max-height: 320px;">
-            <li class="list-group-item">
-                <div class="amigo-info">
-                    <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
-                    Usuario_10
+        <div class="d-flex overflow-auto px-2">
+            <div th:each="amigo : ${amigos}" class="list-group-item me-2" style="min-width: 250px;">
+                <div class="amigo-info d-flex align-items-center mb-2">
+                    <img th:src="@{${amigo.imagen}}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+                    <span th:text="${amigo.nombre}">Usuario_X</span>
                 </div>
                 <button class="btn-desafiar">Desafiar</button>
-            </li>
-            <li class="list-group-item">
-                <div class="amigo-info">
-                    <img th:src="@{/resources/imgs/perfilAndrea.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
-                    Usuario_23
+            </div>
+        </div>
+        </div>
+
+
+        <div id="seccion-anadir" class="d-none">
+            <h3>Añadir amigo</h3>
+            <form class="d-flex flex-column gap-3">
+                <input type="text" class="form-control" placeholder="Buscar por nombre de usuario" />
+                <button type="submit" class="btn btn-success align-self-start">Enviar solicitud</button>
+            </form>
+            <div class="mt-4 text-muted" style="font-weight: 500;">Puedes buscar un amigo por su nombre exacto o alias.</div>
+        </div>
+
+        <div id="seccion-solicitudes" class="d-none">
+            <h3>Solicitudes</h3>
+            <div class="d-flex flex-column gap-3">
+                <div class="list-group-item">
+                    <div class="amigo-info">
+                        <img src="/img/perfil-ejemplo1.jpg" alt="Perfil" />
+                        <span>Usuario123</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm">Aceptar</button>
+                        <button class="btn btn-danger btn-sm">Rechazar</button>
+                    </div>
                 </div>
-                <button class="btn-desafiar">Desafiar</button>
-            </li>
-            <li class="list-group-item">
-                <div class="amigo-info">
-                    <img th:src="@{/resources/imgs/perfilMadMax.jpg}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
-                    Usuario_02
+                <div class="list-group-item">
+                    <div class="amigo-info">
+                        <img src="/img/perfil-ejemplo2.jpg" alt="Perfil" />
+                        <span>Estrella99</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm">Aceptar</button>
+                        <button class="btn btn-danger btn-sm">Rechazar</button>
+                    </div>
                 </div>
-                <button class="btn-desafiar">Desafiar</button>
-            </li>
-        </ul>
+            </div>
+        </div>
+
+        <div id="seccion-chats" class="d-none">
+            <h3>Chats</h3>
+            <div class="d-flex flex-column gap-3">
+                <div class="list-group-item">
+                    <div class="amigo-info">
+                        <img src="/img/perfil-chat1.jpg" alt="Perfil" />
+                        <span>JugadorPro</span>
+                    </div>
+                    <button class="btn-desafiar">Abrir chat</button>
+                </div>
+                <div class="list-group-item">
+                    <div class="amigo-info">
+                        <img src="/img/perfil-chat2.jpg" alt="Perfil" />
+                        <span>AnaGamer</span>
+                    </div>
+                    <button class="btn-desafiar">Abrir chat</button>
+                </div>
+            </div>
+        </div>
+
     </section>
 </div>
 
 <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
 ></script>
+
+<script>
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Sacar clase 'active' de todos
+            document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content > div').forEach(div => div.classList.add('d-none'));
+
+            // Mostrar la que se pidió
+            const seccionId = this.getAttribute('data-seccion');
+            const seccionMostrar = document.getElementById(seccionId);
+            if (seccionMostrar) {
+                seccionMostrar.classList.remove('d-none');
+            }
+        });
+    });
+</script>
 </body>
 </html>

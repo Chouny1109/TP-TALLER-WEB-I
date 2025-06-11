@@ -12,6 +12,7 @@ public class Trampa {
 
     private String nombre;
     private Integer valor;
+    private String imagen;
 
     public Trampa() {}
 
@@ -22,6 +23,8 @@ public class Trampa {
 
     public String getNombre() { return nombre; }
     public Integer getValor() { return valor; }
+    public String getImagen() { return imagen; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
 }
