@@ -7,11 +7,13 @@ import com.tallerwebi.model.Usuario;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.security.Principal;
 import java.util.Map;
+@Component
 public class AuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
@@ -21,8 +23,7 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
                                    Map<String, Object> attributes) {
 
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            HttpServletRequest httpRequest = servletRequest.getServletRequest();
+            HttpServletRequest httpRequest = ((ServletServerHttpRequest) request).getServletRequest();
             HttpSession session = httpRequest.getSession(false);
 
             if (session != null) {
@@ -32,7 +33,6 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
                     attributes.put("user", nombreUsuario);
                     System.out.println("Handshake - Usuario conectado: " + nombreUsuario);
                 } else {
-
                     System.out.println("Handshake - No se encontró un usuario válido en la sesión");
                 }
             } else {
@@ -49,5 +49,6 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
                                Exception exception) {
         // No hace nada
     }
-
 }
+
+

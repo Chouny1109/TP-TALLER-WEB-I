@@ -6,6 +6,7 @@ public class JugadorDTO {
     private String nombreUsuario;
     private String email;
     private String linkAvatar;
+    private Long idPartida;
 
     public JugadorDTO(Usuario usuario) {
         this.id = usuario.getId();
@@ -22,7 +23,13 @@ public class JugadorDTO {
                 ", linkAvatar='" + linkAvatar + '\'' +
                 '}';
     }
+    public Long getIdPartida() {
+        return idPartida;
+    }
 
+    public void setIdPartida(Long idPartida) {
+        this.idPartida = idPartida;
+    }
     public void setLinkAvatar(String linkAvatar) {
 
         this.linkAvatar = linkAvatar;

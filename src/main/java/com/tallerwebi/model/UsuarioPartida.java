@@ -8,10 +8,14 @@ public class UsuarioPartida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-    @ManyToOne(cascade = CascadeType.ALL)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partida_id")
     private Partida partida;
+
 
     public UsuarioPartida() {}
     public UsuarioPartida(Usuario usuario, Partida partida) {

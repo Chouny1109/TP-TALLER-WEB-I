@@ -1,5 +1,6 @@
 package com.tallerwebi.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -25,19 +26,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setUserDestinationPrefix("/user");
     }
 
+    @Autowired
+    private AuthHandshakeInterceptor authHandshakeInterceptor;
+
+    @Autowired
+    private CustomHandshakeHandler customHandshakeHandler ;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat-websocket")
-                .addInterceptors(new AuthHandshakeInterceptor())
-                .setHandshakeHandler(new DefaultHandshakeHandler() {
-
-                    public Principal determineUser(ServerHttpRequest request,
-                                                      WebSocketHandler wsHandler,
-                                                      Map<String, Object> attributes) {
-                        String nombreUsuario = (String) attributes.get("user");  // <-- acá la clave debe ser "user"
-                        return () -> nombreUsuario; // lambda que implementa Principal
-                    }
-                })
+                .addInterceptors(authHandshakeInterceptor)
+                .setHandshakeHandler(customHandshakeHandler)
                 .withSockJS();
     }
+
+
+
+
+
 }

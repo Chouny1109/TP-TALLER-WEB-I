@@ -8,6 +8,7 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioPartida;
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -42,13 +43,16 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
     @Override
-    public Partida obtenerPartidaAbiertaPorModo(TIPO_PARTIDA tipo){
+    public List<Partida> obtenerPartidasAbiertaPorModo(TIPO_PARTIDA tipo) {
         Session session = sessionFactory.getCurrentSession();
-        return (Partida) session.createCriteria(Partida.class)
+        return session.createCriteria(Partida.class)
                 .add(Restrictions.eq("estadoPartida", ESTADO_PARTIDA.ABIERTA))
                 .add(Restrictions.eq("tipo", tipo))
-                .uniqueResult();
+                .setLockMode(LockMode.PESSIMISTIC_WRITE) // <-- Aquí el lock
+                .list();
     }
+
+
 
     @Override
     public void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida) {
@@ -84,6 +88,61 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .map(UsuarioPartida::getUsuario)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Boolean jugadorEstaJugando(Long idJugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        UsuarioPartida usuarioPartida = (UsuarioPartida) session.createCriteria(UsuarioPartida.class, "up")
+                .createAlias("up.usuario", "u")
+                .createAlias("up.partida", "p")
+                .add(Restrictions.eq("u.id", idJugador))
+                .add(Restrictions.or(
+                        Restrictions.eq("p.estadoPartida", ESTADO_PARTIDA.ABIERTA),
+                        Restrictions.eq("p.estadoPartida", ESTADO_PARTIDA.EN_CURSO)
+                ))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        return usuarioPartida != null;
+    }
+
+    @Override
+    public Partida obtenerPartidaActivaDeJugador(Long idJugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        UsuarioPartida usuarioPartida = (UsuarioPartida) session.createCriteria(UsuarioPartida.class, "up")
+                .createAlias("up.usuario", "u")
+                .createAlias("up.partida", "p")
+                .add(Restrictions.eq("u.id", idJugador))
+                .add(Restrictions.or(
+                        Restrictions.eq("p.estadoPartida", ESTADO_PARTIDA.ABIERTA),
+                        Restrictions.eq("p.estadoPartida", ESTADO_PARTIDA.EN_CURSO)
+                ))
+                .setMaxResults(1)
+                .uniqueResult();
+
+        if (usuarioPartida != null) {
+            return usuarioPartida.getPartida();
+        }
+        return null;
+    }
+
+    @Override
+    public void finalizarPartida(Long idPartida) {
+
+        Session session = sessionFactory.getCurrentSession();
+        Partida p = (Partida) session.createCriteria(Partida.class)
+                .add(Restrictions.eq("id", idPartida))
+                .uniqueResult();
+
+        if (p != null) {
+            p.setEstadoPartida(ESTADO_PARTIDA.FINALIZADA); // 2. Cambiar el estado
+            session.update(p); // 3. Guardar los cambios
+        }
+    }
+
+
 
 
 }
