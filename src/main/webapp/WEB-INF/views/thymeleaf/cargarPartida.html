@@ -95,9 +95,8 @@
     /*<![CDATA[*/
     let stompClient = null;
     let rivalEncontrado = false;
-    let idPartidaGlobal = null;
+
     const usuarioId = /*[[${jugador.id}]]*/ 0;
-    const usuarioNombre = /*[[${jugador.nombreUsuario}]]*/ 'defaultUser'; // Asegurate que este valor exista y tenga el nombre de usuario logueado
     let modoJuego = /*[[${modoJuego}]]*/ 'CLASICO';
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -109,17 +108,11 @@
         stompClient.connect({}, function (frame) {
             console.log('Conectado: ' + frame);
 
+            // 1. Me suscribo antes de enviar el mensaje
             stompClient.subscribe('/user/queue/partida', function (mensaje) {
                 console.log("📬 Mensaje recibido en /user/queue/partida:", mensaje.body);
 
                 let rival = JSON.parse(mensaje.body);
-
-                // FILTRO: Ignorar si el mensaje es del mismo jugador
-                if (rival.nombreUsuario === usuarioNombre) {
-                    console.log("Mensaje recibido con datos propios, se ignora.");
-                    return;
-                }
-
                 rivalEncontrado = true;
                 console.log("JugadorDTO recibido:", rival);
                 idPartidaGlobal = rival.idPartida;
@@ -141,6 +134,7 @@
                 console.log("📡 Suscripción a /user/queue/partida hecha."); // Confirmo la suscripción
             });
 
+            // 2. Envío el mensaje para crear o unirme a la partida
             const partidaRequest = {
                 usuarioId: usuarioId,
                 modoJuego: modoJuego
@@ -150,34 +144,23 @@
             console.log("Mensaje enviado:", partidaRequest);
         });
 
-        let countdown = 20;
+        let countdown = 25;
         const interval = setInterval(() => {
             countdown--;
-            if (countdown <= 0 && !rivalEncontrado) {
-                clearInterval(interval);
+            if (countdown === 5 && !rivalEncontrado) {
                 document.getElementById('searching-text').style.display = 'none';
                 document.getElementById('rival-error-message').style.display = 'block';
-
-                if (idPartidaGlobal) {
-                    fetch(`/partida/finalizarPartida?idPartida=${idPartidaGlobal}`, {
-                        method: 'POST'
-                    }).then(res => {
-                        if (res.ok) {
-                            console.log("✅ Partida finalizada por falta de rival");
-                            window.location.href = '/home';  // Redirige manualmente en JS
-                        } else {
-                            console.error("❌ No se pudo finalizar la partida");
-                        }
-                    }).catch(err => {
-                        console.error("❌ Error al finalizar partida:", err);
-                    });
-                }
             }
-        }, 2000);
+            if (countdown <= 0) {
+                clearInterval(interval);
+                window.location.href = /*[[@{/home}]]*/ '/home';
+
+            }
+        }, 1000);
+
     });
     /*]]>*/
 </script>
-
 
 
 </body>

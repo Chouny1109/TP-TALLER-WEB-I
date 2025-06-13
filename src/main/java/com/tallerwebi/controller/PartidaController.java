@@ -23,11 +23,14 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/partida")
 public class PartidaController {
-
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ServicioPartida servicioPartida;
     private ServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
@@ -38,6 +41,7 @@ public class PartidaController {
         this.servicioUsuario = servicioUsuario;
         this.messagingTemplate = messagingTemplate;
     }
+
 
     @GetMapping("/cargar")
     public ModelAndView cargarPartida(HttpServletRequest request, @RequestParam("modoJuego") TIPO_PARTIDA modoJuego) {
@@ -54,6 +58,15 @@ public class PartidaController {
         modelo.put("partida", partida);
         String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(jugador.getId());
         modelo.put("avatarImg", avatarImg);
+
+        scheduler.schedule(() -> {
+            List<Usuario> jugadores = servicioPartida.obtenerJugadoresEnPartida(partida.getId());
+            if (jugadores.size() <= 1) {
+                finalizarPartida(partida.getId());
+            } else {
+                System.out.println("No se finaliza la partida " + partida.getId() + " porque ya tiene rival.");
+            }
+        }, 20, TimeUnit.SECONDS);
 
         return new ModelAndView("cargarPartida", modelo);
     }
@@ -108,16 +121,8 @@ public class PartidaController {
         debugUsuariosConectados();
     }
 
-
-    @PostMapping("/finalizarPartida")
-    public ResponseEntity<?> finalizarPartida(@RequestParam("idPartida") Long idPartida) {
-        try {
-            servicioPartida.finalizarPartida(idPartida);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al finalizar partida");
-        }
+    public void finalizarPartida(Long idPartida) {
+        servicioPartida.finalizarPartida(idPartida);
     }
 
 
