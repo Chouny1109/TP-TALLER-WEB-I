@@ -19,6 +19,10 @@ public class Mision {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mision")
     private List<UsuarioMision> usuarios;
 
+    @ManyToOne
+    @JoinColumn(name = "id_tipoMision")
+    private TipoDeMision tipoMision;
+
     public Mision(String descripcion, Integer experiencia, Integer copas) {
         this.descripcion = descripcion;
         this.experiencia = experiencia;

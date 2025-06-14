@@ -4,7 +4,6 @@ import com.tallerwebi.controller.MisionesController;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
-import com.tallerwebi.service.ServicioMisiones;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +47,7 @@ public class MisionesControllerTest {
         logueado.setId(1L);
 
         when(sessionUtil.getUsuarioLogueado(request)).thenReturn(logueado);
-        when(servicioMisiones.obtenerLasMisionesDelUsuario(logueado.getId())).thenReturn(misionesMock);
+        when(servicioMisiones.obtenerLasMisionesDelUsuarioPorId(logueado.getId())).thenReturn(misionesMock);
 
         return logueado;
     }

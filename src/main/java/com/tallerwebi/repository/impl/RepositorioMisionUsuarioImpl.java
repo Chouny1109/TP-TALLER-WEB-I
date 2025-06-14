@@ -48,16 +48,6 @@ public class RepositorioMisionUsuarioImpl implements RepositorioMisionUsuario {
 
     @Override
     public List<Mision> obtenerMisionesDelUsuarioPorId(Long id) {
-//        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UsuarioMision.class)
-//                .createAlias("usuario", "u")
-//                .add(Restrictions.eq("u.id", id));
-//        List<UsuarioMision> list = criteria.list();
-//        List<Mision> misiones = new ArrayList<>();
-//
-//        for (UsuarioMision relacion : list) {
-//            misiones.add(relacion.getMision());
-//        }
-//        return misiones;
 
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Mision> query = builder.createQuery(Mision.class);
@@ -67,9 +57,7 @@ public class RepositorioMisionUsuarioImpl implements RepositorioMisionUsuario {
 
         query.where(builder.equal(root.get("usuario").get("id"), id));
 
-        List<Mision> misiones = sessionFactory.getCurrentSession().createQuery(query).getResultList();
-
-        return misiones;
+        return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
     @Override
