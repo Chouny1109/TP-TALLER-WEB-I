@@ -7,14 +7,17 @@ import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioMisiones;
 import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.repository.impl.RepositorioMisionesImpl;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -22,13 +25,13 @@ import java.util.stream.Collectors;
 public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     private final RepositorioUsuario repositorioUsuario;
-    private final RepositorioMisiones repositorioMisiones;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
+    private final RepositorioMisiones repositorioMisiones;
 
-    public ServicioMisionesUsuarioImpl(RepositorioUsuario repositorioUsuario, RepositorioMisiones repositorioMisiones, RepositorioMisionUsuario repositorioMisionUsuario) {
+    public ServicioMisionesUsuarioImpl(RepositorioUsuario repositorioUsuario, RepositorioMisionUsuario repositorioMisionUsuario, RepositorioMisiones repositorioMisiones) {
         this.repositorioUsuario = repositorioUsuario;
-        this.repositorioMisiones = repositorioMisiones;
         this.repositorioMisionUsuario = repositorioMisionUsuario;
+        this.repositorioMisiones = repositorioMisiones;
     }
 
     /**
@@ -61,49 +64,43 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
      * @throws UsuarioNoExistente si no existe un usuario para asignarle misiones
      */
 
-    @Scheduled(cron = "0 0 0 * * *")
+   @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void asignarMisionesDiarias() {
-
         List<Usuario> usuariosBd = repositorioUsuario.obtenerUsuarios();
         List<UsuarioMision> relaciones = new ArrayList<>();
+        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
+                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
 
         for (Usuario usuario : usuariosBd) {
-            try {
-                borrarMisionesDelUsuario(usuario);
+            if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
+
+                List<Mision> misionesAleatorias = this.obtenerMisionesAleatorias(misionesBd);
                 relaciones.addAll(
-                        asignarMisionesAUsuario(usuario, misionesBd)
+                        misionesAleatorias.stream().map(
+                                element -> new UsuarioMision(usuario, element)
+                        ).collect(Collectors.toList())
                 );
-            } catch (UsuarioNoExistente e) {
-                System.out.println("No se encontró el usuario");
             }
         }
         repositorioMisionUsuario.saveAll(relaciones);
     }
 
     @Override
-    public List<Mision> generarMisionesAleatorias() {
-        List<Mision> misionesBd = repositorioMisiones.obtenerMisiones();
+    public Boolean tieneMisionesAsignadas(Usuario usuario, Set<Long> usuariosConMisionesAsignadas) {
+        return usuariosConMisionesAsignadas.contains(usuario.getId());
+    }
+
+    @Override
+    public List<Mision> obtenerMisionesAleatorias(List<Mision> misionesBd) {
+        if (misionesBd == null || misionesBd.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Mision> misionesAleatorias = new ArrayList<>(misionesBd);
         Collections.shuffle(misionesAleatorias);
         return misionesAleatorias.stream().limit(3).collect(Collectors.toList());
-    }
-
-    /**
-     * Borra las misiones del usuario solicitado
-     *
-     * @param usuario Usuario al cual se desea borrarle o reiniciarles las misiones.
-     * @throws UsuarioNoExistente Si no existe ese usuario en la base de datos
-     */
-    @Override
-    public void borrarMisionesDelUsuario(Usuario usuario) throws UsuarioNoExistente {
-        Usuario buscado = repositorioUsuario.buscarUsuarioPorId(usuario.getId());
-
-        if (buscado == null) {
-            throw new UsuarioNoExistente();
-        }
-        repositorioMisionUsuario.borrarMisionesDelUsuario(buscado);
     }
 
     @Override
