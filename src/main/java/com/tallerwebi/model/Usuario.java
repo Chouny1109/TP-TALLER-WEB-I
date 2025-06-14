@@ -33,7 +33,7 @@ public class Usuario {
     @Column(unique = true)
     private String token;
 
-    private Integer nivel = 0;
+    private Integer nivel = 1;
 
 
 

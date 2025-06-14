@@ -115,7 +115,7 @@
                 let rival = JSON.parse(mensaje.body);
                 rivalEncontrado = true;
                 console.log("JugadorDTO recibido:", rival);
-                idPartidaGlobal = rival.idPartida;
+                clearInterval(interval);
 
                 document.querySelector('.rival-name').textContent = rival.nombreUsuario;
                 document.querySelector('.question-mark').style.display = 'none';

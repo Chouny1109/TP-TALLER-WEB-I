@@ -71,59 +71,64 @@ public class PartidaController {
         return new ModelAndView("cargarPartida", modelo);
     }
 
-    @Autowired
-    private SimpUserRegistry simpUserRegistry;
-
-    private void debugUsuariosConectados() {
-        System.out.println("🔍 Usuarios actualmente conectados por WebSocket:");
-        for (SimpUser user : simpUserRegistry.getUsers()) {
-            System.out.println(" - " + user.getName());
-        }
-    }
-    @MessageMapping("/crearOUnirsePartida")
-    public void crearOUnirsePartidaWS(@Payload PartidaRequest partidaRequest, Principal principal) {
-
-        System.out.println("🧩 [crearOUnirsePartida] Principal conectado: " + principal.getName());
-        System.out.println("🧩 [crearOUnirsePartida] Datos recibidos: " + partidaRequest);
-
-        Usuario jugador = servicioUsuario.buscarUsuarioPorId(partidaRequest.getUsuarioId());
-        if (jugador == null) return;
-
-        Partida partida = servicioPartida.crearOUnirsePartida(jugador, partidaRequest.getModoJuego());
-        List<Usuario> jugadores = servicioPartida.obtenerJugadoresEnPartida(partida.getId());
-
-        System.out.println("👤 Principal en WS: " + principal);
-        System.out.println("👤 Nombre Principal: " + principal.getName());
-        System.out.println("👤 Jugador esperado: " + jugador.getNombreUsuario());
-
-        // Notificar a todos los jugadores en la partida, excepto al que hizo la petición
-        for (Usuario u : jugadores) {
-            if (u.getNombreUsuario().equals(principal.getName())) {
-                // Saltar al propio jugador para no enviarse a sí mismo como rival
-                continue;
-            }
-
-            JugadorDTO dto = new JugadorDTO(u);
-            dto.setLinkAvatar(servicioUsuario.obtenerImagenAvatarSeleccionado(u.getId()));
-            dto.setIdPartida(partida.getId());
-            String destinatario = u.getNombreUsuario();
-
-            System.out.println("🧩 Emparejando con: " + u.getNombreUsuario());
-            System.out.println("📨 Enviando mensaje a: " + destinatario);
-
-            messagingTemplate.convertAndSendToUser(
-                    destinatario,
-                    "/queue/partida",
-                    dto
-            );
-        }
-
-        debugUsuariosConectados();
-    }
-
     public void finalizarPartida(Long idPartida) {
         servicioPartida.finalizarPartida(idPartida);
     }
+
+    @MessageMapping("/crearOUnirsePartida")
+    public void crearOUnirsePartidaWS(PartidaRequest request) {
+        Usuario jugador = servicioUsuario.buscarUsuarioPorId(request.getUsuarioId());
+        servicioPartida.crearOUnirsePartida(jugador, request.getModoJuego());
+    }
+//    @Autowired
+//    private SimpUserRegistry simpUserRegistry;
+//
+//    private void debugUsuariosConectados() {
+//        System.out.println("🔍 Usuarios actualmente conectados por WebSocket:");
+//        for (SimpUser user : simpUserRegistry.getUsers()) {
+//            System.out.println(" - " + user.getName());
+//        }
+//    }
+//    @MessageMapping("/crearOUnirsePartida")
+//    public void crearOUnirsePartidaWS(@Payload PartidaRequest partidaRequest, Principal principal) {
+//
+//        System.out.println("🧩 [crearOUnirsePartida] Principal conectado: " + principal.getName());
+//        System.out.println("🧩 [crearOUnirsePartida] Datos recibidos: " + partidaRequest);
+//
+//        Usuario jugador = servicioUsuario.buscarUsuarioPorId(partidaRequest.getUsuarioId());
+//        if (jugador == null) return;
+//
+//        Partida partida = servicioPartida.crearOUnirsePartida(jugador, partidaRequest.getModoJuego());
+//        List<Usuario> jugadores = servicioPartida.obtenerJugadoresEnPartida(partida.getId());
+//
+//        System.out.println("👤 Principal en WS: " + principal);
+//        System.out.println("👤 Nombre Principal: " + principal.getName());
+//        System.out.println("👤 Jugador esperado: " + jugador.getNombreUsuario());
+//
+//        // Notificar a todos los jugadores en la partida, excepto al que hizo la petición
+//        for (Usuario u : jugadores) {
+//            if (u.getNombreUsuario().equals(principal.getName())) {
+//                // Saltar al propio jugador para no enviarse a sí mismo como rival
+//                continue;
+//            }
+//
+//            JugadorDTO dto = new JugadorDTO(u);
+//            dto.setLinkAvatar(servicioUsuario.obtenerImagenAvatarSeleccionado(u.getId()));
+//            dto.setIdPartida(partida.getId());
+//            String destinatario = u.getNombreUsuario();
+//
+//            System.out.println("🧩 Emparejando con: " + u.getNombreUsuario());
+//            System.out.println("📨 Enviando mensaje a: " + destinatario);
+//
+//            messagingTemplate.convertAndSendToUser(
+//                    destinatario,
+//                    "/queue/partida",
+//                    dto
+//            );
+//        }
+//
+//        debugUsuariosConectados();
+//    }
 
 
 
