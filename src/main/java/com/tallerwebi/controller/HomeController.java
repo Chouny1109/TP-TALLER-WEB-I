@@ -30,6 +30,8 @@ public class HomeController {
         if (usuario != null) {
             mav.addObject("nombreUsuario", usuario.getNombreUsuario());
             mav.addObject("nivel", usuario.getNivel());
+        }else{
+            return new ModelAndView("redirect:/login");
         }
 
         String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());

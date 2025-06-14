@@ -15,6 +15,8 @@ public class Pregunta {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Respuesta> respuestas;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipoPregunta")
     private CATEGORIA_PREGUNTA tipoPregunta;
 
     public Pregunta(String enunciado, List<Respuesta> respuestas, CATEGORIA_PREGUNTA tipoPregunta) {

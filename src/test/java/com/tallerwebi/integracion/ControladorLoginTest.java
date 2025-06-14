@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -37,11 +38,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		HibernateTestConfig.class,
 		MailTestConfig.class,
 		MockServicioRecoveryConfig.class,
-		MockSimpMessagingTemplateConfig.class // dejalo si tu código depende del SimpMessagingTemplate
+		MockSimpMessagingTemplateConfig.class,
+		MockSimpUserRegistryConfig.class
 })
 public class ControladorLoginTest {
 
 	private Usuario usuarioMock;
+
 
 
 	@Autowired

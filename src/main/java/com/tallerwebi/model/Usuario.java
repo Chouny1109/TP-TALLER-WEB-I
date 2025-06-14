@@ -34,7 +34,7 @@ Usuario {
     @Column(unique = true)
     private String token;
 
-    private Integer nivel = 0;
+    private Integer nivel = 1;
 
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.

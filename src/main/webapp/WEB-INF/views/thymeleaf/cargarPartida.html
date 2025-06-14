@@ -91,29 +91,32 @@
         No se encontró rival :(
     </div>
 </div>
-
-<!-- Scripts -->
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.2.0/js/bootstrap.bundle.min.js}"></script>
-<script type="text/javascript">
+<script th:inline="javascript">
+    /*<![CDATA[*/
     let stompClient = null;
     let rivalEncontrado = false;
 
+    const usuarioId = /*[[${jugador.id}]]*/ 0;
+    let modoJuego = /*[[${modoJuego}]]*/ 'CLASICO';
+
     document.addEventListener('DOMContentLoaded', function () {
-        // Conexión WebSocket
-        const socket = new SockJS('/' + window.location.pathname.split("/")[1] + '/chat-websocket');
+        console.log("modoJuego:", modoJuego);
+
+        const socket = new SockJS(/*[[@{/chat-websocket}]]*/ '/spring/chat-websocket');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, function (frame) {
             console.log('Conectado: ' + frame);
 
-            // Suscripción a rivalEncontrado
-            stompClient.subscribe('/user/queue/rivalEncontrado', function (mensaje) {
-                console.log('Mensaje recibido:', mensaje.body);
+            // 1. Me suscribo antes de enviar el mensaje
+            stompClient.subscribe('/user/queue/partida', function (mensaje) {
+                console.log("📬 Mensaje recibido en /user/queue/partida:", mensaje.body);
+
                 let rival = JSON.parse(mensaje.body);
                 rivalEncontrado = true;
-                console.log("Rival encontrado:", rival);
+                console.log("JugadorDTO recibido:", rival);
+                clearInterval(interval);
 
-                console.log(mensaje.body)
                 document.querySelector('.rival-name').textContent = rival.nombreUsuario;
                 document.querySelector('.question-mark').style.display = 'none';
 
@@ -121,23 +124,44 @@
                 rivalAvatar.src = rival.linkAvatar;
                 rivalAvatar.style.display = 'block';
 
+                const rivalLevelBadge = document.querySelector('.player-container:last-child .badge-number');
+                if (rivalLevelBadge && rival.nivel) {
+                    rivalLevelBadge.textContent = rival.nivel;
+                }
+
                 document.getElementById('searching-text').style.display = 'none';
+
+                console.log("📡 Suscripción a /user/queue/partida hecha."); // Confirmo la suscripción
             });
+
+            // 2. Envío el mensaje para crear o unirme a la partida
+            const partidaRequest = {
+                usuarioId: usuarioId,
+                modoJuego: modoJuego
+            };
+
+            stompClient.send("/app/crearOUnirsePartida", {}, JSON.stringify(partidaRequest));
+            console.log("Mensaje enviado:", partidaRequest);
         });
 
-        // Temporizador de búsqueda de rival
-        let countdown = 10;
+        let countdown = 25;
         const interval = setInterval(() => {
             countdown--;
+            if (countdown === 5 && !rivalEncontrado) {
+                document.getElementById('searching-text').style.display = 'none';
+                document.getElementById('rival-error-message').style.display = 'block';
+            }
             if (countdown <= 0) {
                 clearInterval(interval);
-                if (!rivalEncontrado) {
-                    document.getElementById('searching-text').style.display = 'none';
-                    document.getElementById('rival-error-message').style.display = 'block';
-                }
+                window.location.href = /*[[@{/home}]]*/ '/home';
+
             }
-        }, 2000);
+        }, 1000);
+
     });
+    /*]]>*/
 </script>
+
+
 </body>
 </html>
