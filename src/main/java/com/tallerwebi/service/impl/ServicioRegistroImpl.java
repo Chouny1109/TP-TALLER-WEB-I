@@ -84,8 +84,7 @@ public class ServicioRegistroImpl implements ServicioRegistro {
 
         if (registrado) {
             Usuario usuarioBd = this.repositorioUsuario.buscar(usuario.getEmail());
-            List<UsuarioMision> misiones = this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd, this.servicioMisionesUsuario.generarMisionesAleatorias());
-            this.repositorioMisionUsuario.saveAll(misiones);
+            this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd);
         }
         return registrado;
     }

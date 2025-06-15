@@ -1,5 +1,7 @@
 package com.tallerwebi.model;
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +12,23 @@ public class Mision {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String descripcion;
 
+    @NotNull
     private Integer experiencia;
 
+    @NotNull
     private Integer copas;
 
+    @NotNull
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mision")
     private List<UsuarioMision> usuarios;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "id_tipoMision")
+    private TipoDeMision tipoMision;
 
     public Mision(String descripcion, Integer experiencia, Integer copas) {
         this.descripcion = descripcion;
