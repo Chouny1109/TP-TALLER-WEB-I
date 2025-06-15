@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,6 +86,10 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     public List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones) {
         return misiones.stream().map(element ->
                 new UsuarioMision(usuario, element)).collect(Collectors.toList());
+    }
+
+    @Override
+    public void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente {
     }
 
     @Override
