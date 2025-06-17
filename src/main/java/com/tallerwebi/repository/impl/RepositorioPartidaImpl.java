@@ -15,7 +15,11 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,21 +29,20 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public RepositorioPartidaImpl(SessionFactory sessionFactory){
+    public RepositorioPartidaImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
 
     @Override
     public Boolean guardarPartida(Partida partida) {
-       sessionFactory.getCurrentSession().save(partida);
-       return true;
+        sessionFactory.getCurrentSession().save(partida);
+        return true;
     }
 
     @Override
     public void actualizarPartida(Partida partida) {
         sessionFactory.getCurrentSession().update(partida);
-
     }
 
     @Override
@@ -52,12 +55,11 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .list();
     }
 
-
-
     @Override
     public void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida) {
         sessionFactory.getCurrentSession().save(usuarioPartida);
     }
+
     @Override
     public Usuario obtenerRivalDePartida(Long idPartida, Long idJugadorActual) {
         Session session = sessionFactory.getCurrentSession();
@@ -129,6 +131,19 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
     @Override
+    public Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha) {
+        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
+
+        query.select(builder.countDistinct(root))
+                .where(builder.equal(root.get("usuario").get("id"), id))
+                .where(builder.equal(root.get("fecha").get("fecha"), fecha));
+
+        return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
+    }
+
+    @Override
     public void finalizarPartida(Long idPartida) {
 
         Session session = sessionFactory.getCurrentSession();
@@ -141,8 +156,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
             session.update(p); // 3. Guardar los cambios
         }
     }
-
-
 
 
 }

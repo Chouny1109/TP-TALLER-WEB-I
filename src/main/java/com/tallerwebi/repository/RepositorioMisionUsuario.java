@@ -16,4 +16,6 @@ public interface RepositorioMisionUsuario {
     List<Mision> obtenerMisionesDelUsuarioPorId(Long id);
 
     Set<Long> obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate fechaActual);
+
+
 }

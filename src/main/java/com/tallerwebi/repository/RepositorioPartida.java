@@ -5,18 +5,29 @@ import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
 public interface RepositorioPartida {
 
     Boolean guardarPartida(Partida partida);
+
     void actualizarPartida(Partida partida);
+
     List<Partida> obtenerPartidasAbiertaPorModo(TIPO_PARTIDA tipo);
+
     void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida);
+
     Usuario obtenerRivalDePartida(Long idPartida, Long id);
+
     List<Usuario> obtenerJugadoresDePartida(Long idPartida);
+
     Boolean jugadorEstaJugando(Long idJugador);
+
     void finalizarPartida(Long idPartida);
+
     Partida obtenerPartidaActivaDeJugador(Long idJugador);
+
+    Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha);
 }

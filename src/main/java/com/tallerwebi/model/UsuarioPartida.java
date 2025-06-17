@@ -1,6 +1,7 @@
 package com.tallerwebi.model;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class UsuarioPartida {
@@ -17,11 +18,18 @@ public class UsuarioPartida {
     private Partida partida;
 
 
-    public UsuarioPartida() {}
+    private LocalDate fecha;
+
+    public UsuarioPartida() {
+
+    }
+
     public UsuarioPartida(Usuario usuario, Partida partida) {
         this.usuario = usuario;
         this.partida = partida;
+        this.fecha = LocalDate.now();
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -37,10 +45,12 @@ public class UsuarioPartida {
     public Usuario getUsuario() {
         return usuario;
     }
+
     public void setPartida(Partida partida) {
 
         this.partida = partida;
     }
+
     public Partida getPartida() {
         return partida;
     }

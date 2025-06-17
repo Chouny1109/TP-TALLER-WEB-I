@@ -24,30 +24,4 @@ public interface ServicioMisionesUsuario {
 
     void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente;
 
-    //  QUE DATOS TENDRIAMOS ????
-
-    //  USUARIO LOGUEADO O USUARIOS DE LA BD - MISIONES DE ESE USUARIO
-
-    //  Tendria un usuario logueado
-    //  Ese usuario logueado tiene misiones
-    //  cada mision ejecuta un metodo distinto segun su tipo
-    //  ese metodo alteraria el estado de completado
-    //  habria que guardar la mision nuevamente ya que actualizamos un estado
-
-    //  RESTRICCIONES
-    //-----------------
-    //  1- QUE PASA SI LA MISION DICE "GANAR 5 PARTIDAS" Y OTRA MISION "GANAR 3 PARTIDAS"
-    //  --> AMBAS SERIAN DEL TIPO [GANAR_PARTIDA] PERO SU EJECUCION SERIA DISTINTA
-    //  --> UNA TIENE QUE VALIDAR QUE HAYA GANADO 5 PARTIDAS Y OTRA 3 PARTIDAS
-
-  /*
-        CUANDO SE EJECUTAN LOS METODOS ?
-        --------------------------------
-
-        * Ejecutamos el metodo manualmente cada vez que haga una accion distinta ?
-
-
-
-
-   */
 }

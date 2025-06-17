@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.TIPO_MISION;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
@@ -8,6 +9,9 @@ import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioMisiones;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioMisionesUsuario;
+import com.tallerwebi.strategys.Mision.EstrategiaMision;
+import com.tallerwebi.strategys.Mision.MisionFactory;
+import com.tallerwebi.util.SessionUtil;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,7 +93,23 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     }
 
     @Override
-    public void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente {
+    public void completarMisiones(HttpServletRequest request) {
+        SessionUtil sessionUtil = new SessionUtil();
+        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
+        MisionFactory misionFactory = new MisionFactory();
+
+        if (logueado != null) {
+
+            List<UsuarioMision> usuarioMision = logueado.getMisiones();
+
+            usuarioMision.forEach((element) -> {
+                if (!element.getCompletada()) {
+                    TIPO_MISION tipo = element.getMision().getTipoMision().getNombre();
+                    EstrategiaMision estrategiaMision = misionFactory.obtenerEstrategia(tipo);
+                    estrategiaMision.completarMision(logueado, element);
+                }
+            });
+        }
     }
 
     @Override

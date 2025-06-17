@@ -17,7 +17,7 @@ public class MisionFactory {
         put(TIPO_MISION.GANAR_PARTIDA_CONSECUTIVA, new MisionGanarPartidasConsecutivas());
     }};
 
-    public static EstrategiaMision obtenerEstrategia(TIPO_MISION tipo) {
+    public EstrategiaMision obtenerEstrategia(TIPO_MISION tipo) {
         return estrategias.get(tipo);
     }
 }

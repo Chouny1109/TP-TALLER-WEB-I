@@ -1,5 +1,7 @@
 package com.tallerwebi.model;
 
+import com.tallerwebi.dominio.enums.TIPO_MISION;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,12 +10,13 @@ public class TipoDeMision {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre;
+    @Enumerated(EnumType.STRING)
+    private TIPO_MISION nombre;
 
     public TipoDeMision() {
     }
 
-    public TipoDeMision(String nombre) {
+    public TipoDeMision(TIPO_MISION nombre) {
         this.nombre = nombre;
     }
 
@@ -25,11 +28,11 @@ public class TipoDeMision {
         this.id = id;
     }
 
-    public String getNombre() {
+    public TIPO_MISION getNombre() {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
+    public void setNombre(TIPO_MISION nombre) {
         this.nombre = nombre;
     }
 }
