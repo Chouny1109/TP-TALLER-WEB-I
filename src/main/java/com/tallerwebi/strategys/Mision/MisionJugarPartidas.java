@@ -16,7 +16,8 @@ public class MisionJugarPartidas implements EstrategiaMision {
     private static final Integer PARTIDAS_NECESARIAS = 5;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
 
-    public MisionJugarPartidas(RepositorioPartida repositorioPartida, RepositorioMisionUsuario repositorioMisionUsuario) {
+    public MisionJugarPartidas(RepositorioPartida repositorioPartida,
+                               RepositorioMisionUsuario repositorioMisionUsuario) {
         this.repositorioPartida = repositorioPartida;
         this.repositorioMisionUsuario = repositorioMisionUsuario;
     }
@@ -24,7 +25,8 @@ public class MisionJugarPartidas implements EstrategiaMision {
     @Override
     public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
         LocalDate fecha = LocalDate.now();
-        Integer partidasJugadas = this.repositorioPartida.obtenerCantidadDePartidasJugadasParaLaFecha(usuario.getId(), fecha);
+        Integer partidasJugadas = this.repositorioPartida.
+                obtenerCantidadDePartidasJugadasParaLaFecha(usuario.getId(), fecha);
 
         if (partidasJugadas >= PARTIDAS_NECESARIAS) {
             usuarioMision.setCompletada(Boolean.TRUE);

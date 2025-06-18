@@ -6,6 +6,7 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -24,6 +25,8 @@ public interface RepositorioPartida {
     List<Usuario> obtenerJugadoresDePartida(Long idPartida);
 
     Boolean jugadorEstaJugando(Long idJugador);
+
+    List<UsuarioPartida>obtenerLasPartidasDelUsuarioParaDeterminadaFecha(Long id, LocalDateTime fecha);
 
     void finalizarPartida(Long idPartida);
 

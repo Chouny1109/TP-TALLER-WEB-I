@@ -3,7 +3,6 @@ package com.tallerwebi.repository.impl;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
-import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioPartida;
@@ -20,6 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -141,6 +141,24 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .where(builder.equal(root.get("fecha").get("fecha"), fecha));
 
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
+    }
+
+    @Override
+    public List<UsuarioPartida> obtenerLasPartidasDelUsuarioParaDeterminadaFecha(Long id, LocalDateTime fecha) {
+        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<UsuarioPartida> query = builder.createQuery(UsuarioPartida.class);
+        Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
+
+        query.select(root)
+                .where(
+                        builder.and(
+                                builder.equal(root.get("usuario").get("id"), id),
+                                builder.equal(root.get("fecha"), fecha)
+                        )
+                )
+                .orderBy(builder.asc(root.get("fecha")));  // <-- orden ascendente por fecha
+
+        return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
     @Override

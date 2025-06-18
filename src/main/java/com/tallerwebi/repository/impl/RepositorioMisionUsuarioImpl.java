@@ -66,7 +66,7 @@ public class RepositorioMisionUsuarioImpl implements RepositorioMisionUsuario {
         CriteriaQuery<Long> query = builder.createQuery(Long.class);//Que quiero obtener
         Root<UsuarioMision> root = query.from(UsuarioMision.class); // de donde saco la informacion
 
-        query.select(root.get("usuario").get("usuario_id")) // seleccioname el id de todos los usuarios donde
+        query.select(root.get("usuario").get("id")) // seleccioname el id de todos los usuarios donde
                 // la fecha actual sea igual a la fecha por parametro
                 .where(builder.equal(root.get("fechaDeAsignacion"), fechaActual))
                 .distinct(true);//para no repetir ids
