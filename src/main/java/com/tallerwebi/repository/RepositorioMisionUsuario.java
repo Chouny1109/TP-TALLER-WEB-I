@@ -17,5 +17,7 @@ public interface RepositorioMisionUsuario {
 
     Set<Long> obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate fechaActual);
 
+    void save(UsuarioMision usuarioMision);
+
 
 }

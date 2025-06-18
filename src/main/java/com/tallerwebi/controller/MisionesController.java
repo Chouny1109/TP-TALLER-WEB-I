@@ -5,6 +5,7 @@ import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ public class MisionesController {
     private final ServicioMisionesUsuario servicioMisionesUsuario;
     private final SessionUtil sessionUtil;
 
+    @Autowired
     public MisionesController(ServicioMisionesUsuario servicioMisionesUsuario, SessionUtil sessionUtil) {
         this.servicioMisionesUsuario = servicioMisionesUsuario;
         this.sessionUtil = sessionUtil;

@@ -76,5 +76,10 @@ public class RepositorioMisionUsuarioImpl implements RepositorioMisionUsuario {
         return new HashSet<>(ids);
     }
 
+    @Override
+    public void save(UsuarioMision usuarioMision) {
+        sessionFactory.getCurrentSession().save(usuarioMision);
+    }
+
 
 }

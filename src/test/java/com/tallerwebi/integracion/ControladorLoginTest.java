@@ -45,8 +45,6 @@ public class ControladorLoginTest {
 
 	private Usuario usuarioMock;
 
-
-
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -56,14 +54,11 @@ public class ControladorLoginTest {
 	private WebApplicationContext wac;
 	private MockMvc mockMvc;
 
-
 	@BeforeEach
 	public void init(){
 		usuarioMock = mock(Usuario.class);
 		when(usuarioMock.getEmail()).thenReturn("dami@unlam.com");
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-
-
 	}
 
 	@Test

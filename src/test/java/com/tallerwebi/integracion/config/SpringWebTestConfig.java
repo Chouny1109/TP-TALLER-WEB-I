@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan({ "com.tallerwebi.dominio", "com.tallerwebi.repository","com.tallerwebi.controller","com.tallerwebi.model","com.tallerwebi.service","com.tallerwebi.util"})
+@ComponentScan({ "com.tallerwebi.dominio", "com.tallerwebi.repository","com.tallerwebi.controller","com.tallerwebi.model","com.tallerwebi.service","com.tallerwebi.util","com.tallerwebi.strategys"})
 public class SpringWebTestConfig implements WebMvcConfigurer {
 
     // Spring + Thymeleaf need this
