@@ -17,7 +17,6 @@ public class MisionFactory {
                          MisionUsarHabilidad usarHabilidades,
                          MisionIniciarSesion iniciarSesion,
                          MisionNoUsarHabilidades noUsarHabilidades,
-                         MisionConsultarTablas consultarTablas,
                          MisionGanarPartidasConsecutivas ganarPartidasConsecutivas) {
 
         estrategias.put(TIPO_MISION.GANAR_PARTIDAS, ganarPartidas);
@@ -25,7 +24,6 @@ public class MisionFactory {
         estrategias.put(TIPO_MISION.USAR_HABILIDADES, usarHabilidades);
         estrategias.put(TIPO_MISION.INICIAR_SESION, iniciarSesion);
         estrategias.put(TIPO_MISION.NO_USAR_HABILIDADES, noUsarHabilidades);
-        estrategias.put(TIPO_MISION.CONSULTAR_TABLA_POSICION, consultarTablas);
         estrategias.put(TIPO_MISION.GANAR_PARTIDA_CONSECUTIVA, ganarPartidasConsecutivas);
     }
 
