@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.TIPO_MISION;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
@@ -8,6 +9,10 @@ import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioMisiones;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioMisionesUsuario;
+import com.tallerwebi.strategys.Mision.EstrategiaMision;
+import com.tallerwebi.strategys.Mision.MisionFactory;
+import com.tallerwebi.util.SessionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +32,20 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     private final RepositorioUsuario repositorioUsuario;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
     private final RepositorioMisiones repositorioMisiones;
+    private final SessionUtil sessionUtil;
+    private final MisionFactory misionFactory;
 
-    public ServicioMisionesUsuarioImpl(RepositorioUsuario repositorioUsuario, RepositorioMisionUsuario repositorioMisionUsuario, RepositorioMisiones repositorioMisiones) {
+    public ServicioMisionesUsuarioImpl(RepositorioUsuario repositorioUsuario,
+                                       RepositorioMisionUsuario repositorioMisionUsuario,
+                                       RepositorioMisiones repositorioMisiones,
+                                       SessionUtil sessionUtil,
+                                       MisionFactory misionFactory) {
+
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioMisionUsuario = repositorioMisionUsuario;
         this.repositorioMisiones = repositorioMisiones;
+        this.sessionUtil = sessionUtil;
+        this.misionFactory = misionFactory;
     }
 
     @Override
@@ -50,17 +64,14 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     public void asignarMisionesDiarias() {
         List<Usuario> usuariosBd = this.repositorioUsuario.obtenerUsuarios();
         List<UsuarioMision> relaciones = new ArrayList<>();
-        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
-                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
+        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
 
         for (Usuario usuario : usuariosBd) {
             if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
 
                 List<Mision> misionesAleatorias = this.obtenerMisionesAleatorias(misionesBd);
-                relaciones.addAll(
-                        crearRelacionUsuarioMision(usuario, misionesAleatorias)
-                );
+                relaciones.addAll(crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }
         }
         repositorioMisionUsuario.saveAll(relaciones);
@@ -84,12 +95,25 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     public List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones) {
-        return misiones.stream().map(element ->
-                new UsuarioMision(usuario, element)).collect(Collectors.toList());
+        return misiones.stream().map(element -> new UsuarioMision(usuario, element)).collect(Collectors.toList());
     }
 
     @Override
-    public void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente {
+    public void completarMisiones(HttpServletRequest request) {
+        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
+
+        if (logueado != null) {
+
+            List<UsuarioMision> usuarioMision = logueado.getMisiones();
+
+            usuarioMision.forEach((element) -> {
+                if (!element.getCompletada()) {
+                    TIPO_MISION tipo = element.getMision().getTipoMision().getNombre();
+                    EstrategiaMision estrategiaMision = misionFactory.obtenerEstrategia(tipo);
+                    estrategiaMision.completarMision(logueado, element);
+                }
+            });
+        }
     }
 
     @Override

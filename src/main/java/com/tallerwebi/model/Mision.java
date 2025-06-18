@@ -41,6 +41,38 @@ public class Mision {
 
     }
 
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
+    }
+
+    public Integer getCopas() {
+        return copas;
+    }
+
+    public void setCopas(Integer copas) {
+        this.copas = copas;
+    }
+
+    public List<UsuarioMision> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<UsuarioMision> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+    public TipoDeMision getTipoMision() {
+        return tipoMision;
+    }
+
+    public void setTipoMision(TipoDeMision tipoMision) {
+        this.tipoMision = tipoMision;
+    }
+
     public Long getId() {
         return id;
     }
