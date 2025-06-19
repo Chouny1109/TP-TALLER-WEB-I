@@ -63,8 +63,15 @@
         wheel.style.transform = `rotate(${currentRotation}deg)`;
 
 
+
         setTimeout(() => {
-            alert("¡Categoría seleccionada: " + categorias[elegido].nombre + "!");
+            const categoriaSeleccionada = categorias[elegido].nombre;
+            // Redirigir a la vista que muestra la pregunta
+            window.location.href = /*[[@{/partida/pregunta}]]*/ "/spring/partida/pregunta"
+                + "?categoria=" + encodeURIComponent(categoriaSeleccionada)
+                + "&id=" + encodeURIComponent(partidaId)
+                + "&idUsuario=" + encodeURIComponent(usuarioId)
+                + "&modoJuego=" + encodeURIComponent(modoJuego);
             spinning = false;
         }, 5000);
     }
