@@ -1,6 +1,7 @@
 package com.tallerwebi.service.impl;
 
 import com.sun.mail.util.LineInputStream;
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
@@ -128,6 +129,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
     @Transactional
     public void finalizarPartida(Long idPartida) {
         this.repositorioPartida.finalizarPartida(idPartida);
+    }
+
+    @Override
+    public void obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+        this.repositorioPartida.obtenerPregunta(categoria,idUsuario);
     }
 
     private void partidaSupervivencia() {

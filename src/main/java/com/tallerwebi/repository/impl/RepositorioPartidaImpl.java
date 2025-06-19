@@ -1,5 +1,6 @@
 package com.tallerwebi.repository.impl;
 
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
@@ -126,6 +127,11 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
             return usuarioPartida.getPartida();
         }
         return null;
+    }
+
+    @Override
+    public void obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+
     }
 
     @Override

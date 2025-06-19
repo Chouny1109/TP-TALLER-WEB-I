@@ -1,5 +1,6 @@
 package com.tallerwebi.repository;
 
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
@@ -19,4 +20,6 @@ public interface RepositorioPartida {
     Boolean jugadorEstaJugando(Long idJugador);
     void finalizarPartida(Long idPartida);
     Partida obtenerPartidaActivaDeJugador(Long idJugador);
+
+    void obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario);
 }
