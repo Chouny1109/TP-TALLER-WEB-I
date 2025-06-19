@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-public class Usuario {
+public class
+Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,8 +35,6 @@ public class Usuario {
     private String token;
 
     private Integer nivel = 1;
-
-
 
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.

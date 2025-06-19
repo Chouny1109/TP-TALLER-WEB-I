@@ -1,0 +1,11 @@
+package com.tallerwebi.dominio.enums;
+
+public enum TIPO_MISION {
+    GANAR_PARTIDAS,
+    JUGAR_PARTIDAS,
+    USAR_HABILIDADES,
+    INICIAR_SESION,
+    NO_USAR_HABILIDADES,
+    CONSULTAR_TABLA_POSICION,
+    GANAR_PARTIDA_CONSECUTIVA
+}

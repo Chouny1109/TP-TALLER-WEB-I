@@ -1,6 +1,11 @@
 package com.tallerwebi.model;
 
+import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
+import com.tallerwebi.dominio.enums.ESTADO_PARTIDA_JUGADOR;
+
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class UsuarioPartida {
@@ -17,11 +22,21 @@ public class UsuarioPartida {
     private Partida partida;
 
 
-    public UsuarioPartida() {}
+    private LocalDateTime fecha;
+
+    @Enumerated(EnumType.STRING)
+    private ESTADO_PARTIDA_JUGADOR estado;
+
+    public UsuarioPartida() {
+
+    }
+
     public UsuarioPartida(Usuario usuario, Partida partida) {
         this.usuario = usuario;
         this.partida = partida;
+        this.fecha = LocalDateTime.now();
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -37,11 +52,29 @@ public class UsuarioPartida {
     public Usuario getUsuario() {
         return usuario;
     }
+
     public void setPartida(Partida partida) {
 
         this.partida = partida;
     }
+
     public Partida getPartida() {
         return partida;
+    }
+
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
+    }
+
+    public ESTADO_PARTIDA_JUGADOR getEstado() {
+        return estado;
+    }
+
+    public void setEstado(ESTADO_PARTIDA_JUGADOR estado) {
+        this.estado = estado;
     }
 }

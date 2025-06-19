@@ -14,7 +14,6 @@ public class Partida {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "estadoPartida")
     private ESTADO_PARTIDA estadoPartida = ESTADO_PARTIDA.ABIERTA;
@@ -23,12 +22,8 @@ public class Partida {
     @Column(name = "tipoPartida")
     private TIPO_PARTIDA tipo;
 
-
-
     @ManyToMany
     private List<Pregunta> preguntas;
-
-
 
     public Partida(ESTADO_PARTIDA estadoPartida) {
         this.estadoPartida = estadoPartida;

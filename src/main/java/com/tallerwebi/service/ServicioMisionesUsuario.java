@@ -5,16 +5,23 @@ import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 public interface ServicioMisionesUsuario {
-    List<Mision> obtenerLasMisionesDelUsuario(Long id) throws UsuarioNoExistente;
+    List<Mision> obtenerLasMisionesDelUsuarioPorId(Long id) throws UsuarioNoExistente;
 
     void asignarMisionesDiarias() throws UsuarioNoExistente;
 
-    void borrarMisionesDelUsuario(Usuario usuario) throws UsuarioNoExistente;
+    void asignarMisionesAUsuario(Usuario usuario);
 
-    List<UsuarioMision> asignarMisionesAUsuario(Usuario usuario, List<Mision> misiones);
+    Boolean tieneMisionesAsignadas(Usuario usuario, Set<Long> usuariosConMisionesAsignadas);
 
-    List<Mision> generarMisionesAleatorias();
+    List<Mision> obtenerMisionesAleatorias(List<Mision> misionesBd);
+
+    List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones);
+
+    void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente;
+
 }
