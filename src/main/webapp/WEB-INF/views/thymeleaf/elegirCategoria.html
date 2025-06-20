@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruleta</title>
+    <link rel="stylesheet" th:href="@{/css/elegirCategoria.css}"/>
+
+</head>
+<body>
+
+<h1>¡SELECCIONÁ UNA CATEGORIA!</h1>
+<div class="cats">
+
+</div>
+
+
+<h1>¡SELECCIONÁ UNA CATEGORÍA!</h1>
+
+<div class="cats" id="contenedorCategorias">
+    <!-- Aquí se insertan los cuadrados -->
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const partidaId = /*[[${idPartida}]]*/ 0;
+    const usuarioId = /*[[${idUsuario}]]*/ 0;
+    let modoJuego = /*[[${modoJuego}]]*/ 'CLASICO';
+    /*]]>*/
+</script>
+<script>
+    const categorias = [
+        { nombre: "HISTORIA", color:  "#f0685f", icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M19.146 22L17.393 9.98c-.142-.972-.213-1.457-.06-1.905c.318-.935 1.315-1.291 1.779-2.094c.068-.118.103-.251.17-.518l.567-2.22c.146-.572.22-.858.066-1.05C19.762 2 19.46 2 18.859 2h-1.064c-.67 0-.7.02-.948.629L16.34 3.87c-.249.61-.279.629-.948.629h-.514c-.688 0-.863-.127-1-.804l-.183-.892c-.138-.677-.313-.804-1-.804h-1.39c-.687 0-.862.127-1 .804l-.182.892c-.139.677-.313.804-1.001.804h-.514c-.67 0-.7-.02-.948-.629l-.507-1.24C6.904 2.019 6.874 2 6.205 2H5.141c-.602 0-.903 0-1.056.192c-.153.193-.08.479.066 1.05l.566 2.22c.069.268.103.401.171.52c.464.802 1.461 1.158 1.78 2.093c.152.448.081.933-.06 1.905L4.854 22'/><path d='m9 22l.608-3.039c.143-.718.215-1.076.407-1.342C10.494 16.96 11.262 17 12 17s1.507-.04 1.985.62c.192.264.264.623.407 1.341L15 22M3 22h18M7 8h10m-2 3h2M7 13h2'/></g></svg>` },
+        { nombre: "CIENCIA", color:  "#22f729", icono: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.211 19.7Q3.773 21 5.12 21h13.76q1.348 0 1.909-1.3t-.37-2.367L15.465 11V5h1.668a.92.92 0 0 0 .69-.283A1 1 0 0 0 18.096 4a1 1 0 0 0-.273-.717a.92.92 0 0 0-.69-.283H6.867a.92.92 0 0 0-.69.283A1 1 0 0 0 5.905 4q0 .434.273.717a.92.92 0 0 0 .69.283h1.668v6L3.58 17.333q-.93 1.066-.369 2.367m4.457-4.423h8.664l-2.792-3.544V5h-3.08v6.733z" clip-rule="evenodd" stroke-width="0.4" stroke="currentColor"/></svg>` },
+        { nombre: "ENTRETENIMIENTO", color:  "#52a6ec",  icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='currentColor' d='m4 4l1.625 3.25q.175.35.5.55t.7.2q.75 0 1.15-.638t.05-1.312L7 4h2l1.625 3.25q.175.35.5.55t.7.2q.75 0 1.15-.638t.05-1.312L12 4h2l1.625 3.25q.175.35.5.55t.7.2q.75 0 1.15-.638t.05-1.312L17 4h3q.825 0 1.413.587T22 6v12q0 .825-.587 1.413T20 20H4q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4m0 6v8h16v-8z'/></svg>` },
+        { nombre: "ARTE", color:  "#f2a93b", icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='currentColor' d='M17.5 12a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 17.5 9a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5m-3-4A1.5 1.5 0 0 1 13 6.5A1.5 1.5 0 0 1 14.5 5A1.5 1.5 0 0 1 16 6.5A1.5 1.5 0 0 1 14.5 8m-5 0A1.5 1.5 0 0 1 8 6.5A1.5 1.5 0 0 1 9.5 5A1.5 1.5 0 0 1 11 6.5A1.5 1.5 0 0 1 9.5 8m-3 4A1.5 1.5 0 0 1 5 10.5A1.5 1.5 0 0 1 6.5 9A1.5 1.5 0 0 1 8 10.5A1.5 1.5 0 0 1 6.5 12M12 3a9 9 0 0 0-9 9a9 9 0 0 0 9 9a1.5 1.5 0 0 0 1.5-1.5c0-.39-.15-.74-.39-1c-.23-.27-.38-.62-.38-1a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8'/></svg>` },
+        { nombre: "DEPORTE", color:  "#d037eb", icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='currentColor' d='M13.72 9.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06zM17.75 2A4.25 4.25 0 0 1 22 6.25v1C22 15.396 15.396 22 7.25 22h-1A4.25 4.25 0 0 1 2 17.75v-1C2 8.604 8.604 2 16.75 2zm2.75 4.25a2.75 2.75 0 0 0-2.75-2.75h-1q-.605 0-1.196.053l4.893 4.893q.053-.591.053-1.196zm-.347 4.024l-6.427-6.427a13.27 13.27 0 0 0-9.902 9.977l6.352 6.352a13.27 13.27 0 0 0 9.977-9.902m-16.61 5.391q-.043.537-.043 1.085v1a2.75 2.75 0 0 0 2.75 2.75h1q.548 0 1.085-.044z'/></svg>` },
+        { nombre: "GEOGRAFIA", color:  "#43e1f6", icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='none' stroke='currentColor' stroke-width='2' d='M15 15h4l3 7H2l3-7h4m4-7a1 1 0 1 1-2 0a1 1 0 0 1 2 0M6 8c0 5 6 10 6 10s6-5 6-10c0-3.417-2.686-6-6-6S6 4.583 6 8Z'/></svg>` },
+    ];
+
+    const contenedor = document.getElementById("contenedorCategorias");
+
+    categorias.forEach(cat => {
+        const div = document.createElement("div");
+        div.className = "cat-box";
+        div.style.backgroundColor = cat.color;
+        div.innerHTML = `
+        ${cat.icono}
+        <div class="cat-name">${cat.nombre}</div>
+    `;
+        div.onclick = () => {
+            window.location.href = /*[[@{/partida/pregunta}]]*/ "/spring/partida/pregunta"
+                + "?categoria=" + encodeURIComponent(cat.nombre)
+                + "&id=" + encodeURIComponent(partidaId)
+                + "&idUsuario=" + encodeURIComponent(usuarioId)
+                + "&modoJuego=" + encodeURIComponent(modoJuego);  };
+        contenedor.appendChild(div);
+    });
+</script>
+</body>
+</html>

@@ -33,7 +33,5 @@ public interface RepositorioPartida {
 
     Partida obtenerPartidaActivaDeJugador(Long idJugador);
 
-    void obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario);
-
     Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha);
 }

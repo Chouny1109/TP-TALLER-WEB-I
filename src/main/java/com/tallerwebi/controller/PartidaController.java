@@ -101,9 +101,8 @@ public class PartidaController {
         return new ModelAndView("ruletaCategoria", modelo);
     }
 
-
     @GetMapping("/pregunta")
-    public ModelAndView mostrarPregunta(@RequestParam("categoria") CATEGORIA_PREGUNTA categoria,
+    public ModelAndView mostrarPregunta(@RequestParam("categoria") String categoria,
                                         @RequestParam("id") Long idPartida,
                                         @RequestParam("idUsuario") Long idUsuario,
                                         @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
@@ -118,11 +117,24 @@ public class PartidaController {
         modelo.put("categoria", categoria);
         modelo.put("idPartida", idPartida);
         modelo.put("idUsuario", idUsuario);
+        modelo.put("modoJuego", modoJuego);
 
-        this.servicioPartida.obtenerPregunta(categoria, idUsuario);
+        if (categoria.equalsIgnoreCase("CORONA")) {
+            return new ModelAndView("elegirCategoria", modelo);
+        } else {
+            try {
+                CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
+                Pregunta p = this.servicioPartida.obtenerPregunta(catEnum, idUsuario);
+                modelo.put("pregunta", p);
 
-        return new ModelAndView("preguntas", modelo);
+                return new ModelAndView("preguntas", modelo);
+            } catch (IllegalArgumentException e) {
+                // Si por algún motivo llega una categoría inválida, redireccionás a un error o al home
+                return new ModelAndView("redirect:/errorCategoria");
+            }
+        }
     }
+
 
 
 //    @Autowired

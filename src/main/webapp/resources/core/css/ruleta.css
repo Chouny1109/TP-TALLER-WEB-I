@@ -1,3 +1,6 @@
+* {
+    font-family: 'Outfit',  sans-serif;
+}
 body {
     background: #f5f5f5;
     color: #fff;
@@ -24,12 +27,13 @@ body {
     box-shadow: 0 0 30px rgb(87, 81, 81);
 
     background: conic-gradient(
-            #f0685f 0deg 60deg,
-            #22f729 60deg 120deg,
-            #52a6ec 120deg 180deg,
-            #f2a93b 180deg 240deg,
-            #d037eb 240deg 300deg,
-            #43e1f6 300deg 360deg
+            #f0685f 0deg 51.43deg,
+            #22f729 51.43deg 102.86deg,
+            #52a6ec 102.86deg 154.29deg,
+            #f2a93b 154.29deg 205.72deg,
+            #d037eb 205.72deg 257.15deg,
+            #43e1f6 257.15deg 308.58deg,
+            #f3ec69 308.58deg 360deg
     );
     transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
     position: relative;

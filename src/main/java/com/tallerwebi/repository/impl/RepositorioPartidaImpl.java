@@ -166,10 +166,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
-    @Override
-    public void obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
 
-    }
 
     @Override
     public void finalizarPartida(Long idPartida) {

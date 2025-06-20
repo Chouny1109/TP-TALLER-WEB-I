@@ -19,6 +19,10 @@ public class Pregunta {
     @Column(name = "tipoPregunta")
     private CATEGORIA_PREGUNTA tipoPregunta;
 
+    @OneToMany(mappedBy = "pregunta", cascade = CascadeType.ALL)
+    private List<UsuarioRespondePregunta> respuestasUsuarios;
+
+
     public Pregunta(String enunciado, List<Respuesta> respuestas, CATEGORIA_PREGUNTA tipoPregunta) {
         this.enunciado = enunciado;
         this.respuestas = respuestas;
@@ -41,5 +45,20 @@ public class Pregunta {
 
     public Long getId() {
         return id;
+    }
+    public void setEnunciado(String enunciado) {
+        this.enunciado = enunciado;
+    }
+    public void setRespuestas(List<Respuesta> respuestas) {
+        this.respuestas = respuestas;
+    }
+    public List<Respuesta> getRespuestas() {
+        return respuestas;
+    }
+    public void setRespuestasUsuarios(List<UsuarioRespondePregunta> respuestasUsuarios) {
+        this.respuestasUsuarios = respuestasUsuarios;
+    }
+    public List<UsuarioRespondePregunta> getRespuestasUsuarios() {
+        return respuestasUsuarios;
     }
 }
