@@ -93,42 +93,33 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="d-flex justify-content-between w-50 m-auto">
-            <p class="tipoPregunta"><span th:text="${preguntas.get(1).getTipoPregunta()}"></span> </p>
-            <p class="segundosRestantes">9s</p>
+<div class="container">
+    <div class="d-flex justify-content-between w-50 m-auto">
+        <p class="tipoPregunta"><span th:text="${pregunta.tipoPregunta}"></span></p>
+        <p class="segundosRestantes">9s</p>
+    </div>
+
+    <div class="pregunta">
+        <p th:text="${pregunta.enunciado}"></p>
+    </div>
+
+    <div class="poderes d-flex gap-5 justify-content-center">
+        <div class="counter-item" th:each="i : ${#numbers.sequence(1,4)}">
+            <div class="counter-circle">
+                <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+            </div>
+            <div class="counter-value">1</div>
         </div>
-        <div class="pregunta">
-            <p th:text="${preguntas.get(1).getEnunciado()}"></p>
-        </div>
-        <div class="poderes d-flex gap-5 justify-content-center">
-            <div class="counter-item">
-                <div class="counter-circle">
-                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
-                </div>
-                <div class="counter-value">1</div>
+    </div>
+        <form action="#" method="post" class="d-grid w-50 m-auto">
+            <div th:each="opcion : ${pregunta.respuestas}">
+                <button type="submit"
+                        class="botonOpcion"
+                        name="respuesta"
+                        th:value="${opcion.descripcion}"
+                        th:text="${opcion.descripcion}">
+                </button>
             </div>
-            <div class="counter-item">
-                <div class="counter-circle">
-                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
-                </div>
-                <div class="counter-value">1</div>
-            </div>
-            <div class="counter-item">
-                <div class="counter-circle">
-                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
-                </div>
-                <div class="counter-value">1</div>
-            </div>
-            <div class="counter-item">
-                <div class="counter-circle">
-                    <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
-                </div>
-                <div class="counter-value">1</div>
-            </div>
-        </div>
-        <form action="#" class="d-grid w-50 m-auto" th:each="opcion : ${preguntas.get(1).getOpciones()}">
-            <button type="submit" class="botonOpcion" name="respuesta" th:value="${opcion}" th:text="${opcion}"></button>
         </form>
     </div>
 </body>

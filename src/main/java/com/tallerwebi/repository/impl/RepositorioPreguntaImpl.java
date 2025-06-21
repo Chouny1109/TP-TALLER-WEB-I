@@ -32,12 +32,12 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
 
         Criteria criteria = session.createCriteria(Pregunta.class, "pregunta")
                 .createAlias("pregunta.respuestasUsuarios", "resp", Criteria.LEFT_JOIN)
+                .createAlias("pregunta.respuestas", "res", Criteria.LEFT_JOIN) // 👈 para hacer fetch de respuestas
                 .add(Restrictions.eq("pregunta.tipoPregunta", categoria))
                 .add(Restrictions.or(
                         Restrictions.isNull("resp.id"),
                         Restrictions.ne("resp.usuario.id", idUsuario)
                 ))
-                // Este hack fuerza el ORDER BY RAND()
                 .add(Restrictions.sqlRestriction("1=1 order by rand()"))
                 .setMaxResults(1)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

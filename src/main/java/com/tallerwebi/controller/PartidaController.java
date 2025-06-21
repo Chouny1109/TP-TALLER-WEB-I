@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -119,22 +120,24 @@ public class PartidaController {
         modelo.put("idUsuario", idUsuario);
         modelo.put("modoJuego", modoJuego);
 
-        if (categoria.equalsIgnoreCase("CORONA")) {
+        // Manejo especial para "CORONA"
+        if ("CORONA".equalsIgnoreCase(categoria)) {
             return new ModelAndView("elegirCategoria", modelo);
-        } else {
-            try {
-                CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
-                Pregunta p = this.servicioPartida.obtenerPregunta(catEnum, idUsuario);
-                modelo.put("pregunta", p);
-
-                return new ModelAndView("preguntas", modelo);
-            } catch (IllegalArgumentException e) {
-                // Si por algún motivo llega una categoría inválida, redireccionás a un error o al home
-                return new ModelAndView("redirect:/errorCategoria");
-            }
         }
-    }
 
+        // Validar que categoria sea válida para enum
+        boolean valida = Arrays.stream(CATEGORIA_PREGUNTA.values())
+                .anyMatch(c -> c.name().equalsIgnoreCase(categoria));
+
+        if (!valida) {
+            return new ModelAndView("redirect:/errorCategoria");
+        }
+
+        CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
+        Pregunta p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
+        modelo.put("pregunta", p);
+        return new ModelAndView("preguntas", modelo);
+    }
 
 
 //    @Autowired

@@ -15,6 +15,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -129,8 +132,13 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     @Override
     public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
-       return this.repositorioPregunta.obtenerPregunta(categoria,idUsuario);
-
+     Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria,idUsuario);
+        if (pregunta != null) {
+            List<Respuesta> mezcladas = new ArrayList<>(pregunta.getRespuestas());
+            Collections.shuffle(mezcladas);
+            pregunta.setRespuestas(new HashSet<>(mezcladas)); // si seguís usando Set
+        }
+        return pregunta;
     }
 
     private void partidaSupervivencia() {
