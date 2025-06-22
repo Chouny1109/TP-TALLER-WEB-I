@@ -1,25 +1,23 @@
 package com.tallerwebi.service.impl;
 
-import com.sun.mail.util.LineInputStream;
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
-import com.tallerwebi.model.Partida;
-import com.tallerwebi.model.Usuario;
-import com.tallerwebi.model.UsuarioDTO;
-import com.tallerwebi.model.UsuarioPartida;
+import com.tallerwebi.model.*;
 import com.tallerwebi.repository.RepositorioPartida;
+import com.tallerwebi.repository.RepositorioPregunta;
 import com.tallerwebi.repository.RepositorioUsuario;
-import com.tallerwebi.repository.impl.RepositorioPartidaImpl;
 import com.tallerwebi.service.ServicioPartida;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -28,14 +26,16 @@ public class ServicioPartidaImpl implements ServicioPartida {
     private SessionFactory sessionFactory;
     private final RepositorioPartida repositorioPartida;
     private final RepositorioUsuario repositorioUsuario;
+    private final RepositorioPregunta repositorioPregunta;
     private final SimpMessagingTemplate messagingTemplate;
     private static final Object lock = new Object();
 
     @Autowired
-    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario,SimpMessagingTemplate messagingTemplate) {
+    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta,SimpMessagingTemplate messagingTemplate) {
         this.repositorioPartida = repositorioPartida;
         this.messagingTemplate = messagingTemplate;
         this.repositorioUsuario = repositorioUsuario;
+        this.repositorioPregunta = repositorioPregunta;
     }
     @Override
     @Transactional
@@ -99,14 +99,14 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 UsuarioDTO rivalDTO = new UsuarioDTO(rival, avatarRival);
                 UsuarioDTO jugadorDTO = new UsuarioDTO(jugador, avatarJugador);
 
-                // Enviar a jugador sólo datos del rival
+
                 messagingTemplate.convertAndSendToUser(
                         jugador.getNombreUsuario(),
                         "/queue/partida",
                         rivalDTO
                 );
 
-                // Enviar a rival sólo datos del jugador
+
                 messagingTemplate.convertAndSendToUser(
                         rival.getNombreUsuario(),
                         "/queue/partida",
@@ -128,6 +128,28 @@ public class ServicioPartidaImpl implements ServicioPartida {
     @Transactional
     public void finalizarPartida(Long idPartida) {
         this.repositorioPartida.finalizarPartida(idPartida);
+    }
+
+    /*@Override
+    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+     Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria,idUsuario);
+        if (pregunta != null) {
+            List<Respuesta> mezcladas = new ArrayList<>(pregunta.getRespuestas());
+            Collections.shuffle(mezcladas);
+            pregunta.setRespuestas(new HashSet<>(mezcladas)); // si seguís usando Set
+        }
+        return pregunta;
+    }*/
+
+    @Override
+    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+        Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria, idUsuario);
+
+        if (pregunta != null && pregunta.getRespuestas() != null) {
+            Collections.shuffle(pregunta.getRespuestas()); // mezcla directamente el List
+        }
+
+        return pregunta;
     }
 
     private void partidaSupervivencia() {

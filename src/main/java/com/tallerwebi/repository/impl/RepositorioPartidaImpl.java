@@ -1,8 +1,10 @@
 package com.tallerwebi.repository.impl;
 
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
+import com.tallerwebi.model.RecoveryToken;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioPartida;
@@ -43,6 +45,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     @Override
     public void actualizarPartida(Partida partida) {
         sessionFactory.getCurrentSession().update(partida);
+
     }
 
     @Override
@@ -54,6 +57,8 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .setLockMode(LockMode.PESSIMISTIC_WRITE) // <-- Aquí el lock
                 .list();
     }
+
+
 
     @Override
     public void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida) {
@@ -161,6 +166,8 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
+
+
     @Override
     public void finalizarPartida(Long idPartida) {
 
@@ -174,6 +181,8 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
             session.update(p); // 3. Guardar los cambios
         }
     }
+
+
 
 
 }

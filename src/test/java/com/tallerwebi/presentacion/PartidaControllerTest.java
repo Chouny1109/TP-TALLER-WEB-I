@@ -2,6 +2,7 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.PartidaController;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.impl.ServicioUsuario;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class PartidaControllerTest {
@@ -20,6 +22,7 @@ public class PartidaControllerTest {
     private ServicioPartida servicioPartida;
     private ServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
+
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
         servicioUsuario = mock(ServicioUsuario.class);
@@ -32,7 +35,6 @@ public class PartidaControllerTest {
 
         ModelAndView mav = whenCargarPartida(request, TIPO_PARTIDA.MULTIJUGADOR);
         thenSeCargaLaVistaConElJugador(mav);
-
     }
 
     private HttpServletRequest givenUsuarioEnSesion() {
@@ -40,6 +42,7 @@ public class PartidaControllerTest {
         HttpSession session = mock(HttpSession.class);
 
         Usuario jugador = new Usuario("Nicolas127", "nico@caba.com", "123456");
+        jugador.setId(1L);  // Asignale un ID también
 
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("USUARIO")).thenReturn(jugador);
@@ -48,6 +51,16 @@ public class PartidaControllerTest {
     }
 
     private ModelAndView whenCargarPartida(HttpServletRequest request, TIPO_PARTIDA tipo) {
+        // Creamos un objeto Partida mock con id para evitar nullpointer
+        Partida partidaMock = new Partida();
+        partidaMock.setId(100L);
+
+        // Configuramos el mock para que devuelva la partida cuando se llame al método
+        when(servicioPartida.crearOUnirsePartida(any(Usuario.class), eq(tipo))).thenReturn(partidaMock);
+
+        // Configuramos el mock para el avatar
+        when(servicioUsuario.obtenerImagenAvatarSeleccionado(anyLong())).thenReturn("avatar.png");
+
         PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate);
         return partidaController.cargarPartida(request, tipo);
     }
@@ -56,9 +69,13 @@ public class PartidaControllerTest {
         assertEquals("cargarPartida", mav.getViewName());
 
         Usuario jugador = (Usuario) mav.getModel().get("jugador");
-
         assertEquals("Nicolas127", jugador.getNombreUsuario());
-    }
-    
 
+        Partida partida = (Partida) mav.getModel().get("partida");
+        assertNotNull(partida);
+        assertEquals(100L, partida.getId().longValue());
+
+        String avatarImg = (String) mav.getModel().get("avatarImg");
+        assertEquals("avatar.png", avatarImg);
+    }
 }

@@ -1,5 +1,6 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.ServicioPartida;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,9 +55,11 @@ public class PartidaController {
             return new ModelAndView("redirect:/login");
         }
         modelo.put("jugador", jugador);
+        modelo.put("idUsuario", jugador.getId());
         modelo.put("modoJuego", modoJuego);
         Partida partida = servicioPartida.crearOUnirsePartida(jugador, modoJuego);
         modelo.put("partida", partida);
+        modelo.put("idPartida", partida.getId());
         String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(jugador.getId());
         modelo.put("avatarImg", avatarImg);
 
@@ -80,6 +84,63 @@ public class PartidaController {
         Usuario jugador = servicioUsuario.buscarUsuarioPorId(request.getUsuarioId());
         servicioPartida.crearOUnirsePartida(jugador, request.getModoJuego());
     }
+
+    @GetMapping("/ruletaCategoria")
+    public ModelAndView ruletaCategoria(@RequestParam("id") Long idPartida,
+                                        @RequestParam("idUsuario") Long idUsuario,
+                                        @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
+                                        HttpServletRequest request) {
+
+        ModelMap modelo = new ModelMap();
+        modelo.put("idPartida", idPartida);
+        modelo.put("idUsuario", idUsuario);
+
+        // si querés también:
+        Usuario jugador = (Usuario) request.getSession().getAttribute("USUARIO");
+        modelo.put("jugador", jugador);
+        modelo.put("modoJuego", modoJuego);
+        return new ModelAndView("ruletaCategoria", modelo);
+    }
+
+    @GetMapping("/pregunta")
+    public ModelAndView mostrarPregunta(@RequestParam("categoria") String categoria,
+                                        @RequestParam("id") Long idPartida,
+                                        @RequestParam("idUsuario") Long idUsuario,
+                                        @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
+                                        HttpServletRequest request) {
+        Usuario jugador = (Usuario) request.getSession().getAttribute("USUARIO");
+        if (jugador == null) {
+            return new ModelAndView("redirect:/login");
+        }
+
+        ModelMap modelo = new ModelMap();
+        modelo.put("jugador", jugador);
+        modelo.put("categoria", categoria);
+        modelo.put("idPartida", idPartida);
+        modelo.put("idUsuario", idUsuario);
+        modelo.put("modoJuego", modoJuego);
+
+        // Manejo especial para "CORONA"
+        if ("CORONA".equalsIgnoreCase(categoria)) {
+            return new ModelAndView("elegirCategoria", modelo);
+        }
+
+        // Validar que categoria sea válida para enum
+        boolean valida = Arrays.stream(CATEGORIA_PREGUNTA.values())
+                .anyMatch(c -> c.name().equalsIgnoreCase(categoria));
+
+        if (!valida) {
+            return new ModelAndView("redirect:/errorCategoria");
+        }
+
+        CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
+        Pregunta p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
+        modelo.put("pregunta", p);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nPregunta: " + p.getEnunciado() + "\n\n\n\n\n\n\n\n\n\n\n\n\nrespuestas:" + p.getRespuestas().size());
+        return new ModelAndView("preguntas", modelo);
+    }
+
+
 //    @Autowired
 //    private SimpUserRegistry simpUserRegistry;
 //
