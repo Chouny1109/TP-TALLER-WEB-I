@@ -15,7 +15,7 @@ public class Pregunta {
     private String enunciado;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Respuesta> respuestas;
+    private List<Respuesta> respuestas;
 
 
 
@@ -27,7 +27,7 @@ public class Pregunta {
     private Set<UsuarioRespondePregunta> respuestasUsuarios;
 
 
-    public Pregunta(String enunciado, Set<Respuesta> respuestas, CATEGORIA_PREGUNTA tipoPregunta) {
+    public Pregunta(String enunciado, List<Respuesta> respuestas, CATEGORIA_PREGUNTA tipoPregunta) {
         this.enunciado = enunciado;
         this.respuestas = respuestas;
         this.tipoPregunta = tipoPregunta;
@@ -59,10 +59,10 @@ public class Pregunta {
     public void setEnunciado(String enunciado) {
         this.enunciado = enunciado;
     }
-    public void setRespuestas(Set<Respuesta> respuestas) {
+    public void setRespuestas(List<Respuesta> respuestas) {
         this.respuestas = respuestas;
     }
-    public Set<Respuesta> getRespuestas() {
+    public List<Respuesta> getRespuestas() {
         return respuestas;
     }
     public void setRespuestasUsuarios(Set<UsuarioRespondePregunta> respuestasUsuarios) {

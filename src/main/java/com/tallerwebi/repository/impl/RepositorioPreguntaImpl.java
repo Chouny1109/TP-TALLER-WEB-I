@@ -26,7 +26,7 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
     }
 
 
-    @Override
+    /*@Override
     public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -43,6 +43,24 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         return (Pregunta) criteria.uniqueResult();
+    }*/
+
+    @Override
+    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+
+        String hql = "select distinct p from Pregunta p " +
+                "left join fetch p.respuestas r " +
+                "left join p.respuestasUsuarios ru " +
+                "where p.tipoPregunta = :categoria " +
+                "and (ru.id is null or ru.usuario.id != :idUsuario) " +
+                "order by rand()";
+
+        return (Pregunta) session.createQuery(hql)
+                .setParameter("categoria", categoria)
+                .setParameter("idUsuario", idUsuario)
+                .setMaxResults(1)
+                .uniqueResult();
     }
 
 

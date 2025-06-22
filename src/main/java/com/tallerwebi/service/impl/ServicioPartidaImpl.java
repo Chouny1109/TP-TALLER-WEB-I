@@ -130,7 +130,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         this.repositorioPartida.finalizarPartida(idPartida);
     }
 
-    @Override
+    /*@Override
     public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
      Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria,idUsuario);
         if (pregunta != null) {
@@ -138,6 +138,17 @@ public class ServicioPartidaImpl implements ServicioPartida {
             Collections.shuffle(mezcladas);
             pregunta.setRespuestas(new HashSet<>(mezcladas)); // si seguís usando Set
         }
+        return pregunta;
+    }*/
+
+    @Override
+    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+        Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria, idUsuario);
+
+        if (pregunta != null && pregunta.getRespuestas() != null) {
+            Collections.shuffle(pregunta.getRespuestas()); // mezcla directamente el List
+        }
+
         return pregunta;
     }
 

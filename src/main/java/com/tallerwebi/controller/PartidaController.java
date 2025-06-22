@@ -136,6 +136,7 @@ public class PartidaController {
         CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
         Pregunta p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
         modelo.put("pregunta", p);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nPregunta: " + p.getEnunciado() + "\n\n\n\n\n\n\n\n\n\n\n\n\nrespuestas:" + p.getRespuestas().size());
         return new ModelAndView("preguntas", modelo);
     }
 
