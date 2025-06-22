@@ -21,7 +21,6 @@ public class UsuarioPartida {
     @JoinColumn(name = "partida_id")
     private Partida partida;
 
-
     private LocalDateTime fecha;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +34,7 @@ public class UsuarioPartida {
         this.usuario = usuario;
         this.partida = partida;
         this.fecha = LocalDateTime.now();
+        this.estado = ESTADO_PARTIDA_JUGADOR.PENDIENTE;
     }
 
     public void setId(Long id) {
