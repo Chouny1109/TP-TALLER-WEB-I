@@ -1,12 +1,8 @@
 package com.tallerwebi.repository.impl;
 
-import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
-import com.tallerwebi.model.Partida;
-import com.tallerwebi.model.RecoveryToken;
-import com.tallerwebi.model.Usuario;
-import com.tallerwebi.model.UsuarioPartida;
+import com.tallerwebi.model.*;
 import com.tallerwebi.repository.RepositorioPartida;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
@@ -182,7 +178,56 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         }
     }
 
+    @Override
+    public Partida buscarPartidaPorId(Long idPartida) {
+        Session session = sessionFactory.getCurrentSession();
 
+        return (Partida) session.createCriteria(Partida.class)
+                .add(Restrictions.eq("id", idPartida))
+                .uniqueResult();
+
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        return (ResultadoRespuesta) session.createCriteria(ResultadoRespuesta.class)
+                .createAlias("partida", "p")
+                .createAlias("usuario", "u")
+                .add(Restrictions.eq("p.id", idPartida))
+                .add(Restrictions.eq("u.id", jugador.getId()))
+                .uniqueResult();
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoRespuestaEnPartidaDeRival(Partida partida, Usuario jugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        return (ResultadoRespuesta) session.createCriteria(ResultadoRespuesta.class)
+                .createAlias("partida", "p")
+                .createAlias("usuario", "u")
+                .add(Restrictions.eq("p.id", partida.getId()))
+                .add(Restrictions.ne("u.id", jugador.getId()))
+                .uniqueResult();
+    }
+
+    @Override
+    public List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida){
+        Session session = sessionFactory.getCurrentSession();
+        return (List<ResultadoRespuesta>) session.createCriteria(ResultadoRespuesta.class)
+                .createAlias("partida", "p")
+                .add(Restrictions.eq("p.id", idPartida))
+                .list();
+    }
+    @Override
+    public void guardarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta) {
+        sessionFactory.getCurrentSession().save(resultadoRespuesta);
+    }
+    @Override
+    public void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta) {
+        sessionFactory.getCurrentSession().update(resultadoRespuesta);
+    }
 
 
 }

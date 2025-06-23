@@ -14,6 +14,8 @@ public class Respuesta {
 
     private Boolean opcionCorrecta;
 
+
+
     @ManyToOne
     @JoinColumn(name = "pregunta_id")
     private Pregunta pregunta;
@@ -25,6 +27,14 @@ public class Respuesta {
 
     public void setOpcionCorrecta(Boolean opcionCorrecta) {
         this.opcionCorrecta = opcionCorrecta;
+    }
+
+    public Pregunta getPregunta() {
+        return pregunta;
+    }
+
+    public void setPregunta(Pregunta pregunta) {
+        this.pregunta = pregunta;
     }
     public String getDescripcion() {
         return descripcion;

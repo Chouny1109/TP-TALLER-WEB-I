@@ -3,6 +3,7 @@ package com.tallerwebi.repository;
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
+import com.tallerwebi.model.ResultadoRespuesta;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioPartida;
 
@@ -34,4 +35,15 @@ public interface RepositorioPartida {
     Partida obtenerPartidaActivaDeJugador(Long idJugador);
 
     Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha);
+
+    Partida buscarPartidaPorId(Long idPartida);
+
+    ResultadoRespuesta obtenerResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador);
+    ResultadoRespuesta obtenerResultadoRespuestaEnPartidaDeRival(Partida partida, Usuario jugador);
+
+    List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida);
+
+    void guardarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
+
+    void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
 }

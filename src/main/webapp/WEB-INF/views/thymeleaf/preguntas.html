@@ -90,13 +90,35 @@
             color: #444;
             font-weight: bold;
         }
+        .correcta {
+            background-color: #4CAF50 !important;
+            color: white;
+        }
+
+        .incorrecta {
+            background-color: #E74C3C !important;
+            color: white;
+        }
+
+        .botonOpcion {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+        }
+        .urgente {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="d-flex justify-content-between w-50 m-auto">
         <p class="tipoPregunta"><span th:text="${pregunta.tipoPregunta}"></span></p>
-        <p class="segundosRestantes">9s</p>
+        <p class="segundosRestantes">10s</p>
     </div>
 
     <div class="pregunta">
@@ -111,16 +133,139 @@
             <div class="counter-value">1</div>
         </div>
     </div>
-        <form action="#" method="post" class="d-grid w-50 m-auto">
-            <div th:each="opcion : ${pregunta.respuestas}">
-                <button type="submit"
-                        class="botonOpcion"
-                        name="respuesta"
-                        th:value="${opcion.descripcion}"
-                        th:text="${opcion.descripcion}">
-                </button>
-            </div>
+
+    <!-- Form para responder, solo si no respondí aún -->
+    <form id="form-respuesta" th:if="${!respondida}" th:action="@{/partida/validar-respuesta}" method="post" class="d-grid w-50 m-auto">
+    <input type="hidden" name="idPartida" th:value="${idPartida}" />
+        <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
+        <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
+
+        <div th:each="opcion : ${pregunta.respuestas}">
+            <button type="submit"
+                    class="botonOpcion"
+                    name="respuesta"
+                    th:value="${opcion.id}"
+                    th:text="${opcion.descripcion}">
+            </button>
+        </div>
+    </form>
+
+    <!-- Vista post-respuesta -->
+    <div th:if="${respondida}" class="d-grid w-50 m-auto">
+        <div th:each="opcion : ${pregunta.respuestas}">
+            <button type="button"
+                    class="botonOpcion"
+                    th:classappend="|${
+                    opcion.id == idRespuestaSeleccionada.id ?
+                        (opcion.id == respuestaCorrecta.id ? 'correcta' : 'incorrecta') :
+                        (opcion.id == respuestaCorrecta.id ? 'correcta' : '')
+                }|"
+                    th:text="${opcion.descripcion}"
+                    disabled>
+            </button>
+        </div>
+
+
+        <div id="mensajeEstado" style="color: gray; font-style: italic; margin-top: 10px; min-height: 1.5em;">
+            <!-- Aquí va el mensaje que llegará por WebSocket -->
+        </div>
+
+        <!-- Botón dinámico, lo llenamos con JS -->
+        <div id="contenedorVolver" class="text-center mt-4"></div>
+
+
+        <form th:if="${!terminoPartida} and ${avanzarAutomaticamente}"
+              th:action="@{/partida/siguientePregunta}" method="post"
+              style="display: none" id="formSiguientePregunta">
+            <input type="hidden" name="categoria" th:value="${preguntaSiguiente.tipoPregunta.name()}" />
+            <input type="hidden" name="idPreguntaSiguiente" th:value="${preguntaSiguiente.id}" />
+            <input type="hidden" name="idPartida" th:value="${idPartida}" />
+            <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
+            <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         </form>
+
+
     </div>
+
+</div><script>
+    // Contador de segundos (ej. empieza en 10)
+    let segundos = 10;
+    const elementoTiempo = document.querySelector('.segundosRestantes');
+    const form = document.getElementById('form-respuesta');
+    let respondio = false;
+
+    // Si el usuario hace clic en una opción, marcamos como respondido
+    if (form) {
+        form.addEventListener('submit', function () {
+            respondio = true;
+        });
+    }
+
+    const intervalo = setInterval(() => {
+        segundos--;
+        if (elementoTiempo) {
+            elementoTiempo.textContent = segundos + 's';
+        }
+
+        if (segundos <= 0) {
+            clearInterval(intervalo);
+
+            if (!respondio && form) {
+                // Si no respondió, agregamos input con valor -1 y enviamos el form
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "respuesta";
+                input.value = "-1";
+                form.appendChild(input);
+
+                console.log("⏳ Tiempo agotado, no se respondió.");
+                form.submit();
+            }
+        }
+    }, 1000);
+</script>
+
+<script>
+    // Configuración de WebSocket con Stomp.js (ejemplo)
+    var socket = new SockJS('/ws-endpoint'); // ruta del endpoint websocket
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function(frame) {
+        stompClient.subscribe('/user/queue/partida', function(message) {
+            var data = JSON.parse(message.body);
+            var contenedorMensaje = document.getElementById('mensajeEstado');
+
+            if(data.avanzarAutomaticamente) {
+                if(contenedorMensaje) contenedorMensaje.textContent = '';
+
+                var form = document.getElementById('formSiguientePregunta');
+                if(form) {
+                    form.submit();
+                }
+            } else if(data.estado === 'esperandoRival') {
+                if(contenedorMensaje) {
+                    contenedorMensaje.textContent = 'Esperando que responda tu rival...';
+                }
+            } else if (data.estado === 'finalizado') {
+                if (contenedorMensaje) {
+                    contenedorMensaje.textContent = '¡La partida ha finalizado!';
+                }
+
+                const contenedorVolver = document.getElementById('contenedorVolver');
+                if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
+                    contenedorVolver.innerHTML = '<a href="/home" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
+                }
+            } else {
+                if(contenedorMensaje) contenedorMensaje.textContent = '';
+            }
+        });
+    });
+
+</script>
+
+
+
 </body>
+
+
 </html>

@@ -131,18 +131,27 @@
 
                 document.getElementById('searching-text').style.display = 'none';
 
-                // ⏳ Espera 5 segundos y redirige a ruletaCategoria
+                // ⏳ Espera 5 segundos y redirige a ruletaCategoria o pregunta según modoJuego
                 setTimeout(() => {
-                    const idJugador =/*[[${idUsuario}]]*/ 0;
+                    const idJugador = /*[[${idUsuario}]]*/ 0;
                     const idPartida = /*[[${idPartida}]]*/ 0;
-                    window.location.href = /*[[@{/partida/ruletaCategoria}]]*/ '/partida/ruletaCategoria'
-                        + "?id=" + encodeURIComponent(idPartida)
-                        + "&idUsuario=" + encodeURIComponent(idJugador)
-                        + "&modoJuego=" + encodeURIComponent(modoJuego);
 
+                    if (modoJuego === 'SUPERVIVENCIA') {
+                        const categoriaDefault = 'GENERAL'; // o la que uses para supervivencia
+
+                        window.location.href = /*[[@{/partida/pregunta}]]*/ '/partida/pregunta'
+                            + "?categoria=" + encodeURIComponent(categoriaDefault)
+                            + "&id=" + encodeURIComponent(idPartida)
+                            + "&idUsuario=" + encodeURIComponent(idJugador)
+                            + "&modoJuego=" + encodeURIComponent(modoJuego);
+                    } else {
+                        window.location.href = /*[[@{/partida/ruletaCategoria}]]*/ '/partida/ruletaCategoria'
+                            + "?id=" + encodeURIComponent(idPartida)
+                            + "&idUsuario=" + encodeURIComponent(idJugador)
+                            + "&modoJuego=" + encodeURIComponent(modoJuego);
+                    }
                 }, 5000);
             });
-
 
             // 2. Envío el mensaje para crear o unirme a la partida
             const partidaRequest = {
@@ -164,7 +173,6 @@
             if (countdown <= 0) {
                 clearInterval(interval);
                 window.location.href = /*[[@{/home}]]*/ '/home';
-
             }
         }, 1000);
 

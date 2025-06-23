@@ -25,6 +25,36 @@ public class Partida {
     @ManyToMany
     private List<Pregunta> preguntas;
 
+    @ManyToOne
+    @JoinColumn(name = "turno_actual")
+    private Usuario turnoActual;
+
+    @ManyToOne
+    @JoinColumn(name = "pregunta_actual_id")
+    private Pregunta preguntaActual;
+
+
+    public boolean isFinalizada() {
+        return this.estadoPartida.equals(ESTADO_PARTIDA.FINALIZADA);
+    }
+
+
+    public Pregunta getPreguntaActual() {
+        return preguntaActual;
+    }
+
+    public void setPreguntaActual(Pregunta preguntaActual) {
+        this.preguntaActual = preguntaActual;
+    }
+
+    public Usuario getTurnoActual() {
+        return turnoActual;
+    }
+
+    public void setTurnoActual(Usuario turnoActual) {
+        this.turnoActual = turnoActual;
+    }
+
     public Partida(ESTADO_PARTIDA estadoPartida) {
         this.estadoPartida = estadoPartida;
     }
