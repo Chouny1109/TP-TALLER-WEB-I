@@ -33,7 +33,7 @@ public class PartidaControllerTest {
     public void siElUsuarioEstaLogeado_seCargaLaPartida() {
         HttpServletRequest request = givenUsuarioEnSesion();
 
-        ModelAndView mav = whenCargarPartida(request, TIPO_PARTIDA.MULTIJUGADOR);
+        ModelAndView mav = whenCargarPartida(request, TIPO_PARTIDA.SUPERVIVENCIA);
         thenSeCargaLaVistaConElJugador(mav);
     }
 
