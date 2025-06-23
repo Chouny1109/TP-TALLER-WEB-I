@@ -27,7 +27,7 @@ public class Mision {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "id_tipoMision")
+    @JoinColumn(name = "id_tipoMision")// en que campo de la tabla actual se guarda la relacion hacia la otra entidad
     private TipoDeMision tipoMision;
 
     public Mision(String descripcion, Integer experiencia, Integer copas) {

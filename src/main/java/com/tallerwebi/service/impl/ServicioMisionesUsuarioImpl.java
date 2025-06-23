@@ -64,12 +64,12 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     public void asignarMisionesDiarias() {
         List<Usuario> usuariosBd = this.repositorioUsuario.obtenerUsuarios();
         List<UsuarioMision> relaciones = new ArrayList<>();
-        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
+        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
+                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
 
         for (Usuario usuario : usuariosBd) {
             if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
-
                 List<Mision> misionesAleatorias = this.obtenerMisionesAleatorias(misionesBd);
                 relaciones.addAll(crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }
@@ -90,7 +90,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
         List<Mision> misionesAleatorias = new ArrayList<>(misionesBd);
         Collections.shuffle(misionesAleatorias);
-        return misionesAleatorias.stream().limit(4).collect(Collectors.toList());
+        return misionesAleatorias.stream().limit(3).collect(Collectors.toList());
     }
 
     @Override
@@ -106,11 +106,11 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
             List<UsuarioMision> usuarioMision = logueado.getMisiones();
 
-            usuarioMision.forEach((element) -> {
-                if (!element.getCompletada()) {
-                    TIPO_MISION tipo = element.getMision().getTipoMision().getNombre();
+            usuarioMision.forEach((mision) -> {
+                if (!mision.getCompletada()) {
+                    TIPO_MISION tipo = mision.getMision().getTipoMision().getNombre();
                     EstrategiaMision estrategiaMision = misionFactory.obtenerEstrategia(tipo);
-                    estrategiaMision.completarMision(logueado, element);
+                    estrategiaMision.completarMision(logueado, mision);
                 }
             });
         }
