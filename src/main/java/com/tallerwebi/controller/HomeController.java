@@ -2,6 +2,7 @@ package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioRecovery;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/home")
 public class HomeController {
 
-    private final ServicioUsuario servicioUsuario;
+    private final IServicioUsuario servicioUsuario;
 
     @Autowired
-    public HomeController(ServicioUsuario servicioUsuario) {
+    public HomeController(IServicioUsuario servicioUsuario) {
         this.servicioUsuario = servicioUsuario;
     }
 

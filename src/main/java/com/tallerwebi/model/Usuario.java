@@ -36,6 +36,10 @@ Usuario {
 
     private Integer nivel = 1;
 
+    @Column(nullable = false)
+    private Integer monedas = 0;
+
+
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.
         Fetch Eager -> Te tree todos los datos de ese usuario (Si tenemos muchos datos puede ser ineficiente).
@@ -150,4 +154,9 @@ Usuario {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public Integer getMonedas() { return monedas; }
+
+    public void setMonedas(Integer monedas) { this.monedas = monedas; }
+
 }
