@@ -12,11 +12,9 @@ import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.strategys.Mision.EstrategiaMision;
 import com.tallerwebi.strategys.Mision.MisionFactory;
 import com.tallerwebi.util.SessionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,14 +57,15 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
         return this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id);
     }
 
-    @Scheduled(cron = "0 0/3 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void asignarMisionesDiarias() {
         List<Usuario> usuariosBd = this.repositorioUsuario.obtenerUsuarios();
-        List<UsuarioMision> relaciones = new ArrayList<>();
         Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
                 obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
+
+        List<UsuarioMision> relaciones = new ArrayList<>();
 
         for (Usuario usuario : usuariosBd) {
             if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
@@ -74,6 +73,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
                 relaciones.addAll(crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }
         }
+
         repositorioMisionUsuario.saveAll(relaciones);
     }
 
@@ -95,7 +95,8 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     public List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones) {
-        return misiones.stream().map(element -> new UsuarioMision(usuario, element)).collect(Collectors.toList());
+        return misiones.stream().map(mision ->
+                new UsuarioMision(usuario, mision)).collect(Collectors.toList());
     }
 
     @Override
