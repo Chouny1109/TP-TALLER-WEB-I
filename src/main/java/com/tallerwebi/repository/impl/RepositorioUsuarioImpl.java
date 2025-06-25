@@ -60,6 +60,8 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
         return (Usuario) session.createCriteria(Usuario.class)
                 .add(Restrictions.eq("id", id))
+                .setFetchMode("amigos", FetchMode.JOIN)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .uniqueResult();
     }
 
@@ -98,5 +100,20 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         return (Usuario) criteria.uniqueResult();
     }
 
+    @Override
+    public List<Usuario> obtenerAmigos(Long idUsuario) {
+        Usuario usuario = buscarUsuarioPorId(idUsuario);
+        if (usuario != null) {
+            return List.copyOf(usuario.getAmigos());
+        }
+        return List.of();
+    }
 
+    @Override
+    public Usuario buscarPorNombreUsuario(String nombreUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+        return (Usuario) session.createCriteria(Usuario.class)
+                .add(Restrictions.eq("nombreUsuario", nombreUsuario))
+                .uniqueResult();
+    }
 }

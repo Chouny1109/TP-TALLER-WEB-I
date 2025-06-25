@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -46,4 +47,28 @@ public class ServicioUsuario implements IServicioUsuario {
         }
         return false;
     }
+
+    @Override
+    public List<Usuario> obtenerAmigos(Long idUsuario) {
+        return repositorioUsuario.obtenerAmigos(idUsuario);
+    }
+
+    @Override
+    public Usuario buscarPorNombreUsuario(String nombreUsuario) {
+        return repositorioUsuario.buscarPorNombreUsuario(nombreUsuario);
+    }
+
+    @Override
+    public void eliminarAmigo(Long idUsuario, Long idAmigo) {
+        Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
+        Usuario amigo = repositorioUsuario.buscarUsuarioPorId(idAmigo);
+
+        if (usuario != null && amigo != null) {
+            usuario.getAmigos().remove(amigo);
+            amigo.getAmigos().remove(usuario);
+            repositorioUsuario.modificar(usuario);
+            repositorioUsuario.modificar(amigo);
+        }
+    }
+
 }
