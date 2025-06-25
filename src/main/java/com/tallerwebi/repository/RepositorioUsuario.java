@@ -17,5 +17,6 @@ public interface RepositorioUsuario {
     void asignarAvatarPorDefecto(UsuarioAvatar ua);
     Usuario obtenerUsuarioConPartidas(Long idUsuario);
     List<Usuario> obtenerUsuarios();
+    List<Usuario> obtenerAmigos(Long idUsuario);
+    Usuario buscarPorNombreUsuario(String nombreUsuario);
 }
-
