@@ -12,6 +12,7 @@ public class Moneda {
 
     private String nombre;
     private Integer valor;
+    private Integer cantidad;
 
     public Moneda() {}
 
@@ -19,9 +20,10 @@ public class Moneda {
         this.nombre = nombre;
         this.valor = valor;
     }
-
+    public Long getId() { return id; }
     public String getNombre() { return nombre; }
     public Integer getValor() { return valor; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
+    public Integer getCantidad() { return cantidad; }
 }

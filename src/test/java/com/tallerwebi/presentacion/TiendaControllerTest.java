@@ -1,14 +1,13 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.TiendaController;
-import com.tallerwebi.model.Avatar;
-import com.tallerwebi.model.Moneda;
-import com.tallerwebi.model.Trampa;
-import com.tallerwebi.model.Vida;
+import com.tallerwebi.model.*;
+import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioTienda;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,8 +18,17 @@ public class TiendaControllerTest {
     @Test
     public void cuandoCargaTienda_devuelveLaVistaYModelos() {
         ServicioTienda servicioTienda = givenServicioTiendaConDatos();
+        IServicioUsuario servicioUsuario = mock(IServicioUsuario.class);
+        HttpSession session = mock(HttpSession.class);
 
-        ModelAndView mav = whenCargarTienda(servicioTienda);
+        Usuario usuarioMock = new Usuario();
+        usuarioMock.setId(1L);
+        usuarioMock.setMonedas(999);
+
+        when(session.getAttribute("USUARIO")).thenReturn(usuarioMock);
+        when(servicioUsuario.buscarUsuarioPorId(1L)).thenReturn(usuarioMock);
+
+        ModelAndView mav = whenCargarTienda(servicioTienda, servicioUsuario, session);
 
         thenVistaYModelosSonCorrectos(mav);
     }
@@ -36,9 +44,9 @@ public class TiendaControllerTest {
         return servicioTienda;
     }
 
-    private ModelAndView whenCargarTienda(ServicioTienda servicioTienda) {
-        TiendaController controller = new TiendaController(servicioTienda);
-        return controller.cargarTienda();
+    private ModelAndView whenCargarTienda(ServicioTienda servicioTienda, IServicioUsuario servicioUsuario, HttpSession session) {
+        TiendaController controller = new TiendaController(servicioTienda, servicioUsuario);
+        return controller.cargarTienda(session);
     }
 
     private void thenVistaYModelosSonCorrectos(ModelAndView mav) {
@@ -48,10 +56,12 @@ public class TiendaControllerTest {
         assertTrue(mav.getModel().containsKey("vidas"));
         assertTrue(mav.getModel().containsKey("monedas"));
         assertTrue(mav.getModel().containsKey("avatares"));
+        assertTrue(mav.getModel().containsKey("misMonedas"));
 
         assertEquals(1, ((List<?>) mav.getModel().get("trampas")).size());
         assertEquals(1, ((List<?>) mav.getModel().get("vidas")).size());
         assertEquals(1, ((List<?>) mav.getModel().get("monedas")).size());
         assertEquals(1, ((List<?>) mav.getModel().get("avatares")).size());
+        assertEquals(999, mav.getModel().get("misMonedas"));
     }
 }

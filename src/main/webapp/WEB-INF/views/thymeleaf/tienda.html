@@ -255,7 +255,7 @@
             <div class="status-icons">
                 <div class="status-item">
                     <span class="mdi--star-four-points-circle"></span>
-                    <span>100.000</span>
+                    <span th:text="${misMonedas}">0</span>
                 </div>
             </div>
         </div>
@@ -285,6 +285,7 @@
                             <span th:text="${trampa.valor}">100</span>
                         </div>
                     </div>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
                 </div>
             </div>
 
@@ -312,6 +313,7 @@
                         </div>
                     </div>
                     <p class="item-name" th:text="${avatar.nombre}">Nombre del avatar</p>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
                 </div>
             </div>
             <button class="nav-arrow" aria-label="Siguiente">
@@ -339,6 +341,7 @@
                         </div>
                     </div>
                     <p class="item-name" th:text="${vida.nombre}">Pack de vidas</p>
+                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
                 </div>
             </div>
             <button class="nav-arrow" aria-label="Siguiente">
@@ -365,6 +368,9 @@
                         </div>
                     </div>
                     <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
+                    <a th:href="@{'/pago/moneda/' + ${moneda.id}}" class="btn btn-success btn-sm mt-2">
+                        Comprar
+                    </a>
                 </div>
             </div>
             <button class="nav-arrow" aria-label="Siguiente">
@@ -391,7 +397,6 @@
 
             if (!track || !prevBtn || !nextBtn || !card) return;
 
-            // calculamos ancho total de la tarjeta (incluye margin)
             const style     = getComputedStyle(card);
             const marginLR  = parseInt(style.marginLeft) + parseInt(style.marginRight);
             const cardWidth = card.offsetWidth + marginLR;
