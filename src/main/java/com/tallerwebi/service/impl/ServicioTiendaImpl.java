@@ -40,4 +40,9 @@ public class ServicioTiendaImpl implements ServicioTienda {
     public List<Avatar> obtenerAvatares() {
         return repositorioTienda.obtenerAvatares();
     }
+
+    @Override
+    public Moneda obtenerMonedaPorId(Long id) {
+        return repositorioTienda.obtenerMonedaPorId(id);
+    }
 }
