@@ -9,4 +9,5 @@ public interface ServicioTienda {
     List<Vida> obtenerVidas();
     List<Moneda> obtenerMonedas();
     List<Avatar> obtenerAvatares();
+    Moneda obtenerMonedaPorId(Long id);
 }

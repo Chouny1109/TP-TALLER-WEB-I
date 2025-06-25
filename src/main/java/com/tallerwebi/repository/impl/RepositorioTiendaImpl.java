@@ -55,4 +55,10 @@ public class RepositorioTiendaImpl implements RepositorioTienda{
         query.from(Avatar.class);
         return session.createQuery(query).getResultList();
     }
+
+    @Override
+    public Moneda obtenerMonedaPorId(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Moneda.class, id);
+    }
 }
