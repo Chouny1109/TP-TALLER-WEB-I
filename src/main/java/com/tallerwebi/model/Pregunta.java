@@ -13,6 +13,8 @@ public class Pregunta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String enunciado;
+    private boolean habilitada;
+
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Respuesta> respuestas;
@@ -70,5 +72,11 @@ public class Pregunta {
     }
     public Set<UsuarioRespondePregunta> getRespuestasUsuarios() {
         return respuestasUsuarios;
+    }
+    public boolean getHabilitada() {
+        return habilitada;
+    }
+    public void setHabilitada(boolean b) {
+        this.habilitada = b;
     }
 }

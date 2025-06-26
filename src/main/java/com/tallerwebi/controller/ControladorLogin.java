@@ -1,5 +1,6 @@
 package com.tallerwebi.controller;
 
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioLogin;
 
@@ -41,7 +42,14 @@ public class ControladorLogin {
             request.getSession().setAttribute("ROL", usuarioBuscado.getRol());
             request.getSession().setAttribute("USUARIO", usuarioBuscado);
             model.put("nombreUsuario", usuarioBuscado.getNombreUsuario());
+
+            if (usuarioBuscado.getRol() == ROL_USUARIO.ADMIN) {
+                return new ModelAndView("redirect:/admin");
+            } else if (usuarioBuscado.getRol() == ROL_USUARIO.EDITOR) {
+                return new ModelAndView("redirect:/editor");
+            }
             return new ModelAndView("redirect:/home");
+
         }
             model.put("error", "Usuario o clave incorrecta");
 

@@ -12,13 +12,12 @@ public interface RepositorioPregunta {
     Pregunta buscarPreguntaPorId();
     Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario);
     List<Pregunta> listasPreguntasRandomParaPartida(Long idPregunta);
-
     Pregunta buscarPreguntaPorId(Long idPregunta);
-
     List<Pregunta> listasPreguntasRandomParaPartida();
-
     Respuesta buscarRespuestaPorId(Long idRespuesta);
-
-
     Pregunta obtenerPreguntaSupervivencia(List<Usuario> jugadores);
+    void actualizar(Pregunta pregunta);
+    void actualizarRespuestas(Respuesta respuesta);
+    List<Pregunta> obtenerPreguntasPorCategoria(String categoria);
+
 }
