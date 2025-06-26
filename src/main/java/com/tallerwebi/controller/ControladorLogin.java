@@ -47,9 +47,9 @@ public class ControladorLogin {
                 return new ModelAndView("redirect:/admin");
             } else if (usuarioBuscado.getRol() == ROL_USUARIO.EDITOR) {
                 return new ModelAndView("redirect:/editor");
-            } else {
-                return new ModelAndView("redirect:/home");
             }
+            return new ModelAndView("redirect:/home");
+
         }
             model.put("error", "Usuario o clave incorrecta");
 
