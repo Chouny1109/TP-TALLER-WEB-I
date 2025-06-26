@@ -46,4 +46,5 @@ public interface RepositorioPartida {
     void guardarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
 
     void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
+
 }

@@ -22,58 +22,21 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
 
     private final SessionFactory sessionFactory;
 
-@Autowired
+    @Autowired
     public RepositorioPreguntaImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
-
-    /*@Override
-    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
-        Session session = sessionFactory.getCurrentSession();
-
-        Criteria criteria = session.createCriteria(Pregunta.class, "pregunta")
-                .createAlias("pregunta.respuestasUsuarios", "resp", Criteria.LEFT_JOIN)
-                .createAlias("pregunta.respuestas", "res", Criteria.LEFT_JOIN) // 👈 para hacer fetch de respuestas
-                .add(Restrictions.eq("pregunta.tipoPregunta", categoria))
-                .add(Restrictions.or(
-                        Restrictions.isNull("resp.id"),
-                        Restrictions.ne("resp.usuario.id", idUsuario)
-                ))
-                .add(Restrictions.sqlRestriction("1=1 order by rand()"))
-                .setMaxResults(1)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
-        return (Pregunta) criteria.uniqueResult();
-    }*/
 
     @Override
     public Pregunta buscarPreguntaPorId() {
         return null;
     }
 
-//    @Override
-//    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
-//        Session session = sessionFactory.getCurrentSession();
-//
-//        String hql = "select distinct p from Pregunta p " +
-//                "left join fetch p.respuestas r " +
-//                "left join p.respuestasUsuarios ru " +
-//                "where p.tipoPregunta = :categoria " +
-//                "and (ru.id is null or ru.usuario.id != :idUsuario) " +
-//                "order by rand()";
-//
-//        return (Pregunta) session.createQuery(hql)
-//                .setParameter("categoria", categoria)
-//                .setParameter("idUsuario", idUsuario)
-//                .setMaxResults(1)
-//                .uniqueResult();
-//    }
-@Override
-public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
-    Session session = sessionFactory.getCurrentSession();
+    @Override
+    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
 
-    String hql = "select distinct p from Pregunta p " +
+        String hql = "select distinct p from Pregunta p " +
             "left join fetch p.respuestas r " +
             "where p.tipoPregunta = :categoria " +
             "and not exists (" +
@@ -83,12 +46,12 @@ public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
             "order by rand()";
 
 
-    return (Pregunta) session.createQuery(hql)
+        return (Pregunta) session.createQuery(hql)
             .setParameter("categoria", categoria)
             .setParameter("idUsuario", idUsuario)
             .setMaxResults(1)
             .uniqueResult();
-}
+    }
 
 
     @Override
@@ -144,5 +107,24 @@ public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
                 .uniqueResult();
     }
 
+    @Override
+    public void actualizar(Pregunta pregunta) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(pregunta);
+    }
 
+    @Override
+    public void actualizarRespuestas(Respuesta respuesta) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(respuesta);
+    }
+
+    @Override
+    public List<Pregunta> obtenerPreguntasPorCategoria(String categoria) {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "FROM Pregunta p WHERE p.tipoPregunta = :cat";
+        return session.createQuery(hql, Pregunta.class)
+                .setParameter("cat", CATEGORIA_PREGUNTA.valueOf(categoria))
+                .getResultList();
+    }
 }
