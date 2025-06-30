@@ -119,7 +119,13 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     public void asignarMisionesAUsuario(Usuario usuario) {
-        List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
-        this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
+        Set<Long>usuariosConMisiones= this.repositorioMisionUsuario.
+                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
+        boolean tieneMisionesAsignadas = tieneMisionesAsignadas(usuario,usuariosConMisiones);
+
+        if(!tieneMisionesAsignadas){
+            List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
+            this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
+        }
     }
 }

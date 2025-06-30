@@ -12,6 +12,7 @@ public class MisionFactory {
 
     private final Map<TIPO_MISION, EstrategiaMision> estrategias = new HashMap<>();
 
+    @Autowired
     public MisionFactory(MisionGanarPartidas ganarPartidas,
                          MisionJugarPartidas jugarPartidas,
                          MisionUsarHabilidad usarHabilidades,

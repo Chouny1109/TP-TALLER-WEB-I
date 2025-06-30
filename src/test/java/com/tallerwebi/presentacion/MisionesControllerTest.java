@@ -36,13 +36,13 @@ public class MisionesControllerTest {
     }
 
     @Test
-    public void caundoCargoLaVistaMisionesMeDevuelveUnModelAndView() throws UsuarioNoExistente {
-        Usuario logueado = givenDadoUnUsuarioLogueadoConMisiones();
+    public void caundoCargoLaVistaObtenerMisionesMeDevuelveUnModelAndView() throws UsuarioNoExistente {
+        Usuario logueado = givenDadoUnUsuarioLogueadoConObtenerMisiones();
         ModelAndView mav = whenCargoLaVista(request);
         thenLaVistaMeDevueleveUnModelAnView(mav, logueado);
     }
 
-    private Usuario givenDadoUnUsuarioLogueadoConMisiones() throws UsuarioNoExistente {
+    private Usuario givenDadoUnUsuarioLogueadoConObtenerMisiones() throws UsuarioNoExistente {
         Usuario logueado = new Usuario();
         logueado.setId(1L);
 
@@ -53,7 +53,7 @@ public class MisionesControllerTest {
     }
 
     private ModelAndView whenCargoLaVista(HttpServletRequest request) throws UsuarioNoExistente {
-        return misionesController.misiones(request);
+        return misionesController.obtenerMisiones(request);
     }
 
     private void thenLaVistaMeDevueleveUnModelAnView(ModelAndView mav, Usuario logueado) {

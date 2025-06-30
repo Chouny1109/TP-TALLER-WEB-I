@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Component
 public class MisionUsarHabilidad implements EstrategiaMision {
 
-    private static final int CANTIDAD_DE_HABILIDADES_USADAS = 3;
+    private static final int CANTIDAD_DE_HABILIDADES_USADAS = 2;
 
     private final RepositorioMisionUsuario repositorioMisionUsuario;
     private final RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida;
