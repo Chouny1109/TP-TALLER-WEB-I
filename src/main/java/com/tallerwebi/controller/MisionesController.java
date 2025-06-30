@@ -29,7 +29,7 @@ public class MisionesController {
     }
 
     @GetMapping
-    public ModelAndView misiones(HttpServletRequest request) throws UsuarioNoExistente {
+    public ModelAndView obtenerMisiones(HttpServletRequest request) throws UsuarioNoExistente {
         ModelMap modelMap = new ModelMap();
 
         Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
@@ -40,4 +40,5 @@ public class MisionesController {
 
         return new ModelAndView("misiones", modelMap);
     }
+
 }

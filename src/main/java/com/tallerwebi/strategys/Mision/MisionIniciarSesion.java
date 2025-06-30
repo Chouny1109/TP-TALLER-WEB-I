@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MisionIniciarSesion implements EstrategiaMision {
 
-    private RepositorioMisionUsuario repositorioMisionUsuario;
+    private final RepositorioMisionUsuario repositorioMisionUsuario;
 
     public MisionIniciarSesion(RepositorioMisionUsuario repositorioMisionUsuario) {
         this.repositorioMisionUsuario = repositorioMisionUsuario;

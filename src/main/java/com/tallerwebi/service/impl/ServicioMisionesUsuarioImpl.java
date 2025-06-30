@@ -12,11 +12,9 @@ import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.strategys.Mision.EstrategiaMision;
 import com.tallerwebi.strategys.Mision.MisionFactory;
 import com.tallerwebi.util.SessionUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,21 +57,23 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
         return this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id);
     }
 
-    @Scheduled(cron = "0 0/3 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void asignarMisionesDiarias() {
         List<Usuario> usuariosBd = this.repositorioUsuario.obtenerUsuarios();
-        List<UsuarioMision> relaciones = new ArrayList<>();
-        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
+        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
+                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
+
+        List<UsuarioMision> relaciones = new ArrayList<>();
 
         for (Usuario usuario : usuariosBd) {
             if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
-
                 List<Mision> misionesAleatorias = this.obtenerMisionesAleatorias(misionesBd);
                 relaciones.addAll(crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }
         }
+
         repositorioMisionUsuario.saveAll(relaciones);
     }
 
@@ -90,12 +90,13 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
         List<Mision> misionesAleatorias = new ArrayList<>(misionesBd);
         Collections.shuffle(misionesAleatorias);
-        return misionesAleatorias.stream().limit(4).collect(Collectors.toList());
+        return misionesAleatorias.stream().limit(3).collect(Collectors.toList());
     }
 
     @Override
     public List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones) {
-        return misiones.stream().map(element -> new UsuarioMision(usuario, element)).collect(Collectors.toList());
+        return misiones.stream().map(mision ->
+                new UsuarioMision(usuario, mision)).collect(Collectors.toList());
     }
 
     @Override
@@ -106,11 +107,11 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
             List<UsuarioMision> usuarioMision = logueado.getMisiones();
 
-            usuarioMision.forEach((element) -> {
-                if (!element.getCompletada()) {
-                    TIPO_MISION tipo = element.getMision().getTipoMision().getNombre();
+            usuarioMision.forEach((mision) -> {
+                if (!mision.getCompletada()) {
+                    TIPO_MISION tipo = mision.getMision().getTipoMision().getNombre();
                     EstrategiaMision estrategiaMision = misionFactory.obtenerEstrategia(tipo);
-                    estrategiaMision.completarMision(logueado, element);
+                    estrategiaMision.completarMision(logueado, mision);
                 }
             });
         }
@@ -118,7 +119,13 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     public void asignarMisionesAUsuario(Usuario usuario) {
-        List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
-        this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
+        Set<Long>usuariosConMisiones= this.repositorioMisionUsuario.
+                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
+        boolean tieneMisionesAsignadas = tieneMisionesAsignadas(usuario,usuariosConMisiones);
+
+        if(!tieneMisionesAsignadas){
+            List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
+            this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
+        }
     }
 }
