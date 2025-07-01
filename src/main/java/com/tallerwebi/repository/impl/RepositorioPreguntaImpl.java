@@ -71,11 +71,6 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
     }
 
     @Override
-    public List<Pregunta> listasPreguntasRandomParaPartida() {
-        return List.of();
-    }
-
-    @Override
     public Respuesta buscarRespuestaPorId(Long idRespuesta) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -117,6 +112,18 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
     public void actualizarRespuestas(Respuesta respuesta) {
         Session session = sessionFactory.getCurrentSession();
         session.update(respuesta);
+    }
+
+    @Override
+    public void eliminarPregunta(Long idPregunta) {
+        Session session = sessionFactory.getCurrentSession();
+        session.delete(this.buscarPreguntaPorId(idPregunta));
+    }
+
+    @Override
+    public void agregarNuevaPregunta(Pregunta pregunta) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(pregunta);
     }
 
     @Override

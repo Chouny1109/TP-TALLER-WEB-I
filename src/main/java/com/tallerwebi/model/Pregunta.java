@@ -79,4 +79,7 @@ public class Pregunta {
     public void setHabilitada(boolean b) {
         this.habilitada = b;
     }
+    public void setCategoria(CATEGORIA_PREGUNTA categoriaPregunta) {
+        this.tipoPregunta = categoriaPregunta;
+    }
 }

@@ -9,6 +9,7 @@ import com.tallerwebi.service.ServicioEditor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,5 +78,31 @@ public class ServicioEditorImpl implements ServicioEditor{
     @Override
     public List<Pregunta> obtenerPreguntasPorCategoria(String categoria) {
         return repositorioPregunta.obtenerPreguntasPorCategoria(categoria);
+    }
+
+    @Override
+    @Transactional
+    public void agregarPreguntasYRespuestas(String categoria, String enunciado, String[] textos, Long idCorrecta) {
+        Pregunta nuevaPregunta = new Pregunta();
+        nuevaPregunta.setCategoria(CATEGORIA_PREGUNTA.valueOf(categoria));
+        nuevaPregunta.setEnunciado(enunciado);
+
+        List<Respuesta> respuestas = new ArrayList<>();
+
+        for (int i = 0; i < textos.length; i++) {
+            Respuesta respuesta = new Respuesta();
+            respuesta.setDescripcion(textos[i]);
+            respuesta.setOpcionCorrecta((long) i == idCorrecta);
+            respuesta.setPregunta(nuevaPregunta);
+            respuestas.add(respuesta);
+        }
+
+        nuevaPregunta.setRespuestas(respuestas);
+        repositorioPregunta.agregarNuevaPregunta(nuevaPregunta);
+    }
+
+    @Override
+    public void eliminarPregunta(Long idPregunta) {
+        repositorioPregunta.eliminarPregunta(idPregunta);
     }
 }

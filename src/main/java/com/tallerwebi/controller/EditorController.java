@@ -6,6 +6,7 @@ import com.tallerwebi.repository.impl.RepositorioPreguntaImpl;
 import com.tallerwebi.service.ServicioEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +56,6 @@ public class EditorController {
         String enunciado = request.getParameter("enunciado");
         Long idRespuestaCorrecta = Long.valueOf(request.getParameter("respuestaCorrecta"));
 
-        // Obtener arrays de respuestas
         String[] ids = request.getParameterValues("respuestas[#idx].id");
         String[] textos = request.getParameterValues("respuestas[#idx].descripcion");
 
@@ -72,4 +72,23 @@ public class EditorController {
         return new ModelAndView("redirect:/editor");
     }
 
+    @PostMapping("/agregarPregunta")
+    public String agregarPregunta(HttpServletRequest request) {
+        String categoria = request.getParameter("categoria");
+        String enunciado = request.getParameter("enunciado");
+        Long idRespuestaCorrecta = Long.valueOf(request.getParameter("respuestaCorrecta"));
+        String[] textos = request.getParameterValues("textos");
+
+        servicioEditor.agregarPreguntasYRespuestas(categoria, enunciado, textos, idRespuestaCorrecta);
+
+        return "redirect:/editor";
+    }
+
+    @PostMapping("/eliminarPregunta")
+    public ModelAndView eliminarPregunta(@RequestParam("idPregunta")Long idPregunta){
+
+        servicioEditor.eliminarPregunta(idPregunta);
+
+        return new ModelAndView("redirect:/editor");
+    }
 }
