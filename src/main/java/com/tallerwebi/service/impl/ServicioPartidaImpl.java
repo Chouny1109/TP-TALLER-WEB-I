@@ -148,7 +148,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }*/
 
 
-
     @Override
     @Transactional
     public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
@@ -161,9 +160,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
         return pregunta;
     }
-
-
-
 
     @Override
     @Transactional
@@ -194,6 +190,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         Partida p = repositorioPartida.buscarPartidaPorId(idPartida);
         p.setEstadoPartida(ESTADO_PARTIDA.FINALIZADA); // << Usar solo esto
         p.setPreguntaActual(null);
+
         repositorioPartida.actualizarPartida(p); // << Solo este
     }
 
@@ -260,7 +257,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
         return siguientePregunta;
     }
 
-
     @Override
     @Transactional
     public void notificarEstadoPartida(Long idPartida, Usuario quienRespondio, boolean ambosRespondieron, boolean terminoPartida) {
@@ -306,7 +302,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
         return null;
     }
 
-
     private Pregunta partidaMultijugador(ResultadoRespuesta resultado) {
       return null;
     }
@@ -327,8 +322,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
         return true;
     }
-
-
 
     //web soquets, logica de las preguntas etc
 }
