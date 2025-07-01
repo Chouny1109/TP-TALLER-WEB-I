@@ -25,7 +25,7 @@ public class MisionesControllerTest {
     private SessionUtil sessionUtil;
     private HttpServletRequest request;
     private MisionesController misionesController;
-    private final List<Mision> misionesMock = List.of(new Mision("Mision 1", 10, 10));
+    private final List<Mision> misionesMock = List.of(new Mision("Mision 1", 10, 10,1));
 
     @BeforeEach
     public void setUp() {

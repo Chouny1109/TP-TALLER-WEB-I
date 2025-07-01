@@ -12,8 +12,6 @@ import java.time.LocalDate;
 @Component
 public class MisionUsarHabilidad implements EstrategiaMision {
 
-    private static final int CANTIDAD_DE_HABILIDADES_USADAS = 2;
-
     private final RepositorioMisionUsuario repositorioMisionUsuario;
     private final RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida;
 
@@ -29,10 +27,11 @@ public class MisionUsarHabilidad implements EstrategiaMision {
 
         if (usuario != null) {
             LocalDate fecha = LocalDate.now();
-            long cantidadDeHabilidades = this.repositorioUsuarioHabilidadPartida.
+            boolean cumplio = this.repositorioUsuarioHabilidadPartida.
                     obtenerHabilidadesUsadasParaLaFecha(usuario.getId(), fecha);
 
-            if (cantidadDeHabilidades >= CANTIDAD_DE_HABILIDADES_USADAS) {
+            if (cumplio) {
+                usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
                 usuarioMision.setCompletada(Boolean.TRUE);
                 this.repositorioMisionUsuario.save(usuarioMision);
             }

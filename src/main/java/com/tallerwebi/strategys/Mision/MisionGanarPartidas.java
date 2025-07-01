@@ -15,8 +15,6 @@ import java.util.List;
 @Component
 public class MisionGanarPartidas implements EstrategiaMision {
 
-    private static final int CANTIDAD_DE_PARTIDAS_GANADAS = 3;
-
     private final RepositorioPartida repositorioPartida;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
 
@@ -32,6 +30,8 @@ public class MisionGanarPartidas implements EstrategiaMision {
             LocalDateTime fecha = LocalDateTime.now();
             List<UsuarioPartida> usuarioPartidas = this.repositorioPartida.
                     obtenerLasPartidasDelUsuarioParaDeterminadaFecha(usuario.getId(), fecha);
+            Integer progreso = usuarioMision.getProgreso();
+            Integer objetivo = usuarioMision.getMision().getCantidad();
 
             if (usuarioPartidas.isEmpty()) {
                 return;
@@ -41,8 +41,13 @@ public class MisionGanarPartidas implements EstrategiaMision {
                     partida -> partida.getEstado().equals(ESTADO_PARTIDA_JUGADOR.VICTORIA)
             ).count();
 
-            if (cantidadGanadas >= CANTIDAD_DE_PARTIDAS_GANADAS) {
-                usuarioMision.setCompletada(Boolean.TRUE);
+            if (cantidadGanadas > progreso) {
+                usuarioMision.setProgreso(cantidadGanadas);
+
+                if (cantidadGanadas >= objetivo) {
+                    usuarioMision.setCompletada(Boolean.TRUE);
+                }
+
                 this.repositorioMisionUsuario.save(usuarioMision);
             }
         }

@@ -13,7 +13,6 @@ import java.time.LocalDate;
 public class MisionJugarPartidas implements EstrategiaMision {
 
     private final RepositorioPartida repositorioPartida;
-    private static final Integer PARTIDAS_NECESARIAS = 5;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
 
     public MisionJugarPartidas(RepositorioPartida repositorioPartida,
@@ -27,9 +26,14 @@ public class MisionJugarPartidas implements EstrategiaMision {
         LocalDate fecha = LocalDate.now();
         Integer partidasJugadas = this.repositorioPartida.
                 obtenerCantidadDePartidasJugadasParaLaFecha(usuario.getId(), fecha);
+        Integer objetivo = usuarioMision.getMision().getCantidad();
+        Integer progreso = usuarioMision.getProgreso();
 
-        if (partidasJugadas >= PARTIDAS_NECESARIAS) {
-            usuarioMision.setCompletada(Boolean.TRUE);
+        if (partidasJugadas > progreso) {
+            usuarioMision.setProgreso(partidasJugadas);
+            if (partidasJugadas >= objetivo) {
+                usuarioMision.setCompletada(Boolean.TRUE);
+            }
             this.repositorioMisionUsuario.save(usuarioMision);
         }
     }

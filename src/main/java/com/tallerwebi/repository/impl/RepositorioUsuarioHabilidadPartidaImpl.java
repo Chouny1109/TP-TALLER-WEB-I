@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuarioHabilidadPartida {
@@ -22,18 +23,24 @@ public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuari
     }
 
     @Override
-    public long obtenerHabilidadesUsadasParaLaFecha(Long id, LocalDate fecha) {
-        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+    public boolean obtenerHabilidadesUsadasParaLaFecha(Long id, LocalDate fecha) {
+        CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<UsuarioHabilidadPartida> root = query.from(UsuarioHabilidadPartida.class);
 
-        query.select(builder.countDistinct(root.get("habilidad")))
-                .where(
-                        builder.equal(root.get("usuario").get("id"), id),
-                        builder.equal(root.get("fecha"), fecha)
-                );
+        // Agrupamos por partida
+        query.multiselect(root.get("partida").get("id"));
+        query.where(
+                cb.equal(root.get("usuario").get("id"), id),
+                cb.equal(root.get("fecha"), fecha)
+        );
+        query.groupBy(root.get("partida").get("id"));
+        query.having(cb.greaterThanOrEqualTo(cb.countDistinct(root.get("habilidad").get("id")), 2L));
 
-        return sessionFactory.getCurrentSession().createQuery(query).getSingleResult();
+        List<Long> resultados = sessionFactory.getCurrentSession().createQuery(query).getResultList();
+
+        // Si hay al menos una partida con 2 o más habilidades distintas
+        return !resultados.isEmpty();
     }
 
     @Override

@@ -25,15 +25,18 @@ public class Mision {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mision")
     private List<UsuarioMision> usuarios;
 
+    private Integer cantidad;
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "id_tipoMision")// en que campo de la tabla actual se guarda la relacion hacia la otra entidad
     private TipoDeMision tipoMision;
 
-    public Mision(String descripcion, Integer experiencia, Integer copas) {
+    public Mision(String descripcion, Integer experiencia, Integer copas, Integer cantidad) {
         this.descripcion = descripcion;
         this.experiencia = experiencia;
         this.copas = copas;
+        this.cantidad = cantidad;
         this.usuarios = new ArrayList<>();
     }
 
@@ -87,5 +90,13 @@ public class Mision {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
     }
 }
