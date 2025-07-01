@@ -13,4 +13,6 @@ public interface ServicioEditor {
     void cambiarEstadoPregunta(Long idPregunta);
     List<String> obtenerCategorias();
     List<Pregunta> obtenerPreguntasPorCategoria(String categoria);
+    void agregarPreguntasYRespuestas(String categoriaPregunta, String enunciado, String[] textos, Long idRespuestaCorrecta);
+    void eliminarPregunta(Long idPregunta);
 }
