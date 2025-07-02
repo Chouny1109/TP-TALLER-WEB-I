@@ -47,14 +47,8 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Properties;
 @Configuration
 @EnableWebMvc
-@ComponentScan({
-        "com.tallerwebi.dominio",
-        "com.tallerwebi.repository",
-        "com.tallerwebi.controller",
-        "com.tallerwebi.service",
-        "com.tallerwebi.config",
-        "com.tallerwebi.util",
-        "com.tallerwebi.strategys"
+@ComponentScan(basePackages = {
+        "com.tallerwebi.controller"  // ← solo controllers
 })
 
 public class SpringWebConfig implements WebMvcConfigurer {
