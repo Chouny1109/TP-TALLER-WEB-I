@@ -15,6 +15,16 @@ public class ResultadoRespuesta {
     @JoinColumn(name = "pregunta_id")
     private Pregunta pregunta;
 
+    public Integer getOrden() {
+        return orden;
+    }
+
+    public void setOrden(Integer orden) {
+        this.orden = orden;
+    }
+
+    private Integer orden;
+
     @ManyToOne
     @JoinColumn(name = "respuesta_correcta_id")
     private Respuesta respuestaCorrecta;
@@ -28,6 +38,16 @@ public class ResultadoRespuesta {
     @ManyToOne
     @JoinColumn(name = "partida_id")
     private Partida partida;
+
+    public Boolean getTiempoTerminadoRespuestaNula() {
+        return tiempoTerminadoRespuestaNula;
+    }
+
+    public void setTiempoTerminadoRespuestaNula(Boolean tiempoTerminadoRespuestaNula) {
+        this.tiempoTerminadoRespuestaNula = tiempoTerminadoRespuestaNula;
+    }
+
+    private Boolean tiempoTerminadoRespuestaNula;
 
     public Respuesta getRespuestaSeleccionada() {
         return respuestaSeleccionada;

@@ -10,16 +10,19 @@ import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioPartida;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.tallerwebi.dominio.enums.TIPO_PARTIDA.MULTIJUGADOR;
 
@@ -173,91 +176,124 @@ public class ServicioPartidaImpl implements ServicioPartida {
     @Override
     @Transactional
     public Partida buscarPartidaPorId(Long idPartida){
-        return repositorioPartida.buscarPartidaPorId(idPartida);
-    }
-
-    @Override
-    @Transactional
-    public Partida obtenerPreguntaSupervivencia(Long idPartida){
-        List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
-        Pregunta pregunta = this.repositorioPregunta.obtenerPreguntaSupervivencia(jugadores);
         Partida p = repositorioPartida.buscarPartidaPorId(idPartida);
-        p.setPreguntaActual(pregunta);
-        repositorioPartida.actualizarPartida(p);
-        em.flush();
+        em.refresh(p);
         return p;
     }
+
+    private static final ConcurrentHashMap<Long, Object> locksPorPartida = new ConcurrentHashMap<>();
+    @Autowired
+    private ServicioPartidaTransaccional partidaTransaccional;
+
+    @Transactional
+    @Override
+    public SiguientePreguntaSupervivencia obtenerPreguntaSupervivencia(Long idPartida, Usuario usuario, ResultadoRespuesta resultadoUltimo) {
+        Object lock = locksPorPartida.computeIfAbsent(idPartida, k -> new Object());
+        Integer ordenBuscado = (resultadoUltimo == null) ? 1 : resultadoUltimo.getOrden() + 1;
+
+        synchronized (lock) {
+            Partida partida = buscarPartidaPorId(idPartida);
+
+            em.flush();  // fuerza escritura
+            em.clear();  // evita leer desde cache vieja
+
+            SiguientePreguntaSupervivencia existente = repositorioPartida.obtenerSiguientePreguntaEntidad(partida, ordenBuscado);
+            if (existente != null) {
+                return existente;
+            }
+
+            List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
+            Pregunta nuevaPregunta = repositorioPregunta.obtenerPreguntaSupervivencia(jugadores);
+            if (nuevaPregunta == null) {
+                finalizarPartida(idPartida);
+                return null;
+            }
+
+            SiguientePreguntaSupervivencia siguiente = new SiguientePreguntaSupervivencia(
+                    partida, jugadores.get(0), jugadores.get(1), ordenBuscado, nuevaPregunta
+            );
+
+            try {
+                // llamar al servicio transaccional para guardar
+                partidaTransaccional.guardarSiguientePregunta(siguiente);
+            } catch (DataIntegrityViolationException | ConstraintViolationException e) {
+                // obtener la existente usando nueva transacción
+                return partidaTransaccional.obtenerPreguntaExistenteConNuevaTransaccion(partida, ordenBuscado);
+            }
+
+            return siguiente;
+        }
+    }
+
+
 
     @Override
     @Transactional
     public void finalizarPartida(Long idPartida) {
         Partida p = repositorioPartida.buscarPartidaPorId(idPartida);
-        p.setEstadoPartida(ESTADO_PARTIDA.FINALIZADA); // << Usar solo esto
-        p.setPreguntaActual(null);
-        repositorioPartida.actualizarPartida(p); // << Solo este
+        p.setEstadoPartida(ESTADO_PARTIDA.FINALIZADA);
+        repositorioPartida.actualizarPartida(p);
+        locksPorPartida.remove(idPartida);
     }
 
     @PersistenceContext
     private EntityManager em;
     // Método para chequear si la partida terminó
     @Transactional
+    @Override
     public boolean partidaTerminada(Long idPartida) {
         Partida p = repositorioPartida.buscarPartidaPorId(idPartida);
         em.refresh(p);
-        return p.isFinalizada() || p.getPreguntaActual() == null;
+        return p.getEstadoPartida().equals(ESTADO_PARTIDA.FINALIZADA);
+
     }
+
 
     @Override
     @Transactional
-    public Pregunta validarRespuesta(Long idRespuestaSeleccionada, Long idPartida, TIPO_PARTIDA modoJuego, Usuario jugador) {
-        ResultadoRespuesta resultado = repositorioPartida.obtenerResultadoRespuestaEnPartidaPorJugador(idPartida, jugador);
-        if(resultado == null) {
-            resultado = new ResultadoRespuesta();
-            resultado.setPartida(buscarPartidaPorId(idPartida));
-            resultado.setUsuario(jugador);
-            repositorioPartida.guardarResultadoRespuesta(resultado);
-        }
+    public ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego) {
 
-        Respuesta respuestaSeleccionada = null;
-        if (idRespuestaSeleccionada != -1) {
-            respuestaSeleccionada = repositorioPregunta.buscarRespuestaPorId(idRespuestaSeleccionada);
-        }
-        Pregunta pregunta = buscarPartidaPorId(idPartida).getPreguntaActual();
+        //recibe resultadoRespuesta con la respuesta seleccionada desde el controller
+        // chequea q ambos hayan respondido (resultado respuesta del rival de mismo orden y misma pregunta)
+        // va a partida supervivencia, chequea respuesta del jugador con la del rival, devuelve resulado respuesta con siguiente pregunta y sin respuesta, o devuelve null.
+        Partida partida = resultado.getPartida();
+        Usuario jugador = resultado.getUsuario();
+        Pregunta preguntaRespondida = resultado.getPregunta();
+        Respuesta respuestaSeleccionada = resultado.getRespuestaSeleccionada();
+        Integer orden = resultado.getOrden();
 
-        resultado.setPregunta(pregunta);
-        resultado.setRespuestaSeleccionada(respuestaSeleccionada);
-        resultado.setRespuestaCorrecta(
-                pregunta.getRespuestas().stream()
-                        .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
-                        .findFirst()
-                        .orElse(null)
-        );
 
-        repositorioPartida.actualizarResultadoRespuesta(resultado);
+        repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(jugador, preguntaRespondida));
+        em.flush();
 
-        boolean ambosRespondieron = chequearAmbosRespondieron(idPartida, jugador);
 
-        Pregunta siguientePregunta = null;
+        boolean ambosRespondieron = chequearAmbosRespondieron(partida.getId(), jugador, orden);
 
-        if (ambosRespondieron) {
+        ResultadoRespuesta resultadoRespuestaSiguiente = null;
+        if(ambosRespondieron){
             if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
-                Partida actualizada = partidaSupervivencia(resultado);
-                if (actualizada != null && actualizada.getPreguntaActual() != null) {
-                    siguientePregunta = actualizada.getPreguntaActual();
-                }
-            } else if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
-                siguientePregunta = partidaMultijugador(resultado);
+                resultadoRespuestaSiguiente = partidaSupervivencia(resultado);
             }
         }
+        if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
+            resultadoRespuestaSiguiente = partidaMultijugador(resultado);
+        }
 
 
 
-        boolean terminoPartida = partidaTerminada(idPartida) || (siguientePregunta == null && ambosRespondieron);
+        // Fallback si no avanzó la partida
 
-        // Notificar estado a los jugadores, indicándoles si avanzar o esperar
-        notificarEstadoPartida(idPartida, jugador, ambosRespondieron, terminoPartida);
 
-        return siguientePregunta;
+        boolean terminoPartida = partidaTerminada(partida.getId()) ||
+                (resultadoRespuestaSiguiente == null && ambosRespondieron);
+
+        notificarEstadoPartida(partida.getId(), jugador, ambosRespondieron, terminoPartida);
+
+        return resultadoRespuestaSiguiente;
+    }
+
+    private ResultadoRespuesta partidaMultijugador(ResultadoRespuesta resultado) {
+        return null;
     }
 
 
@@ -285,50 +321,192 @@ public class ServicioPartidaImpl implements ServicioPartida {
         }
     }
 
-    private Partida partidaSupervivencia(ResultadoRespuesta resultado) {
-        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoRespuestaEnPartidaDeRival(resultado.getPartida(), resultado.getUsuario());
+    @Override
+    public Pregunta buscarPreguntaPorId(Long idPregunta) {
+        return repositorioPregunta.buscarPreguntaPorId(idPregunta);
+    }
 
-        if (resultadoRival != null && resultado.getPregunta().equals(resultadoRival.getPregunta())) {
-            boolean respondioBien = resultado.respondioBien();
-            boolean respondioBienRival = resultadoRival.respondioBien();
+    private ResultadoRespuesta partidaSupervivencia(ResultadoRespuesta resultado) {
+        Long idPartida = resultado.getPartida().getId();
+        Usuario jugador = resultado.getUsuario();
 
-            if ((respondioBien && respondioBienRival) || (!respondioBien && !respondioBienRival)) {
-                // Ambos respondieron igual (bien o mal) → nueva pregunta
-                return obtenerPreguntaSupervivencia(resultado.getPartida().getId());
-            } else {
-                // Uno bien y otro mal → termina partida
-                resultado.getPartida().setPreguntaActual(null);
-                repositorioPartida.actualizarPartida(resultado.getPartida());
-                finalizarPartida(resultado.getPartida().getId());
-                return null;
-            }
+        // Obtener resultado del rival actualizado
+        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaDeRival(idPartida, jugador);
+
+        // Validar que ambos respondieron lo mismo
+        if (resultadoRival == null ||
+                resultado.getRespuestaSeleccionada() == null ||
+                resultadoRival.getRespuestaSeleccionada() == null ||
+                !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
+
+            finalizarPartida(idPartida);
+            return null;
         }
-        return null;
+
+        // Obtener o generar la siguiente pregunta con orden siguiente
+        SiguientePreguntaSupervivencia siguientePregunta = obtenerPreguntaSupervivencia(idPartida, jugador, resultado);
+        if (siguientePregunta == null) {
+            finalizarPartida(idPartida);
+            return null;
+        }
+
+        Pregunta pregunta = siguientePregunta.getSiguientePregunta();
+        int nuevoOrden = siguientePregunta.getOrden();
+
+        // Asegurarse de crear ResultadoRespuesta para ambos jugadores con ese orden y pregunta
+        ResultadoRespuesta existenteJugador = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, jugador, nuevoOrden, pregunta);
+        if (existenteJugador == null) {
+            existenteJugador = crearResultadoRespuestaConOrdenFijo(pregunta.getId(), idPartida, jugador, null, nuevoOrden);
+        }
+
+        ResultadoRespuesta existenteRival = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, resultadoRival.getUsuario(), nuevoOrden, pregunta);
+        if (existenteRival == null) {
+            crearResultadoRespuestaConOrdenFijo(pregunta.getId(), idPartida, resultadoRival.getUsuario(), null, nuevoOrden);
+        }
+
+        // Retornar el del jugador actual, para que siga su flujo
+        return existenteJugador;
     }
 
-
-    private Pregunta partidaMultijugador(ResultadoRespuesta resultado) {
-      return null;
-    }
 
     @Transactional
-    @Override
-    public boolean chequearAmbosRespondieron(Long idPartida, Usuario jugador) {
+    public ResultadoRespuesta crearResultadoRespuestaConOrdenFijo(Long idPregunta, Long idPartida, Usuario usuario, Long idRespuesta, Integer ordenFijo) {
         Partida partida = buscarPartidaPorId(idPartida);
-        ResultadoRespuesta resultado = repositorioPartida.obtenerResultadoRespuestaEnPartidaPorJugador(idPartida, jugador);
-        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoRespuestaEnPartidaDeRival(partida, jugador);
+        Pregunta pregunta = buscarPreguntaPorId(idPregunta);
 
-        // Si alguno no respondió aún o no seleccionó respuesta, no avanzar
-        if (resultado == null || resultado.getRespuestaSeleccionada() == null) return false;
-        if (resultadoRival == null || resultadoRival.getRespuestaSeleccionada() == null) return false;
+        ResultadoRespuesta resultado = new ResultadoRespuesta();
+        resultado.setPartida(partida);
+        resultado.setPregunta(pregunta);
+        resultado.setUsuario(usuario);
+        resultado.setOrden(ordenFijo);
 
+        Respuesta respuestaSeleccionada = null;
+        if (idRespuesta == null) {
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.FALSE);
+        } else if (idRespuesta == -1) {
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.TRUE);
+        } else {
+            respuestaSeleccionada = buscarRespuestaPorId(idRespuesta);
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.FALSE);
+        }
+
+        resultado.setRespuestaSeleccionada(respuestaSeleccionada);
+
+        // Guardar respuesta correcta para evaluación posterior
+        resultado.setRespuestaCorrecta(
+                pregunta.getRespuestas().stream()
+                        .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                        .findFirst()
+                        .orElse(null)
+        );
+
+        repositorioPartida.guardarResultadoRespuesta(resultado);
+        em.flush();
+
+        return resultado;
+    }
+
+    @Override
+    @Transactional
+    public boolean chequearAmbosRespondieron(Long p, Usuario jugador, Integer orden) {
+        Partida partida = buscarPartidaPorId(p);
+
+
+        ResultadoRespuesta resultado = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(p, jugador);
+        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaDeRival(p, resultado.getUsuario());
+
+
+        if(resultadoRival == null || resultado == null) {
+            return false;
+        }
+        if(!resultadoRival.getOrden().equals(resultado.getOrden())) {
+            return false;
+        }
+
+        // si resultado de ambos la respuesta es nula y termino respuesta nula es false, osea q no se envio ninguna respuesta aunq sea -1
+        if((resultadoRival.getRespuestaSeleccionada() == null && resultadoRival.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE))  || (resultado.getRespuestaSeleccionada() == null && resultado.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE))){
+            return false;
+        }
         // Chequear que ambos están respondiendo la misma pregunta
-        if (!Objects.equals(resultado.getPregunta(), resultadoRival.getPregunta())) return false;
+        if (!Objects.equals(resultado.getPregunta(), resultadoRival.getPregunta())) {
+            return false;
+        }
+
 
         return true;
     }
 
+    @Override
+    @Transactional
+    public ResultadoRespuesta crearResultadoRespuestaConSiguienteOrden(Long idPregunta, Long idPartida, Usuario usuario, Long idRespuesta){
+
+        Partida p = buscarPartidaPorId(idPartida);
+        ResultadoRespuesta ultimo = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(idPartida, usuario);
+        int nuevoOrden = (ultimo == null) ? 1 : ultimo.getOrden() + 1;
+
+        Pregunta preguntaRespondida = buscarPreguntaPorId(idPregunta);
+
+        // BUSCAR EXISTENTE
+        ResultadoRespuesta existente = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, nuevoOrden, preguntaRespondida);
+        if (existente != null) {
+            return existente;  // Retornar resultado ya existente para evitar duplicados o desincronización
+        }
+
+        ResultadoRespuesta resultado = new ResultadoRespuesta();
+        resultado.setPartida(p);
+        resultado.setPregunta(preguntaRespondida);
+        resultado.setUsuario(usuario);
+
+        Respuesta respuestaSeleccionada = null;
+
+        if (idRespuesta == null) {
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.FALSE);
+        } else if (idRespuesta == -1) {
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.TRUE);
+        } else {
+            respuestaSeleccionada = buscarRespuestaPorId(idRespuesta);
+            resultado.setTiempoTerminadoRespuestaNula(Boolean.FALSE);
+        }
+
+        resultado.setRespuestaSeleccionada(respuestaSeleccionada);
+
+        resultado.setRespuestaCorrecta(
+                preguntaRespondida.getRespuestas().stream()
+                        .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                        .findFirst()
+                        .orElse(null)
+        );
+
+        resultado.setOrden(nuevoOrden);
+
+        repositorioPartida.guardarResultadoRespuesta(resultado);
+        em.flush();
+
+        return resultado;
+    }
 
 
+    @Override
+    @Transactional
+    public ResultadoRespuesta obtenerUltimoResultadoRespuestaDeJugador(Long idPartida, Usuario usuario){
+        return repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(idPartida, usuario);
+    }
+    @Transactional
+    @Override
+    public void actualizarResultadoRespuesta(ResultadoRespuesta rr){
+        repositorioPartida.actualizarResultadoRespuesta(rr);
+        if (rr.getRespuestaSeleccionada() != null || Boolean.TRUE.equals(rr.getTiempoTerminadoRespuestaNula())) {
+            repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(rr.getUsuario(), rr.getPregunta()));
+        }
+
+        em.flush();
+    }
+
+    @Override
+    @Transactional
+    public ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp) {
+        return repositorioPartida.obtenerResultadoPorPartidaUsuarioYPregunta(idPartida, usuario, preguntaResp);
+
+    }
     //web soquets, logica de las preguntas etc
 }

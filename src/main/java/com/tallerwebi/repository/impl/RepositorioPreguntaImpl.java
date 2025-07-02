@@ -47,10 +47,6 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
         return (Pregunta) criteria.uniqueResult();
     }*/
 
-    @Override
-    public Pregunta buscarPreguntaPorId() {
-        return null;
-    }
 
 //    @Override
 //    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
@@ -122,7 +118,9 @@ public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
 
     }
 
+
     @Override
+    @SuppressWarnings("unchecked")
     public Pregunta obtenerPreguntaSupervivencia(List<Usuario> jugadores) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -131,17 +129,22 @@ public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
                 .collect(Collectors.toList());
 
         String hql = "select distinct p from Pregunta p " +
-                "left join fetch p.respuestas r " +
-                "where not exists (" +
-                "   select 1 from UsuarioRespondePregunta urp " +
-                "   where urp.pregunta = p and urp.usuario.id in (:idsJugadores)" +
+                "where p.id not in (" +
+                "   select urp.pregunta.id from UsuarioRespondePregunta urp " +
+                "   where urp.usuario.id in (:idsJugadores)" +
                 ") " +
-                "order by rand()";
+                "order by function('rand')";
 
-        return (Pregunta) session.createQuery(hql)
+        List<Pregunta> preguntas = session.createQuery(hql)
                 .setParameterList("idsJugadores", idsJugadores)
                 .setMaxResults(1)
-                .uniqueResult();
+                .list();
+
+        if (preguntas.isEmpty()) {
+            return null;
+        }
+
+        return preguntas.get(0);
     }
 
 

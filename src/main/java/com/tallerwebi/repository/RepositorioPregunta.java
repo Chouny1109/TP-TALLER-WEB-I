@@ -9,7 +9,7 @@ import com.tallerwebi.model.Usuario;
 import java.util.List;
 
 public interface RepositorioPregunta {
-    Pregunta buscarPreguntaPorId();
+
     Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario);
     List<Pregunta> listasPreguntasRandomParaPartida(Long idPregunta);
 

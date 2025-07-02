@@ -8,10 +8,14 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -200,17 +204,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
     }
 
-    @Override
-    public ResultadoRespuesta obtenerResultadoRespuestaEnPartidaDeRival(Partida partida, Usuario jugador) {
-        Session session = sessionFactory.getCurrentSession();
 
-        return (ResultadoRespuesta) session.createCriteria(ResultadoRespuesta.class)
-                .createAlias("partida", "p")
-                .createAlias("usuario", "u")
-                .add(Restrictions.eq("p.id", partida.getId()))
-                .add(Restrictions.ne("u.id", jugador.getId()))
-                .uniqueResult();
-    }
 
     @Override
     public List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida){
@@ -227,6 +221,126 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     @Override
     public void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta) {
         sessionFactory.getCurrentSession().update(resultadoRespuesta);
+    }
+
+    @Override
+    public boolean existeUsuarioRespondePregunta(Long idUsuario, Long idPregunta) {
+        String hql = "select count(urp.id) from UsuarioRespondePregunta urp where urp.usuario.id = :idUsuario and urp.pregunta.id = :idPregunta";
+        Long count = (Long) sessionFactory.getCurrentSession()
+                .createQuery(hql)
+                .setParameter("idUsuario", idUsuario)
+                .setParameter("idPregunta", idPregunta)
+                .uniqueResult();
+        return count != null && count > 0;
+    }
+
+
+    @Override
+    public void guardarUsuarioRespondePregunta(UsuarioRespondePregunta usp){
+        sessionFactory.getCurrentSession().save(usp);
+    }
+    @Override
+    public ResultadoRespuesta obtenerUltimoResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        return session.createQuery(
+                        "FROM ResultadoRespuesta r WHERE r.partida.id = :idPartida AND r.usuario.id = :idUsuario ORDER BY r.orden DESC",
+                        ResultadoRespuesta.class
+                )
+                .setParameter("idPartida", idPartida)
+                .setParameter("idUsuario", jugador.getId())
+                .setMaxResults(1)
+                .uniqueResult();
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerUltimoResultadoRespuestaEnPartidaDeRival(Long idPartida, Usuario jugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        return session.createQuery(
+                        "FROM ResultadoRespuesta r WHERE r.partida.id = :idPartida AND r.usuario.id <> :idUsuario ORDER BY r.orden DESC",
+                        ResultadoRespuesta.class
+                )
+                .setParameter("idPartida", idPartida)
+                .setParameter("idUsuario", jugador.getId())
+                .setMaxResults(1)
+                .uniqueResult();
+    }
+
+
+    @Override
+    public SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Partida partida, Integer orden) {
+        Session session = sessionFactory.getCurrentSession();
+
+        String hql = "select sp from SiguientePreguntaSupervivencia sp " +
+                "join fetch sp.siguientePregunta p " +
+                "where sp.partida.id = :idPartida and sp.orden = :orden";
+
+        return session.createQuery(hql, SiguientePreguntaSupervivencia.class)
+                .setParameter("idPartida", partida.getId())
+                .setParameter("orden", orden)
+                .setMaxResults(1)
+                .uniqueResult();
+    }
+
+
+
+    @Override
+    public void guardarSiguientePregunta(SiguientePreguntaSupervivencia siguientePregunta) {
+        sessionFactory.getCurrentSession().save(siguientePregunta);
+    }
+
+    @Override
+    public Integer obtenerMaxOrdenSiguientePregunta(Long idPartida) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery(
+                        "SELECT MAX(s.orden) FROM SiguientePreguntaSupervivencia s WHERE s.partida.id = :idPartida",
+                        Integer.class)
+                .setParameter("idPartida", idPartida)
+                .uniqueResult();
+    }
+
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int orden, Pregunta pregunta) {
+        String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
+                "WHERE rr.partida.id = :idPartida " +
+                "AND rr.usuario = :usuario " +
+                "AND rr.orden = :orden " +
+                "AND rr.pregunta = :pregunta";
+
+        try {
+            return em.createQuery(jpql, ResultadoRespuesta.class)
+                    .setParameter("idPartida", idPartida)
+                    .setParameter("usuario", usuario)
+                    .setParameter("orden", orden)
+                    .setParameter("pregunta", pregunta)  // entidad pregunta
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp) {
+        Session session = sessionFactory.getCurrentSession();
+
+        List<ResultadoRespuesta> resultados = session.createQuery(
+                        "FROM ResultadoRespuesta r WHERE r.partida.id = :idPartida AND r.usuario.id = :idUsuario AND r.pregunta.id = :idPregunta",
+                        ResultadoRespuesta.class)
+                .setParameter("idPartida", idPartida)
+                .setParameter("idUsuario", usuario.getId())
+                .setParameter("idPregunta", preguntaResp.getId())
+                .getResultList();
+
+        if (resultados.isEmpty()) {
+            return null;
+        } else {
+            return resultados.get(0);
+        }
     }
 
 

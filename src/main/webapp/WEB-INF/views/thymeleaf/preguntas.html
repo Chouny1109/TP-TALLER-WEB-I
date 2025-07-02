@@ -8,6 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <title>Pregunta</title>
+
+    <!-- SockJS (cliente WebSocket compatible) -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+    <!-- STOMP.js (protocolo de mensajería sobre SockJS) -->
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nerko+One&family=Outfit:wght@100..900&display=swap');
 
@@ -139,6 +146,7 @@
     <input type="hidden" name="idPartida" th:value="${idPartida}" />
         <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
         <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
+        <input type="hidden" name="idPreguntaRespondida" th:value="${pregunta.id}" />
 
         <div th:each="opcion : ${pregunta.respuestas}">
             <button type="submit"
@@ -156,7 +164,7 @@
             <button type="button"
                     class="botonOpcion"
                     th:classappend="|${
-                    opcion.id == idRespuestaSeleccionada.id ?
+                    opcion.id == idRespuestaSeleccionada ?
                         (opcion.id == respuestaCorrecta.id ? 'correcta' : 'incorrecta') :
                         (opcion.id == respuestaCorrecta.id ? 'correcta' : '')
                 }|"
@@ -174,20 +182,30 @@
         <div id="contenedorVolver" class="text-center mt-4"></div>
 
 
-        <form th:if="${!terminoPartida} and ${avanzarAutomaticamente}"
-              th:action="@{/partida/siguientePregunta}" method="post"
+        <form th:if="${respondida}" th:action="@{/partida/validar-rival}" method="post"
               style="display: none" id="formSiguientePregunta">
-            <input type="hidden" name="categoria" th:value="${preguntaSiguiente.tipoPregunta.name()}" />
-            <input type="hidden" name="idPreguntaSiguiente" th:value="${preguntaSiguiente.id}" />
             <input type="hidden" name="idPartida" th:value="${idPartida}" />
+            <input type="hidden" name="preguntaRespondida" th:value="${pregunta.id}">
+            <input type="hidden" name="idRespuestaSeleccionada" th:value="${idRespuestaSeleccionada}" />
             <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
             <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         </form>
 
 
+        <div th:if="${mensajeFinal}" style="color: gray; font-style: italic; margin-top: 10px;">
+            <p th:text="${mensajeFinal}"></p>
+        </div>
+
+        <div th:if="${mostrarVolver}" class="text-center mt-4">
+            <a href="/home" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>
+        </div>
+
     </div>
 
-</div><script>
+
+</div>
+
+<script>
     // Contador de segundos (ej. empieza en 10)
     let segundos = 10;
     const elementoTiempo = document.querySelector('.segundosRestantes');
@@ -196,9 +214,14 @@
 
     // Si el usuario hace clic en una opción, marcamos como respondido
     if (form) {
-        form.addEventListener('submit', function () {
-            respondio = true;
+        form.addEventListener('submit', function (e) {
+            if (respondio) {
+                e.preventDefault(); // evita doble envío
+            } else {
+                respondio = true;
+            }
         });
+
     }
 
     const intervalo = setInterval(() => {
@@ -224,25 +247,39 @@
         }
     }, 1000);
 </script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    let respondida = /*[[${respondida}]]*/ false;
+    let modoJuego = /*[['' + ${modoJuego.name()}]]*/ '';
+
+    // Para debug
+    console.log("respondida =", respondida);
+    console.log("modoJuego =", modoJuego);
+
+    if (respondida === true && modoJuego === 'SUPERVIVENCIA') {
+        const formSiguiente = document.getElementById("formSiguientePregunta");
+        if (formSiguiente) {
+            setTimeout(() => formSiguiente.submit(), 2000);
+        }
+    }
+
+    /*]]>*/
+</script>
+
+
 
 <script>
-    // Configuración de WebSocket con Stomp.js (ejemplo)
-    var socket = new SockJS('/ws-endpoint'); // ruta del endpoint websocket
+    var socket = new SockJS('/spring/chat-websocket');
     var stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function(frame) {
         stompClient.subscribe('/user/queue/partida', function(message) {
             var data = JSON.parse(message.body);
+            console.log("Mensaje WebSocket recibido:", message.body);
             var contenedorMensaje = document.getElementById('mensajeEstado');
 
-            if(data.avanzarAutomaticamente) {
-                if(contenedorMensaje) contenedorMensaje.textContent = '';
-
-                var form = document.getElementById('formSiguientePregunta');
-                if(form) {
-                    form.submit();
-                }
-            } else if(data.estado === 'esperandoRival') {
+            if(data.estado === 'respondio') {
                 if(contenedorMensaje) {
                     contenedorMensaje.textContent = 'Esperando que responda tu rival...';
                 }
@@ -250,18 +287,17 @@
                 if (contenedorMensaje) {
                     contenedorMensaje.textContent = '¡La partida ha finalizado!';
                 }
-
                 const contenedorVolver = document.getElementById('contenedorVolver');
                 if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
-                    contenedorVolver.innerHTML = '<a href="/home" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
+                    contenedorVolver.innerHTML = '<a href="home"  id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
                 }
             } else {
                 if(contenedorMensaje) contenedorMensaje.textContent = '';
             }
         });
     });
-
 </script>
+
 
 
 

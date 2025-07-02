@@ -29,9 +29,6 @@ public class Partida {
     @JoinColumn(name = "turno_actual")
     private Usuario turnoActual;
 
-    @ManyToOne
-    @JoinColumn(name = "pregunta_actual_id")
-    private Pregunta preguntaActual;
 
 
     public boolean isFinalizada() {
@@ -39,13 +36,6 @@ public class Partida {
     }
 
 
-    public Pregunta getPreguntaActual() {
-        return preguntaActual;
-    }
-
-    public void setPreguntaActual(Pregunta preguntaActual) {
-        this.preguntaActual = preguntaActual;
-    }
 
     public Usuario getTurnoActual() {
         return turnoActual;

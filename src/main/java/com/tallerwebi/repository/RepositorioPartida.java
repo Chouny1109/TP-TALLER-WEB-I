@@ -2,10 +2,7 @@ package com.tallerwebi.repository;
 
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
-import com.tallerwebi.model.Partida;
-import com.tallerwebi.model.ResultadoRespuesta;
-import com.tallerwebi.model.Usuario;
-import com.tallerwebi.model.UsuarioPartida;
+import com.tallerwebi.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,11 +36,28 @@ public interface RepositorioPartida {
     Partida buscarPartidaPorId(Long idPartida);
 
     ResultadoRespuesta obtenerResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador);
-    ResultadoRespuesta obtenerResultadoRespuestaEnPartidaDeRival(Partida partida, Usuario jugador);
 
     List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida);
 
     void guardarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
 
     void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta);
+
+    boolean existeUsuarioRespondePregunta(Long idUsuario, Long idPregunta);
+
+    void guardarUsuarioRespondePregunta(UsuarioRespondePregunta usp);
+
+    ResultadoRespuesta obtenerUltimoResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador);
+
+    ResultadoRespuesta obtenerUltimoResultadoRespuestaEnPartidaDeRival(Long idPartida, Usuario jugador);
+
+    SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Partida partida, Integer orden);
+
+    void guardarSiguientePregunta(SiguientePreguntaSupervivencia siguientePregunta);
+
+    Integer obtenerMaxOrdenSiguientePregunta(Long idPartida);
+
+    ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int nuevoOrden, Pregunta pregunta);
+
+    ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp);
 }
