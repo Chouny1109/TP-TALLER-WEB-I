@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
@@ -33,7 +34,8 @@ public class ServicioScheduledUsuarioMisionImpl implements ServicioScheduledMisi
         List<UsuarioMision> relaciones = new ArrayList<>();
 
         for (Usuario usuario : usuariosBd) {
-            if (!servicioMisionesUsuario.tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
+            if (!servicioMisionesUsuario.tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)
+                    && ROL_USUARIO.JUGADOR.equals(usuario.getRol())) {
                 List<Mision> misionesAleatorias = servicioMisionesUsuario.obtenerMisionesAleatorias(misionesBd);
                 relaciones.addAll(servicioMisionesUsuario.crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }
