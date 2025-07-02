@@ -5,6 +5,7 @@ import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.model.UsuarioMisionDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -13,9 +14,15 @@ import java.util.Set;
 public interface ServicioMisionesUsuario {
     List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id) throws UsuarioNoExistente;
 
-    void asignarMisionesDiarias() throws UsuarioNoExistente;
-
     void asignarMisionesAUsuario(Usuario usuario);
+
+    void guardarRelacionesUsuarioMision(List<UsuarioMision> relaciones);
+
+    List<Mision> obtenerMisiones();
+
+    List<Usuario> obtenerUsuarios();
+
+    Set<Long> obtenerLosIDdeTodosLosUsuariosConMisionesAsignadas();
 
     Boolean tieneMisionesAsignadas(Usuario usuario, Set<Long> usuariosConMisionesAsignadas);
 
