@@ -29,6 +29,7 @@ public class MisionNoUsarHabilidades implements EstrategiaMision {
                     elUsuarioTienePartidasGanadasSinUsarHabilidades(usuario.getId());
 
             if (tienePartidasGanadasSinHabilidades) {
+                usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
                 usuarioMision.setCompletada(Boolean.TRUE);
                 this.repositorioMisionUsuario.save(usuarioMision);
             }

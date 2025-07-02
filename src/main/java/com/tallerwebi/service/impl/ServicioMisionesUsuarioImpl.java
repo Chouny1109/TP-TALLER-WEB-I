@@ -1,10 +1,10 @@
 package com.tallerwebi.service.impl;
 
 import com.tallerwebi.dominio.enums.TIPO_MISION;
-import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
+import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioMisiones;
 import com.tallerwebi.repository.RepositorioUsuario;
@@ -12,9 +12,9 @@ import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.strategys.Mision.EstrategiaMision;
 import com.tallerwebi.strategys.Mision.MisionFactory;
 import com.tallerwebi.util.SessionUtil;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service
 public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
@@ -46,35 +45,46 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
         this.misionFactory = misionFactory;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Mision> obtenerLasMisionesDelUsuarioPorId(Long id) throws UsuarioNoExistente {
-        Usuario buscado = repositorioUsuario.buscarUsuarioPorId(id);
+    public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id) {
+        List<UsuarioMision> usuarioMisiones = this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id);
 
-        if (buscado == null) {
-            throw new UsuarioNoExistente();
-        }
-
-        return this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id);
+        return usuarioMisiones.stream().map(m ->
+                        new UsuarioMisionDTO(
+                                m.getMision().getDescripcion(),
+                                m.getProgreso(),
+                                m.getMision().getCantidad(),
+                                m.getMision().getExperiencia(),
+                                m.getMision().getCopas(),
+                                m.getCompletada(),
+                                m.getCanjeada()
+                        ))
+                .collect(Collectors.toList());
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
     @Override
-    public void asignarMisionesDiarias() {
-        List<Usuario> usuariosBd = this.repositorioUsuario.obtenerUsuarios();
-        Set<Long> usuariosConMisionesAsignadas = this.repositorioMisionUsuario.
-                obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
-        List<Mision> misionesBd = this.repositorioMisiones.obtenerMisiones();
+    public void guardarRelacionesUsuarioMision(List<UsuarioMision> relaciones) {
+        this.repositorioMisionUsuario.saveAll(relaciones);
+    }
 
-        List<UsuarioMision> relaciones = new ArrayList<>();
+    @Transactional(readOnly = true)
+    @Override
+    public List<Mision> obtenerMisiones() {
+        return this.repositorioMisiones.obtenerMisiones();
+    }
 
-        for (Usuario usuario : usuariosBd) {
-            if (!tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)) {
-                List<Mision> misionesAleatorias = this.obtenerMisionesAleatorias(misionesBd);
-                relaciones.addAll(crearRelacionUsuarioMision(usuario, misionesAleatorias));
-            }
-        }
+    @Transactional(readOnly = true)
+    @Override
+    public List<Usuario> obtenerUsuarios() {
+        return this.repositorioUsuario.obtenerUsuarios();
+    }
 
-        repositorioMisionUsuario.saveAll(relaciones);
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Long> obtenerLosIDdeTodosLosUsuariosConMisionesAsignadas() {
+        return this.repositorioMisionUsuario.obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
     }
 
     @Override
@@ -117,13 +127,14 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
         }
     }
 
+    @Transactional
     @Override
     public void asignarMisionesAUsuario(Usuario usuario) {
-        Set<Long>usuariosConMisiones= this.repositorioMisionUsuario.
+        Set<Long> usuariosConMisiones = this.repositorioMisionUsuario.
                 obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
-        boolean tieneMisionesAsignadas = tieneMisionesAsignadas(usuario,usuariosConMisiones);
+        boolean tieneMisionesAsignadas = tieneMisionesAsignadas(usuario, usuariosConMisiones);
 
-        if(!tieneMisionesAsignadas){
+        if (!tieneMisionesAsignadas) {
             List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
             this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
         }

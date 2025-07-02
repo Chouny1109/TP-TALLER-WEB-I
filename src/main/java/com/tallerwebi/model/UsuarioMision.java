@@ -1,4 +1,5 @@
 package com.tallerwebi.model;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -22,6 +23,8 @@ public class UsuarioMision {
     @Column(nullable = false)
     private Boolean canjeada;
 
+    private Integer progreso;
+
     @Column(nullable = false)
     private Boolean completada;
 
@@ -35,6 +38,7 @@ public class UsuarioMision {
         this.mision = mision;
         this.canjeada = false;
         this.completada = false;
+        this.progreso = 0;
         this.fechaDeAsignacion = LocalDate.now();
     }
 
@@ -76,5 +80,21 @@ public class UsuarioMision {
 
     public void setCompletada(Boolean completada) {
         this.completada = completada;
+    }
+
+    public Integer getProgreso() {
+        return progreso;
+    }
+
+    public void setProgreso(Integer progreso) {
+        this.progreso = progreso;
+    }
+
+    public LocalDate getFechaDeAsignacion() {
+        return fechaDeAsignacion;
+    }
+
+    public void setFechaDeAsignacion(LocalDate fechaDeAsignacion) {
+        this.fechaDeAsignacion = fechaDeAsignacion;
     }
 }

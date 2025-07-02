@@ -73,7 +73,7 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
         Root<Usuario> root = query.from(Usuario.class);
 
-        query.select(root);
+        query.select(root).distinct(true);
 
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
