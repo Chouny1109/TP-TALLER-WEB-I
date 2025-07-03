@@ -196,6 +196,7 @@ public class PartidaController {
 
         return new ModelAndView("preguntas", modelo);
     }
+
     @PostMapping("/validar-rival")
     public ModelAndView validarRespuestaRival(
             @RequestParam("idRespuestaSeleccionada") Long idRespuestaSeleccionada,

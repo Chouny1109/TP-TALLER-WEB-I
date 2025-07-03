@@ -250,6 +250,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
+    let terminada =/*[[${terminoPartida}]]*/ false;
     let respondida = /*[[${respondida}]]*/ false;
     let modoJuego = /*[['' + ${modoJuego.name()}]]*/ '';
 
@@ -257,7 +258,7 @@
     console.log("respondida =", respondida);
     console.log("modoJuego =", modoJuego);
 
-    if (respondida === true && modoJuego === 'SUPERVIVENCIA') {
+    if (respondida === true && modoJuego === 'SUPERVIVENCIA' && !terminada) {
         const formSiguiente = document.getElementById("formSiguientePregunta");
         if (formSiguiente) {
             setTimeout(() => formSiguiente.submit(), 2000);
@@ -289,7 +290,7 @@
                 }
                 const contenedorVolver = document.getElementById('contenedorVolver');
                 if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
-                    contenedorVolver.innerHTML = '<a href="home"  id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
+                    contenedorVolver.innerHTML = '<a href="spring/home"  id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
                 }
             } else {
                 if(contenedorMensaje) contenedorMensaje.textContent = '';
