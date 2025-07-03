@@ -215,22 +215,21 @@ public class PartidaController {
                 : null;
         Boolean tiempoTerminadoRespuestaNula = (idRespuestaSeleccionada == -1);
 
-        // BUSCAR ResultadoRespuesta por PARTIDA + USUARIO + PREGUNTA
         ResultadoRespuesta resultadoRespuesta = servicioPartida.obtenerResultadoPorPartidaUsuarioYPregunta(idPartida, usuario, preguntaResp);
 
+        // Si no existe, crearla con orden correspondiente
         if (resultadoRespuesta == null) {
-            // No existe resultado para esa pregunta, creamos uno nuevo con siguiente orden
             resultadoRespuesta = servicioPartida.crearResultadoRespuestaConSiguienteOrden(
-                    preguntaRespondida, idPartida, usuario, idRespuestaSeleccionada);
-        } else {
-            // Si existe pero no tiene respuesta, actualizar
-            if (resultadoRespuesta.getRespuestaSeleccionada() == null) {
-                resultadoRespuesta.setRespuestaSeleccionada(respuestaSeleccionada);
-                resultadoRespuesta.setTiempoTerminadoRespuestaNula(tiempoTerminadoRespuestaNula);
-                servicioPartida.actualizarResultadoRespuesta(resultadoRespuesta);
-            }
+                    preguntaRespondida, idPartida, usuario, idRespuestaSeleccionada
+            );
+        } else if (resultadoRespuesta.getRespuestaSeleccionada() == null) {
+            // Si existe pero aún no se había respondido, actualizarla
+            resultadoRespuesta.setRespuestaSeleccionada(respuestaSeleccionada);
+            resultadoRespuesta.setTiempoTerminadoRespuestaNula(tiempoTerminadoRespuestaNula);
+            servicioPartida.actualizarResultadoRespuesta(resultadoRespuesta);
         }
 
+        // Chequear si ambos respondieron
         boolean ambosRespondieron = servicioPartida.chequearAmbosRespondieron(idPartida, usuario, resultadoRespuesta.getOrden());
 
         ResultadoRespuesta siguiente = null;
@@ -243,11 +242,27 @@ public class PartidaController {
         if (siguiente != null) {
             modelo.put("pregunta", siguiente.getPregunta());
             modelo.put("categoria", siguiente.getPregunta().getTipoPregunta().name());
+        } else if (!terminoPartida) {
+            // Buscar si ya se generó la siguiente pregunta (orden siguiente)
+            Integer siguienteOrden = resultadoRespuesta.getOrden() + 1;
+            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, siguienteOrden);
+
+            if (siguienteGenerada != null) {
+                modelo.put("pregunta", siguienteGenerada.getSiguientePregunta());
+                modelo.put("categoria", siguienteGenerada.getSiguientePregunta().getTipoPregunta().name());
+            } else {
+                // No hay siguiente, mostrar la actual con mensaje
+                modelo.put("pregunta", resultadoRespuesta.getPregunta());
+                modelo.put("mensajeFinal", "No se pudo obtener la siguiente pregunta.");
+                modelo.put("mostrarVolver", true);
+            }
+
         } else {
+            // Partida finalizada
             modelo.put("pregunta", resultadoRespuesta.getPregunta());
-            modelo.put("terminoPartida", terminoPartida);
-            modelo.put("mensajeFinal", terminoPartida ? "¡La partida ha finalizado!" : null);
-            modelo.put("mostrarVolver", terminoPartida);
+            modelo.put("terminoPartida", true);
+            modelo.put("mensajeFinal", "¡La partida ha finalizado!");
+            modelo.put("mostrarVolver", true);
         }
 
         modelo.put("modoJuego", modoJuego);
