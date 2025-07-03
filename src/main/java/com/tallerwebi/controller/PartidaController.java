@@ -196,7 +196,6 @@ public class PartidaController {
 
         return new ModelAndView("preguntas", modelo);
     }
-
     @PostMapping("/validar-rival")
     public ModelAndView validarRespuestaRival(
             @RequestParam("idRespuestaSeleccionada") Long idRespuestaSeleccionada,
@@ -217,19 +216,16 @@ public class PartidaController {
 
         ResultadoRespuesta resultadoRespuesta = servicioPartida.obtenerResultadoPorPartidaUsuarioYPregunta(idPartida, usuario, preguntaResp);
 
-        // Si no existe, crearla con orden correspondiente
         if (resultadoRespuesta == null) {
             resultadoRespuesta = servicioPartida.crearResultadoRespuestaConSiguienteOrden(
                     preguntaRespondida, idPartida, usuario, idRespuestaSeleccionada
             );
         } else if (resultadoRespuesta.getRespuestaSeleccionada() == null) {
-            // Si existe pero aún no se había respondido, actualizarla
             resultadoRespuesta.setRespuestaSeleccionada(respuestaSeleccionada);
             resultadoRespuesta.setTiempoTerminadoRespuestaNula(tiempoTerminadoRespuestaNula);
             servicioPartida.actualizarResultadoRespuesta(resultadoRespuesta);
         }
 
-        // Chequear si ambos respondieron
         boolean ambosRespondieron = servicioPartida.chequearAmbosRespondieron(idPartida, usuario, resultadoRespuesta.getOrden());
 
         ResultadoRespuesta siguiente = null;
@@ -237,39 +233,71 @@ public class PartidaController {
             siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego);
         }
 
-        boolean terminoPartida = (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) && (siguiente == null);
+        boolean terminoPartida = false;
+        if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA && siguiente == null) {
+            int ordenSiguiente = resultadoRespuesta.getOrden() + 1;
+            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, ordenSiguiente);
+            terminoPartida = (siguienteGenerada == null); // SOLO termina si no hay siguiente
+        }
 
         if (siguiente != null) {
+            // Hay siguiente pregunta, mostrarla
             modelo.put("pregunta", siguiente.getPregunta());
             modelo.put("categoria", siguiente.getPregunta().getTipoPregunta().name());
+            modelo.put("respondida", false);
         } else if (!terminoPartida) {
-            // Buscar si ya se generó la siguiente pregunta (orden siguiente)
-            Integer siguienteOrden = resultadoRespuesta.getOrden() + 1;
-            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, siguienteOrden);
+            // Aún no terminó, pero esperando al rival o la siguiente ya fue generada
+            int ordenSiguiente = resultadoRespuesta.getOrden() + 1;
+            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, ordenSiguiente);
 
             if (siguienteGenerada != null) {
-                modelo.put("pregunta", siguienteGenerada.getSiguientePregunta());
-                modelo.put("categoria", siguienteGenerada.getSiguientePregunta().getTipoPregunta().name());
+                Pregunta pregunta = siguienteGenerada.getSiguientePregunta();
+                modelo.put("pregunta", pregunta);
+                modelo.put("categoria", pregunta.getTipoPregunta().name());
+                modelo.put("respondida", false);
             } else {
-                // No hay siguiente, mostrar la actual con mensaje
+                // Todavía no se generó la siguiente porque falta el rival
                 modelo.put("pregunta", resultadoRespuesta.getPregunta());
-                modelo.put("mensajeFinal", "No se pudo obtener la siguiente pregunta.");
+                modelo.put("respondida", true);
+                modelo.put("mensajeFinal", "Esperando a tu rival...");
+
+                // 🔴 CLAVE: para pintar correctamente botones en la vista
+                modelo.put("idRespuestaSeleccionada",
+                        resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
+                modelo.put("respuestaCorrecta",
+                        resultadoRespuesta.getPregunta().getRespuestas().stream()
+                                .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                                .findFirst()
+                                .orElse(null));
+            }
+        } else {
+            // Terminó la partida
+            modelo.put("pregunta", resultadoRespuesta.getPregunta());
+            modelo.put("orden", resultadoRespuesta.getOrden());
+
+            if(servicioPartida.partidaTerminada(idPartida)) {
+                modelo.put("terminoPartida", true);
+                modelo.put("mensajeFinal", "¡La partida ha finalizado!");
                 modelo.put("mostrarVolver", true);
             }
 
-        } else {
-            // Partida finalizada
-            modelo.put("pregunta", resultadoRespuesta.getPregunta());
-            modelo.put("terminoPartida", true);
-            modelo.put("mensajeFinal", "¡La partida ha finalizado!");
-            modelo.put("mostrarVolver", true);
+            modelo.put("respondida", true);
+
+            // 🔴 CLAVE para pintar las opciones en vista final
+            modelo.put("idRespuestaSeleccionada",
+                    resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
+            modelo.put("respuestaCorrecta",
+                    resultadoRespuesta.getPregunta().getRespuestas().stream()
+                            .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                            .findFirst()
+                            .orElse(null));
         }
 
         modelo.put("modoJuego", modoJuego);
         modelo.put("idUsuario", idUsuario);
         modelo.put("idPartida", idPartida);
-        modelo.put("respondida", false);
 
         return new ModelAndView("preguntas", modelo);
     }
+
 }
