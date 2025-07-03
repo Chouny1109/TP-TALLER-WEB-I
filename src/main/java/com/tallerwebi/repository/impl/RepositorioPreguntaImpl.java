@@ -110,7 +110,7 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
                 .collect(Collectors.toList());
 
         String hql = "select distinct p from Pregunta p " +
-                "where p.id not in (" +
+                "where p.habilitada = true and p.id not in (" +
                 "   select urp.pregunta.id from UsuarioRespondePregunta urp " +
                 "   where urp.usuario.id in (:idsJugadores)" +
                 ") " +
