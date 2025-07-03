@@ -47,17 +47,16 @@ public class RepositorioMisionUsuarioImpl implements RepositorioMisionUsuario {
     }
 
     @Override
-    public List<Mision> obtenerMisionesDelUsuarioPorId(Long id) {
+    public List<UsuarioMision> obtenerMisionesDelUsuarioPorId(Long id) {
 
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
-        CriteriaQuery<Mision> query = builder.createQuery(Mision.class);
+        CriteriaQuery<UsuarioMision> query = builder.createQuery(UsuarioMision.class);
         Root<UsuarioMision> root = query.from(UsuarioMision.class);
 
-        query.select(root.get("mision"));//obtenemos el atributo mision de UsuarioMision
-
-        query.where(builder.equal(root.get("usuario").get("id"), id));
-
+        query.select(root)
+                .where(builder.equal(root.get("usuario").get("id"), id));
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
+
     }
 
     @Override

@@ -73,19 +73,17 @@ public class ServicioRegistroImpl implements ServicioRegistro {
 
         if (registrado) {
             Avatar avatar = this.repositorioAvatar.obtenerAvatar(1L);
-
             UsuarioAvatar relacion = new UsuarioAvatar();
             relacion.setAvatar(avatar);
             relacion.setUsuario(usuario);
             relacion.setEstado(ESTADO_AVATAR.SELECCIONADO);
 
+            Usuario usuarioBd = this.repositorioUsuario.buscar(usuario.getEmail());
+
+            this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd);
             this.repositorioUsuario.asignarAvatarPorDefecto(relacion);
         }
 
-        if (registrado) {
-            Usuario usuarioBd = this.repositorioUsuario.buscar(usuario.getEmail());
-            this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd);
-        }
         return registrado;
     }
 }

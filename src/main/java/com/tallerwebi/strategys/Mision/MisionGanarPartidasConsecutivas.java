@@ -15,7 +15,6 @@ import java.util.List;
 @Component
 public class MisionGanarPartidasConsecutivas implements EstrategiaMision {
 
-    private static final int CANTIDAD_DE_VICTORIAS_CONSECUTIVAS = 5;
     private final RepositorioPartida repositorioPartida;
     private final RepositorioMisionUsuario repositorioMisionUsuario;
 
@@ -30,6 +29,8 @@ public class MisionGanarPartidasConsecutivas implements EstrategiaMision {
 
         if (usuario != null) {
             int contador = 0;
+            Integer progreso = usuarioMision.getProgreso();
+            Integer objetivo = usuarioMision.getMision().getCantidad();
             LocalDateTime fecha = LocalDateTime.now();
             List<UsuarioPartida> usuarioPartidas = this.repositorioPartida.
                     obtenerLasPartidasDelUsuarioParaDeterminadaFecha(usuario.getId(), fecha);
@@ -38,7 +39,8 @@ public class MisionGanarPartidasConsecutivas implements EstrategiaMision {
                 if (partida.getEstado().equals(ESTADO_PARTIDA_JUGADOR.VICTORIA)) {
                     contador++;
 
-                    if (contador == CANTIDAD_DE_VICTORIAS_CONSECUTIVAS) {
+                    if (contador == objetivo) {
+                        usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
                         usuarioMision.setCompletada(Boolean.TRUE);
                         this.repositorioMisionUsuario.save(usuarioMision);
                         return;

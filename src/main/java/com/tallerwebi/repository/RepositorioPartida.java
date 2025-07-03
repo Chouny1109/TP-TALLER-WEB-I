@@ -60,4 +60,5 @@ public interface RepositorioPartida {
     ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int nuevoOrden, Pregunta pregunta);
 
     ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp);
+
 }

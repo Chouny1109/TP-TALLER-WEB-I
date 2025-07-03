@@ -1,7 +1,5 @@
 package com.tallerwebi.model;
 
-import com.sun.istack.NotNull;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -14,25 +12,22 @@ public class UsuarioMision {
     )
     private Long id;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "mision_id")
     private Mision mision;
 
-    @NotNull
     @Column(nullable = false)
     private Boolean canjeada;
 
-    @NotNull
+    private Integer progreso;
+
     @Column(nullable = false)
     private Boolean completada;
 
-    @NotNull
     private LocalDate fechaDeAsignacion;
 
     public UsuarioMision() {
@@ -43,6 +38,7 @@ public class UsuarioMision {
         this.mision = mision;
         this.canjeada = false;
         this.completada = false;
+        this.progreso = 0;
         this.fechaDeAsignacion = LocalDate.now();
     }
 
@@ -84,5 +80,21 @@ public class UsuarioMision {
 
     public void setCompletada(Boolean completada) {
         this.completada = completada;
+    }
+
+    public Integer getProgreso() {
+        return progreso;
+    }
+
+    public void setProgreso(Integer progreso) {
+        this.progreso = progreso;
+    }
+
+    public LocalDate getFechaDeAsignacion() {
+        return fechaDeAsignacion;
+    }
+
+    public void setFechaDeAsignacion(LocalDate fechaDeAsignacion) {
+        this.fechaDeAsignacion = fechaDeAsignacion;
     }
 }

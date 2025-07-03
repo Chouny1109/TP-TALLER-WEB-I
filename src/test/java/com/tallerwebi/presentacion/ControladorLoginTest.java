@@ -91,7 +91,7 @@ public class ControladorLoginTest {
 		verify(sessionMock, never()).setAttribute(eq("USUARIO"), any());
 	}
 	private void thenSeRedirigeAlHome(ModelAndView mav) {
-		assertThat(mav.getViewName(), equalToIgnoringCase("redirect:/home"));
+		assertThat(mav.getViewName(), equalToIgnoringCase("redirect:/admin"));
 		verify(sessionMock, times(1)).setAttribute("ROL", usuarioMock.getRol());
 		verify(sessionMock, times(1)).setAttribute("USUARIO", usuarioMock);
 	}

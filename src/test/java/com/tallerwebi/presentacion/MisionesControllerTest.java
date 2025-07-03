@@ -4,6 +4,7 @@ import com.tallerwebi.controller.MisionesController;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ public class MisionesControllerTest {
     private SessionUtil sessionUtil;
     private HttpServletRequest request;
     private MisionesController misionesController;
-    private final List<Mision> misionesMock = List.of(new Mision("Mision 1", 10, 10));
+    private final List<UsuarioMisionDTO> misionesMock = List.of(new UsuarioMisionDTO("Mision 1", 0, 5, 500, 100, false, false));
 
     @BeforeEach
     public void setUp() {
@@ -36,13 +37,13 @@ public class MisionesControllerTest {
     }
 
     @Test
-    public void caundoCargoLaVistaMisionesMeDevuelveUnModelAndView() throws UsuarioNoExistente {
-        Usuario logueado = givenDadoUnUsuarioLogueadoConMisiones();
+    public void caundoCargoLaVistaObtenerMisionesMeDevuelveUnModelAndView() throws UsuarioNoExistente {
+        Usuario logueado = givenDadoUnUsuarioLogueadoConObtenerMisiones();
         ModelAndView mav = whenCargoLaVista(request);
         thenLaVistaMeDevueleveUnModelAnView(mav, logueado);
     }
 
-    private Usuario givenDadoUnUsuarioLogueadoConMisiones() throws UsuarioNoExistente {
+    private Usuario givenDadoUnUsuarioLogueadoConObtenerMisiones() throws UsuarioNoExistente {
         Usuario logueado = new Usuario();
         logueado.setId(1L);
 
@@ -53,7 +54,7 @@ public class MisionesControllerTest {
     }
 
     private ModelAndView whenCargoLaVista(HttpServletRequest request) throws UsuarioNoExistente {
-        return misionesController.misiones(request);
+        return misionesController.obtenerMisiones(request);
     }
 
     private void thenLaVistaMeDevueleveUnModelAnView(ModelAndView mav, Usuario logueado) {

@@ -3,6 +3,7 @@ package com.tallerwebi.controller;
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
+import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,11 @@ public class PartidaController {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     @Autowired
     private ServicioPartida servicioPartida;
-    private ServicioUsuario servicioUsuario;
+    private IServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public PartidaController(ServicioPartida servicioPartida, ServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate) {
+    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate) {
         this.servicioPartida = servicioPartida;
         this.servicioUsuario = servicioUsuario;
         this.messagingTemplate = messagingTemplate;

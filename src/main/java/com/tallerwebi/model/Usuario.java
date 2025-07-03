@@ -4,7 +4,10 @@ import com.tallerwebi.dominio.enums.ROL_USUARIO;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -36,6 +39,19 @@ Usuario {
 
     private Integer nivel = 1;
 
+    @Column(nullable = false)
+    private Integer monedas = 0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "amistad",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "amigo_id")
+    )
+    @JsonIgnoreProperties("amigos")
+    private Set<Usuario> amigos = new HashSet<>();
+
+
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.
         Fetch Eager -> Te tree todos los datos de ese usuario (Si tenemos muchos datos puede ser ineficiente).
@@ -45,7 +61,6 @@ Usuario {
             fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<UsuarioMision> misiones;
-
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -150,4 +165,17 @@ Usuario {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public Integer getMonedas() { return monedas; }
+
+    public void setMonedas(Integer monedas) { this.monedas = monedas; }
+
+    public Set<Usuario> getAmigos() {
+        return amigos;
+    }
+
+    public void setAmigos(Set<Usuario> amigos) {
+        this.amigos = amigos;
+    }
+
 }

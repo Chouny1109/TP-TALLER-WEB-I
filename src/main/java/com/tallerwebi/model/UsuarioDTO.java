@@ -1,18 +1,11 @@
 package com.tallerwebi.model;
 
 public class UsuarioDTO {
-
-
     private Long id;
-
-
-
     private String nombreUsuario;
-
-
     private Integer nivel;
-
     private String linkAvatar;
+    private String email;
 
     public UsuarioDTO(Usuario usuario, String linkAvatar) {
         this.id = usuario.getId();
@@ -20,8 +13,16 @@ public class UsuarioDTO {
         this.nivel = usuario.getNivel();
         this.linkAvatar = linkAvatar;
     }
-    public UsuarioDTO() {}
 
+    public UsuarioDTO(Usuario usuario) {
+        this.id = usuario.getId();
+        this.nombreUsuario = usuario.getNombreUsuario();
+        this.nivel = usuario.getNivel();
+        this.email = usuario.getEmail();
+    }
+
+    public UsuarioDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -30,6 +31,7 @@ public class UsuarioDTO {
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -37,6 +39,7 @@ public class UsuarioDTO {
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
+
     public Integer getNivel() {
         return nivel;
     }
@@ -44,9 +47,11 @@ public class UsuarioDTO {
     public void setNivel(Integer nivel) {
         this.nivel = nivel;
     }
+
     public String getLinkAvatar() {
         return linkAvatar;
     }
+
     public void setLinkAvatar(String linkAvatar) {
         this.linkAvatar = linkAvatar;
     }

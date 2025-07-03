@@ -3,6 +3,7 @@ package com.tallerwebi.controller;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,17 @@ public class MisionesController {
     }
 
     @GetMapping
-    public ModelAndView misiones(HttpServletRequest request) throws UsuarioNoExistente {
+    public ModelAndView obtenerMisiones(HttpServletRequest request) throws UsuarioNoExistente {
         ModelMap modelMap = new ModelMap();
 
         Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
 
-        List<Mision> misionesDelUsuario = this.servicioMisionesUsuario.obtenerLasMisionesDelUsuarioPorId(logueado.getId());
+        List<UsuarioMisionDTO> misionesDelUsuario = this.servicioMisionesUsuario.
+                obtenerLasMisionesDelUsuarioPorId(logueado.getId());
 
         modelMap.addAttribute("misiones", misionesDelUsuario);
 
         return new ModelAndView("misiones", modelMap);
     }
+
 }

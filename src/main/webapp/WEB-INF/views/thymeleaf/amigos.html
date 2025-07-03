@@ -242,49 +242,53 @@
 
     <section class="content" >
         <div id="seccion-amigos">
-        <h3>Mis amigos</h3>
-        <div class="d-flex overflow-auto px-2">
+            <h3>Mis amigos</h3>
             <div th:each="amigo : ${amigos}" class="list-group-item me-2" style="min-width: 250px;">
                 <div class="amigo-info d-flex align-items-center mb-2">
-                    <img th:src="@{${amigo.imagen}}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
-                    <span th:text="${amigo.nombre}">Usuario_X</span>
+                    <!--<img th:src="@{${amigo.imagen}}" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">-->
+                    <img src="" alt="Perfil" class="profile-pic rounded-circle me-2" width="40" height="40">
+                    <span th:text="${amigo.nombreUsuario}">Usuario_X</span>
                 </div>
-                <button class="btn-desafiar">Desafiar</button>
+                <div class="d-flex gap-2">
+                    <form th:action="@{/amigos/eliminar}" method="post">
+                        <input type="hidden" name="idAmigo" th:value="${amigo.id}" />
+                        <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                    </form>
+                    <button class="btn-desafiar">Desafiar</button>
+                </div>
             </div>
-        </div>
         </div>
 
 
         <div id="seccion-anadir" class="d-none">
             <h3>Añadir amigo</h3>
-            <form class="d-flex flex-column gap-3">
-                <input type="text" class="form-control" placeholder="Buscar por nombre de usuario" />
+            <form th:action="@{/amigos/enviar-solicitud}" method="post" class="d-flex flex-column gap-3">
+                <input type="text" name="nombreUsuario" class="form-control" placeholder="Buscar por nombre de usuario" required />
                 <button type="submit" class="btn btn-success align-self-start">Enviar solicitud</button>
             </form>
-            <div class="mt-4 text-muted" style="font-weight: 500;">Puedes buscar un amigo por su nombre exacto o alias.</div>
+            <div class="mt-4 text-muted" style="font-weight: 500;">
+                Puedes buscar un amigo por su nombre exacto o alias.
+            </div>
         </div>
 
         <div id="seccion-solicitudes" class="d-none">
             <h3>Solicitudes</h3>
             <div class="d-flex flex-column gap-3">
-                <div class="list-group-item">
+                <div th:each="solicitud : ${solicitudes}" class="list-group-item">
                     <div class="amigo-info">
-                        <img src="/img/perfil-ejemplo1.jpg" alt="Perfil" />
-                        <span>Usuario123</span>
+                        <!--<img th:src="@{${solicitud.remitente.imagen}}" alt="Perfil" />-->
+                        <img src="" alt="Perfil">
+                        <span th:text="${solicitud.remitente.nombreUsuario}">Usuario</span>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-success btn-sm">Aceptar</button>
-                        <button class="btn btn-danger btn-sm">Rechazar</button>
-                    </div>
-                </div>
-                <div class="list-group-item">
-                    <div class="amigo-info">
-                        <img src="/img/perfil-ejemplo2.jpg" alt="Perfil" />
-                        <span>Estrella99</span>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-success btn-sm">Aceptar</button>
-                        <button class="btn btn-danger btn-sm">Rechazar</button>
+                        <form th:action="@{/amigos/aceptar}" method="post">
+                            <input type="hidden" name="idSolicitud" th:value="${solicitud.id}" />
+                            <button class="btn btn-success btn-sm" type="submit">Aceptar</button>
+                        </form>
+                        <form th:action="@{/amigos/rechazar}" method="post">
+                            <input type="hidden" name="idSolicitud" th:value="${solicitud.id}" />
+                            <button class="btn btn-danger btn-sm" type="submit">Rechazar</button>
+                        </form>
                     </div>
                 </div>
             </div>

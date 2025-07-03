@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository("repositorioUsuario")
-@Transactional
 public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
     private final SessionFactory sessionFactory;
@@ -60,14 +62,20 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
         return (Usuario) session.createCriteria(Usuario.class)
                 .add(Restrictions.eq("id", id))
+                .setFetchMode("amigos", FetchMode.JOIN)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .uniqueResult();
     }
 
     @Override
     public List<Usuario> obtenerUsuarios() {
-        Session session = sessionFactory.getCurrentSession();
-        return (List<Usuario>) session.createCriteria(Usuario.class)
-                .list();
+        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Usuario> query = builder.createQuery(Usuario.class);
+        Root<Usuario> root = query.from(Usuario.class);
+
+        query.select(root).distinct(true);
+
+        return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
     @Override
@@ -98,5 +106,20 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         return (Usuario) criteria.uniqueResult();
     }
 
+    @Override
+    public List<Usuario> obtenerAmigos(Long idUsuario) {
+        Usuario usuario = buscarUsuarioPorId(idUsuario);
+        if (usuario != null) {
+            return List.copyOf(usuario.getAmigos());
+        }
+        return List.of();
+    }
 
+    @Override
+    public Usuario buscarPorNombreUsuario(String nombreUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+        return (Usuario) session.createCriteria(Usuario.class)
+                .add(Restrictions.eq("nombreUsuario", nombreUsuario))
+                .uniqueResult();
+    }
 }
