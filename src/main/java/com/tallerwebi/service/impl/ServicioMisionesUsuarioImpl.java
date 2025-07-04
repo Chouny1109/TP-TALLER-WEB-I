@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.dominio.enums.TIPO_MISION;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
@@ -134,7 +135,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
                 obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate.now());
         boolean tieneMisionesAsignadas = tieneMisionesAsignadas(usuario, usuariosConMisiones);
 
-        if (!tieneMisionesAsignadas) {
+        if (!tieneMisionesAsignadas && ROL_USUARIO.JUGADOR.equals(usuario.getRol())) {
             List<Mision> misionesUsuario = obtenerMisionesAleatorias(this.repositorioMisiones.obtenerMisiones());
             this.repositorioMisionUsuario.saveAll(crearRelacionUsuarioMision(usuario, misionesUsuario));
         }
