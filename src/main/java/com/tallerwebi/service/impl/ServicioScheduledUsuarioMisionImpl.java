@@ -22,10 +22,9 @@ public class ServicioScheduledUsuarioMisionImpl implements ServicioScheduledMisi
     @Autowired
     public ServicioScheduledUsuarioMisionImpl(ServicioMisionesUsuario servicioMisionesUsuario) {
         this.servicioMisionesUsuario = servicioMisionesUsuario;
-        System.out.println("🔥 Instancia creada: " + this.hashCode());
     }
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void asignarMisionesDiarias() {
         List<Usuario> usuariosBd = servicioMisionesUsuario.obtenerUsuarios();

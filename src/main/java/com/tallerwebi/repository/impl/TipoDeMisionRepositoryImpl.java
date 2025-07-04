@@ -42,4 +42,11 @@ public class TipoDeMisionRepositoryImpl implements TipoDeMisionRepository {
     public void save(TipoDeMision tipoMision) {
         sessionFactory.getCurrentSession().save(tipoMision);
     }
+
+    @Override
+    public void saveAll(List<TIPO_MISION> tiposDeMision) {
+        for (TIPO_MISION tipo : tiposDeMision) {
+            sessionFactory.getCurrentSession().save(new TipoDeMision(tipo));
+        }
+    }
 }

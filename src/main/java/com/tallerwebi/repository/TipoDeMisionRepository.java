@@ -11,4 +11,5 @@ public interface TipoDeMisionRepository {
 
     void save(TipoDeMision tipoMision);
 
+    void saveAll(List<TIPO_MISION> tiposDeMision);
 }
