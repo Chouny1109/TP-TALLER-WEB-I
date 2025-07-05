@@ -7,36 +7,144 @@
     <title>Misiones</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
-    <!-- custom style -->
-    <link rel="stylesheet" th:href="@{/css/misiones.css}">
 </head>
 
 <body>
-<header class="header">
-    <div class="header-content">
-        <a th:href="@{/home}"><img th:src="@{/resources/imgs/arrow.svg}" alt=""></a>
-        <h2>Misiones</h2>
-    </div>
-</header>
+
+<style>
+    body {
+        background-color: #ECFAE5;
+        width: 100%;
+        min-height: 100dvh;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container-misiones {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin: 2rem auto;
+        width: 100%;
+        min-width: 650px;
+    }
+
+    .card-misiones {
+        display: flex;
+        background-color: #98CD00;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 800px;
+        min-height: 150px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.07), 0 6px 20px 0 rgba(0, 0, 0, 0.02);
+    }
+
+    .card-container-left {
+        background-color: white;
+        padding: 1rem;
+        width: fit-content;
+    }
+
+    .card-container-left img {
+        width: 70px;
+    }
+
+    .card-reward {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(152, 205, 0, 0.41);
+        padding: 1rem;
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        min-width: 120px;
+    }
+
+    .card-reward span {
+        color: #1B676B;
+        font-weight: bold;
+    }
+
+    .card-information {
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .cambiar-mision {
+        background-color: white;
+        border-radius: 7px;
+        padding: 5px;
+        display: flex;
+        place-self: end;
+        cursor: pointer;
+        width: fit-content;
+        margin-bottom: 1rem;
+    }
+
+    .card-title {
+        color: #0d3235;
+        text-align: center;
+        font-weight: normal;
+        font-size: 1.2rem;
+    }
+
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .progress {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .progress span {
+        color: #0d3235;
+        z-index: 100;
+        text-align: center;
+        font-weight: bold;
+    }
+
+</style>
+
 
 <main class="main">
 
-    <!--Itero el model que le mando del controlador y completo con la informacion del mismo-->
-    <div class="container" th:if="${misiones != null && misiones.size() > 0}">
-        <div class="card" th:each="mision : ${misiones}">
-            <div class="card-container">
-                <span class="card-title" th:text="${mision.descripcion}"></span>
-                <div class="card-buttons">
-                    <button type="button" class="card-button">Canjear</button>
-                    <a th:href="@{/partida/cargar}" class="card-button">Ir</a>
+    <div class="container-misiones" th:if="${misiones != null && misiones.size() > 0}">
+        <div class="card-misiones" th:each="mision : ${misiones}">
+            <div class="card-container-left">
+                <div class="card-reward">
+                    <img th:src="@{/imgs/Recompensa.webp}" alt="">
+                    <span th:text="|x${mision.copas}|"></span>
                 </div>
             </div>
-            <progress class="card-progress" max="100" value="10"></progress>
+            <div class="card-information">
+                <div class="cambiar-mision">
+                    <img th:src="@{/imgs/arrow-counterclockwise.svg}" alt="">
+                </div>
+                <div class="card-content">
+                    <span th:text="${mision.descripcion}" class="card-title"></span>
+                    <div class="progress" th:style="'height:20px'">
+                        <div class="determinate"
+                             th:style="'height:20px;width:' + (${mision.progreso} * 100 / ${mision.cantidad}) + '%'">
+                        </div>
+                        <span th:text="|${mision.progreso} / ${mision.cantidad}|"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
     <p th:if="${misiones==null or misiones.size()==0}">Actualmente no tenes misiones para mostrar.</p>
 </main>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 </body>
 </html>

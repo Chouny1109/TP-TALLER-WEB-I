@@ -13,7 +13,7 @@ public interface RepositorioMisionUsuario {
 
     void saveAll(List<UsuarioMision> misiones);
 
-    List<UsuarioMision> obtenerMisionesDelUsuarioPorId(Long id);
+    List<UsuarioMision> obtenerMisionesDelUsuarioPorId(Long id,LocalDate fecha);
 
     Set<Long> obtenerElIdDeTodosLosUsuariosConMisionesAsignadas(LocalDate fechaActual);
 
