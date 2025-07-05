@@ -8,11 +8,12 @@ import com.tallerwebi.model.UsuarioMisionDTO;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 public interface ServicioMisionesUsuario {
-    List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id) throws UsuarioNoExistente;
+    List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) throws UsuarioNoExistente;
 
     void asignarMisionesAUsuario(Usuario usuario);
 

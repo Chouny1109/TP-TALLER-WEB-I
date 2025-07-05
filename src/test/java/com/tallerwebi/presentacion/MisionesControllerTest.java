@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +49,7 @@ public class MisionesControllerTest {
         logueado.setId(1L);
 
         when(sessionUtil.getUsuarioLogueado(request)).thenReturn(logueado);
-        when(servicioMisiones.obtenerLasMisionesDelUsuarioPorId(logueado.getId())).thenReturn(misionesMock);
+        when(servicioMisiones.obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now())).thenReturn(misionesMock);
 
         return logueado;
     }

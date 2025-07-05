@@ -48,20 +48,23 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Transactional(readOnly = true)
     @Override
-    public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id) {
-        List<UsuarioMision> usuarioMisiones = this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id);
+    public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) {
+        List<UsuarioMision> usuarioMisiones = this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id, fecha);
 
-        return usuarioMisiones.stream().map(m ->
-                        new UsuarioMisionDTO(
-                                m.getMision().getDescripcion(),
-                                m.getProgreso(),
-                                m.getMision().getCantidad(),
-                                m.getMision().getExperiencia(),
-                                m.getMision().getCopas(),
-                                m.getCompletada(),
-                                m.getCanjeada()
-                        ))
-                .collect(Collectors.toList());
+        if (!usuarioMisiones.isEmpty()) {
+            return usuarioMisiones.stream().map(m ->
+                            new UsuarioMisionDTO(
+                                    m.getMision().getDescripcion(),
+                                    m.getProgreso(),
+                                    m.getMision().getCantidad(),
+                                    m.getMision().getExperiencia(),
+                                    m.getMision().getCopas(),
+                                    m.getCompletada(),
+                                    m.getCanjeada()
+                            ))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     @Transactional

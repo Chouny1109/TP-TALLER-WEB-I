@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -36,7 +37,7 @@ public class MisionesController {
         Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
 
         List<UsuarioMisionDTO> misionesDelUsuario = this.servicioMisionesUsuario.
-                obtenerLasMisionesDelUsuarioPorId(logueado.getId());
+                obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
 
         modelMap.addAttribute("misiones", misionesDelUsuario);
 
