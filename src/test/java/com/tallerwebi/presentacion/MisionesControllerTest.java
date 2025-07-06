@@ -2,7 +2,6 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.MisionesController;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
-import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.service.ServicioMisionesUsuario;
@@ -27,7 +26,7 @@ public class MisionesControllerTest {
     private SessionUtil sessionUtil;
     private HttpServletRequest request;
     private MisionesController misionesController;
-    private final List<UsuarioMisionDTO> misionesMock = List.of(new UsuarioMisionDTO("Mision 1", 0, 5, 500, 100, false, false));
+    private final List<UsuarioMisionDTO> misionesMock = List.of(new UsuarioMisionDTO(1L,"Mision 1", 0, 5, 500, 100, false, false));
 
     @BeforeEach
     public void setUp() {

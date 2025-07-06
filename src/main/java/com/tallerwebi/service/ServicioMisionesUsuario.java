@@ -15,6 +15,10 @@ import java.util.Set;
 public interface ServicioMisionesUsuario {
     List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) throws UsuarioNoExistente;
 
+    void actualizarUsuario(Usuario usuario);
+
+    void borrarRelacionUsuarioMision(UsuarioMision usuarioMision);
+
     void asignarMisionesAUsuario(Usuario usuario);
 
     void guardarRelacionesUsuarioMision(List<UsuarioMision> relaciones);
@@ -31,6 +35,9 @@ public interface ServicioMisionesUsuario {
 
     List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones);
 
+    UsuarioMision crearRelacionUsuarioMision(Usuario usuario, Mision mision);
+
     void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente;
 
+    void cambiarMision(Usuario logueado, Long idMision);
 }

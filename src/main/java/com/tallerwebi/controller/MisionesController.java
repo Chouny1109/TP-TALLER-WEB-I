@@ -1,7 +1,6 @@
 package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
-import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.service.ServicioMisionesUsuario;
@@ -10,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,13 @@ public class MisionesController {
         modelMap.addAttribute("misiones", misionesDelUsuario);
 
         return new ModelAndView("misiones", modelMap);
+    }
+
+    @PostMapping("/cambiarMision")
+    public String cambiarMision(@RequestParam Long idMision, HttpServletRequest request) {
+        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
+        servicioMisionesUsuario.cambiarMision(logueado, idMision);
+        return "redirect:/misiones";
     }
 
 }
