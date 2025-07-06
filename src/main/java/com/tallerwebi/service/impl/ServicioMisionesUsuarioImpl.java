@@ -13,6 +13,7 @@ import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.strategys.Mision.EstrategiaMision;
 import com.tallerwebi.strategys.Mision.MisionFactory;
 import com.tallerwebi.util.SessionUtil;
+import com.tallerwebi.util.ValidadorMision;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,18 +33,20 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     private final RepositorioMisiones repositorioMisiones;
     private final SessionUtil sessionUtil;
     private final MisionFactory misionFactory;
+    private final ValidadorMision validadorMision;
 
     public ServicioMisionesUsuarioImpl(RepositorioUsuario repositorioUsuario,
                                        RepositorioMisionUsuario repositorioMisionUsuario,
                                        RepositorioMisiones repositorioMisiones,
                                        SessionUtil sessionUtil,
-                                       MisionFactory misionFactory) {
+                                       MisionFactory misionFactory, ValidadorMision validadorMision) {
 
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioMisionUsuario = repositorioMisionUsuario;
         this.repositorioMisiones = repositorioMisiones;
         this.sessionUtil = sessionUtil;
         this.misionFactory = misionFactory;
+        this.validadorMision = validadorMision;
     }
 
     @Transactional(readOnly = true)
@@ -54,6 +57,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
         if (!usuarioMisiones.isEmpty()) {
             return usuarioMisiones.stream().map(m ->
                             new UsuarioMisionDTO(
+                                    m.getId(),
                                     m.getMision().getDescripcion(),
                                     m.getProgreso(),
                                     m.getMision().getCantidad(),
@@ -110,7 +114,12 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     @Override
     public List<UsuarioMision> crearRelacionUsuarioMision(Usuario usuario, List<Mision> misiones) {
         return misiones.stream().map(mision ->
-                new UsuarioMision(usuario, mision)).collect(Collectors.toList());
+                crearRelacionUsuarioMision(usuario, mision)).collect(Collectors.toList());
+    }
+
+    @Override
+    public UsuarioMision crearRelacionUsuarioMision(Usuario usuario, Mision mision) {
+        return new UsuarioMision(usuario, mision);
     }
 
     @Override
@@ -129,6 +138,35 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
                 }
             });
         }
+    }
+
+    @Override
+    @Transactional
+    public void cambiarMision(Usuario logueado, Long idMision) {
+        Usuario usuarioBd = repositorioUsuario.buscarUsuarioPorId(logueado.getId());
+        UsuarioMision usuarioMision = this.repositorioMisionUsuario.obtenerUsuarioMision(idMision);
+
+
+        this.validadorMision.validarMision(usuarioBd, usuarioMision);
+
+        usuarioBd.setMonedas(usuarioBd.getMonedas() - ValidadorMision.COSTO_MISION);
+        Mision nuevaMision = this.repositorioMisionUsuario.obtenerMisionNoAsignadaParaUsuario(usuarioBd.getId(), LocalDate.now());
+        this.repositorioMisionUsuario.save(crearRelacionUsuarioMision(usuarioBd, nuevaMision));
+
+        borrarRelacionUsuarioMision(usuarioMision);
+        actualizarUsuario(usuarioBd);
+    }
+
+    @Transactional
+    @Override
+    public void actualizarUsuario(Usuario usuario) {
+        this.repositorioUsuario.modificar(usuario);
+    }
+
+    @Transactional
+    @Override
+    public void borrarRelacionUsuarioMision(UsuarioMision usuarioMision) {
+        this.repositorioMisionUsuario.delete(usuarioMision);
     }
 
     @Transactional

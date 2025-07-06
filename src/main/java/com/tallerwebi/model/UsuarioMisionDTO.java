@@ -1,6 +1,7 @@
 package com.tallerwebi.model;
 
 public class UsuarioMisionDTO {
+    private Long id;
     private String descripcion;
     private Integer progreso;
     private Integer cantidad;
@@ -9,7 +10,8 @@ public class UsuarioMisionDTO {
     private Boolean completada;
     private Boolean canjeada;
 
-    public UsuarioMisionDTO(String descripcion, Integer progreso, Integer cantidad, Integer experiencia, Integer copas, Boolean completada, Boolean canjeada) {
+    public UsuarioMisionDTO(Long id, String descripcion, Integer progreso, Integer cantidad, Integer experiencia, Integer copas, Boolean completada, Boolean canjeada) {
+        this.id = id;
         this.descripcion = descripcion;
         this.progreso = progreso;
         this.cantidad = cantidad;
@@ -18,6 +20,7 @@ public class UsuarioMisionDTO {
         this.completada = completada;
         this.canjeada = canjeada;
     }
+
 
     public UsuarioMisionDTO() {
     }
@@ -76,5 +79,13 @@ public class UsuarioMisionDTO {
 
     public void setCanjeada(Boolean canjeada) {
         this.canjeada = canjeada;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

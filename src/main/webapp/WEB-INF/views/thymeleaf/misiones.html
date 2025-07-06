@@ -8,6 +8,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
 </head>
 
@@ -36,7 +37,6 @@
     .card-misiones {
         display: flex;
         background-color: #98CD00;
-        border-radius: 12px;
         width: 100%;
         max-width: 800px;
         min-height: 150px;
@@ -63,7 +63,7 @@
         border-radius: 50%;
         width: 100%;
         height: 100%;
-        min-width: 120px;
+        min-width: 130px;
     }
 
     .card-reward span {
@@ -106,11 +106,28 @@
         align-items: center;
     }
 
+    .button-modal {
+        border: none;
+        display: flex;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-left: auto;
+    }
+
     .progress span {
         color: #0d3235;
         z-index: 100;
         text-align: center;
         font-weight: bold;
+    }
+
+    .modal {
+        max-width: 450px;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
     }
 
 </style>
@@ -119,7 +136,7 @@
 <main class="main">
 
     <div class="container-misiones" th:if="${misiones != null && misiones.size() > 0}">
-        <div class="card-misiones" th:each="mision : ${misiones}">
+        <div class="card-misiones" th:each="mision,i : ${misiones}">
             <div class="card-container-left">
                 <div class="card-reward">
                     <img th:src="@{/imgs/Recompensa.webp}" alt="">
@@ -127,8 +144,24 @@
                 </div>
             </div>
             <div class="card-information">
-                <div class="cambiar-mision">
+
+                <!-- Modal Trigger -->
+                <button type="submit" th:attr="data-target='modal-' + ${i}" class=" modal-trigger button-modal">
                     <img th:src="@{/imgs/arrow-counterclockwise.svg}" alt="">
+                </button>
+
+                <!-- Modal Structure -->
+                <div th:attr="id='modal-' + ${i}" class="modal">
+                    <div class="modal-content ">
+                        <p class="modal-title"
+                           th:text="'¿Te gustaría canjear la misión ' + ${mision.descripcion} + ' por 800 monedas?'"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{/misiones/cambiarMision}" method="post">
+                            <input type="hidden" name="idMision" th:value="${mision.id}">
+                            <button type="submit" class="modal-close waves-effect waves-green btn-flat">Aceptar</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="card-content">
                     <span th:text="${mision.descripcion}" class="card-title"></span>
@@ -143,8 +176,14 @@
         </div>
     </div>
 
-    <p th:if="${misiones==null or misiones.size()==0}">Actualmente no tenes misiones para mostrar.</p>
+    <p th:if="${misiones==null or misiones.size()==0}">Actualmente no tenes misiones para mostrar</p>
 </main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let elems = document.querySelectorAll('.modal');
+        let instances = M.Modal.init(elems);
+    });
+</script>
 </body>
 </html>
