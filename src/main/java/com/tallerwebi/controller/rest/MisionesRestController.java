@@ -1,8 +1,6 @@
 package com.tallerwebi.controller.rest;
 
-import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Usuario;
-import com.tallerwebi.model.UsuarioDTO;
 import com.tallerwebi.model.UsuarioMisionDTO;
 import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.util.SessionUtil;
@@ -21,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/misiones")
+@RequestMapping("/api/misiones")
 public class MisionesRestController {
 
     private final SessionUtil session;
