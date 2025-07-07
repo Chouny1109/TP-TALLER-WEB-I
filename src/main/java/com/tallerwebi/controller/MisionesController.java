@@ -22,34 +22,36 @@ import java.util.List;
 @RequestMapping("/misiones")
 public class MisionesController {
 
-    private final ServicioMisionesUsuario servicioMisionesUsuario;
-    private final SessionUtil sessionUtil;
-
-    @Autowired
-    public MisionesController(ServicioMisionesUsuario servicioMisionesUsuario, SessionUtil sessionUtil) {
-        this.servicioMisionesUsuario = servicioMisionesUsuario;
-        this.sessionUtil = sessionUtil;
-    }
+//    private final ServicioMisionesUsuario servicioMisionesUsuario;
+//    private final SessionUtil sessionUtil;
+//
+//    @Autowired
+//    public MisionesController(ServicioMisionesUsuario servicioMisionesUsuario, SessionUtil sessionUtil) {
+//        this.servicioMisionesUsuario = servicioMisionesUsuario;
+//        this.sessionUtil = sessionUtil;
+//    }
 
     @GetMapping
-    public ModelAndView obtenerMisiones(HttpServletRequest request) throws UsuarioNoExistente {
-        ModelMap modelMap = new ModelMap();
-
-        Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
-
-        List<UsuarioMisionDTO> misionesDelUsuario = this.servicioMisionesUsuario.
-                obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
-
-        modelMap.addAttribute("misiones", misionesDelUsuario);
-
-        return new ModelAndView("misiones", modelMap);
+    //public ModelAndView obtenerMisiones(HttpServletRequest request)throws UsuarioNoExistente
+    public String cargarVistaMisiones() {
+//        ModelMap modelMap = new ModelMap();
+//
+//        Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
+//
+//        List<UsuarioMisionDTO> misionesDelUsuario = this.servicioMisionesUsuario.
+//                obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
+//
+//        modelMap.addAttribute("misiones", misionesDelUsuario);
+//
+//        return new ModelAndView("misiones", modelMap);
+        return "misiones";
     }
 
-    @PostMapping("/cambiarMision")
-    public String cambiarMision(@RequestParam Long idMision, HttpServletRequest request) {
-        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
-        servicioMisionesUsuario.cambiarMision(logueado, idMision);
-        return "redirect:/misiones";
-    }
+//    @PostMapping("/cambiarMision")
+//    public String cambiarMision(@RequestParam Long idMision, HttpServletRequest request) {
+//        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
+//        servicioMisionesUsuario.cambiarMision(logueado, idMision);
+//        return "redirect:/misiones";
+//    }
 
 }
