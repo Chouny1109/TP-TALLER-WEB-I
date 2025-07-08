@@ -39,7 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		MailTestConfig.class,
 		MockServicioRecoveryConfig.class,
 		MockSimpMessagingTemplateConfig.class,
-		MockSimpUserRegistryConfig.class
+		MockSimpUserRegistryConfig.class,
+		com.tallerwebi.config.DotenvConfig.class
 })
 public class ControladorLoginTest {
 
