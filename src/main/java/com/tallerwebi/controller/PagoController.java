@@ -11,6 +11,7 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioTienda;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Collections;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @Controller
 @RequestMapping("/pago")
@@ -31,11 +33,13 @@ public class PagoController {
 
     private final ServicioTienda servicioTienda;
     private final IServicioUsuario servicioUsuario;
+    private final String publicUrl;
 
     @Autowired
-    public PagoController(ServicioTienda servicioTienda, IServicioUsuario servicioUsuario) {
+    public PagoController(ServicioTienda servicioTienda, IServicioUsuario servicioUsuario, Dotenv dotenv) {
         this.servicioUsuario = servicioUsuario;
         this.servicioTienda = servicioTienda;
+        this.publicUrl = dotenv.get("PUBLIC_URL");
     }
 
     @GetMapping("/moneda/{id}")
@@ -46,20 +50,20 @@ public class PagoController {
 
             session.setAttribute("MONEDA_COMPRADA", id);
 
-            String host = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-
 
             PreferenceItemRequest item = PreferenceItemRequest.builder()
                     .title(moneda.getNombre())
+                    .description("Compra de moneda en TP Taller Web")
+                    .categoryId("others")
                     .quantity(1)
                     .unitPrice(BigDecimal.valueOf(moneda.getValor()))
                     .currencyId("ARS")
                     .build();
 
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                    .success(host + "/pago/confirmacion")
-                    .failure(host + "/pago/fallo")
-                    .pending(host + "/pago/pendiente")
+                    .success(publicUrl + "/spring/pago/confirmacion")
+                    .failure(publicUrl + "/spring/pago/fallo")
+                    .pending(publicUrl + "/spring/pago/pendiente")
                     .build();
 
             PreferenceRequest requestMP = PreferenceRequest.builder()
