@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/misiones")
+@RequestMapping("/api")
 public class MisionesRestController {
 
     private final SessionUtil session;
@@ -32,7 +32,7 @@ public class MisionesRestController {
         this.servicio = servicio;
     }
 
-    @GetMapping
+    @GetMapping("/misiones")
     public ResponseEntity<?> obtenerMisiones(HttpServletRequest request) {
         try {
             Usuario logueado = session.getUsuarioLogueado(request);
@@ -49,15 +49,9 @@ public class MisionesRestController {
             List<UsuarioMisionDTO> misionesDelUsuario = servicio.obtenerLasMisionesDelUsuarioPorId(
                     logueado.getId(), fechaActual);
 
-            if (misionesDelUsuario.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        Map.of(
-                                "error", "No se han encontrado misiones para el usuario"
-                        )
-                );
-            }
-
-            return ResponseEntity.ok(misionesDelUsuario);
+            return misionesDelUsuario.isEmpty() ?
+                    ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
+                    ResponseEntity.ok(misionesDelUsuario);
 
         } catch (Exception e) {
             LOGGER.error("Error al obtener las misiones del usuario");
