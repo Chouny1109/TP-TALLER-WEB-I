@@ -54,21 +54,18 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) {
         List<UsuarioMision> usuarioMisiones = this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id, fecha);
 
-        if (!usuarioMisiones.isEmpty()) {
-            return usuarioMisiones.stream().map(m ->
-                            new UsuarioMisionDTO(
-                                    m.getId(),
-                                    m.getMision().getDescripcion(),
-                                    m.getProgreso(),
-                                    m.getMision().getCantidad(),
-                                    m.getMision().getExperiencia(),
-                                    m.getMision().getCopas(),
-                                    m.getCompletada(),
-                                    m.getCanjeada()
-                            ))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return usuarioMisiones.stream().map(m ->
+                        new UsuarioMisionDTO(
+                                m.getId(),
+                                m.getMision().getDescripcion(),
+                                m.getProgreso(),
+                                m.getMision().getCantidad(),
+                                m.getMision().getExperiencia(),
+                                m.getMision().getCopas(),
+                                m.getCompletada(),
+                                m.getCanjeada()
+                        ))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -145,7 +142,6 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     public void cambiarMision(Usuario logueado, Long idMision) {
         Usuario usuarioBd = repositorioUsuario.buscarUsuarioPorId(logueado.getId());
         UsuarioMision usuarioMision = this.repositorioMisionUsuario.obtenerUsuarioMision(idMision);
-
 
         this.validadorMision.validarMision(usuarioBd, usuarioMision);
 
