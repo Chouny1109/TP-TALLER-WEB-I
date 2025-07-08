@@ -13,6 +13,7 @@ public class Moneda {
     private String nombre;
     private Integer valor;
     private Integer cantidad;
+    private String imagen;
 
     public Moneda() {}
 
@@ -26,4 +27,5 @@ public class Moneda {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
     public Integer getCantidad() { return cantidad; }
+    public String getImagen() { return imagen; }
 }

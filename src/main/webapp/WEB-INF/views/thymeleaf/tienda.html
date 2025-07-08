@@ -360,14 +360,13 @@
             </button>
             <div class="d-flex overflow-auto px-2">
                 <div th:each="moneda : ${monedas}" class="shop-card">
-                    <i class="bi bi-info-circle info-icon"></i>
+                    <img th:src="@{'/imgs/Monedas/' + ${moneda.imagen}}" alt="Imagen de monedas" class="shop-card-img" />
+                    <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
                     <div class="price-badge status-icons">
                         <div class="status-item">
-                            <span class="mdi--star-four-points-circle"></span>
-                            <span th:text="${moneda.valor}">200</span>
+                            <span th:text="'$' + ${moneda.valor}">200</span>
                         </div>
                     </div>
-                    <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
                     <a th:href="@{'/pago/moneda/' + ${moneda.id}}" class="btn btn-success btn-sm mt-2">
                         Comprar
                     </a>
