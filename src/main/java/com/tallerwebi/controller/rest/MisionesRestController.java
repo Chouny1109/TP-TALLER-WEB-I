@@ -45,7 +45,14 @@ public class MisionesRestController {
         return ResponseEntity.ok(misionesDelUsuario);
     }
 
-//    @PutMapping("/misiones/{id}")
-//    public ResponseEntity<?> cambiarMision(@PathVariable Long id, HttpServletRequest request) {
-//    }
+    @PutMapping("/misiones/{id}")
+    public ResponseEntity<?> cambiarMision(@PathVariable Long id, HttpServletRequest request) {
+        Usuario logueado = session.getUsuarioLogueado(request);
+
+        if (logueado == null) {
+            throw new UsuarioNoAutenticadoException("El usuario no se encuentra autenticado");
+        }
+        servicio.cambiarMision(logueado, id);
+        return ResponseEntity.ok().build();
+    }
 }
