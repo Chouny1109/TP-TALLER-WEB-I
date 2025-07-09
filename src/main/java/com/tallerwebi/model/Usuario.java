@@ -62,6 +62,8 @@ Usuario {
     @JsonManagedReference
     private List<UsuarioMision> misiones;
 
+    private Boolean baneado = false;
+
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -178,4 +180,7 @@ Usuario {
         this.amigos = amigos;
     }
 
+    public Boolean getBaneado() {return baneado;}
+
+    public void setBaneado(Boolean baneado) {this.baneado = baneado;}
 }
