@@ -38,6 +38,12 @@ public class ServicioUsuario implements IServicioUsuario {
     }
 
     @Override
+    public boolean tieneMonedasSuficientes(Long idUsuario, int costo) {
+        Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
+        return usuario.getMonedas() >= costo;
+    }
+
+    @Override
     public boolean descontarMonedas(Long idUsuario, int cantidad) {
         Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
         if (usuario.getMonedas() >= cantidad) {

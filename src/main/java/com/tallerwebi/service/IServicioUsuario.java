@@ -12,4 +12,5 @@ public interface IServicioUsuario {
     List<Usuario> obtenerAmigos(Long idUsuario);
     Usuario buscarPorNombreUsuario(String nombreUsuario);
     void eliminarAmigo(Long idUsuario, Long idAmigo);
+    boolean tieneMonedasSuficientes(Long idUsuario, int costo);
 }
