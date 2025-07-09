@@ -27,4 +27,5 @@ public class Trampa {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
     public void setImagen(String imagen) { this.imagen = imagen; }
+    public Long getId() { return id; }
 }

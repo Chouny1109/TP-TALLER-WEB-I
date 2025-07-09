@@ -263,6 +263,15 @@
 
 </div>
 
+<div class="container mt-4">
+    <div th:if="${mensaje}" class="alert alert-success" role="alert">
+        <span th:text="${mensaje}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+</div>
+
 <div class="carrousel-section-container">
 
     <section class="store-section mb-5">
@@ -285,7 +294,11 @@
                             <span th:text="${trampa.valor}">100</span>
                         </div>
                     </div>
-                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
+                    <form th:action="@{'/tienda/comprar-trampa/' + ${trampa.id}}" method="get">
+                        <button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+                            Comprar
+                        </button>
+                    </form>
                 </div>
             </div>
 

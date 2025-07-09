@@ -45,4 +45,9 @@ public class ServicioTiendaImpl implements ServicioTienda {
     public Moneda obtenerMonedaPorId(Long id) {
         return repositorioTienda.obtenerMonedaPorId(id);
     }
+
+    @Override
+    public Trampa obtenerTrampaPorId(Long id) {
+        return repositorioTienda.obtenerTrampaPorId(id);
+    }
 }

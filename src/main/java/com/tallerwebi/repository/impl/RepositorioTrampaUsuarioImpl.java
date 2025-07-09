@@ -37,4 +37,24 @@ public class RepositorioTrampaUsuarioImpl implements RepositorioTrampaUsuario {
 
         return session.createQuery(query).getResultList();
     }
+
+    @Override
+    public TrampaUsuario buscarPorUsuarioYTrampa(Long idUsuario, Long idTrampa) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<TrampaUsuario> query = builder.createQuery(TrampaUsuario.class);
+        Root<TrampaUsuario> root = query.from(TrampaUsuario.class);
+
+        Predicate predUsuario = builder.equal(root.get("usuario").get("id"), idUsuario);
+        Predicate predTrampa = builder.equal(root.get("trampa").get("id"), idTrampa);
+
+        query.select(root).where(builder.and(predUsuario, predTrampa));
+
+        return session.createQuery(query).uniqueResult();
+    }
+
+    @Override
+    public void modificar(TrampaUsuario trampaUsuario) {
+        sessionFactory.getCurrentSession().update(trampaUsuario);
+    }
 }
