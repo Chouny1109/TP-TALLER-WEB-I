@@ -24,4 +24,6 @@ public interface RepositorioUsuario {
     void banearUsuario(Long idUsuario);
     void desbanearUsuario(Long idUsuario);
     void asignarRol(Long idUsuario, ROL_USUARIO nuevoRol);
+    boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar);
+    List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario);
 }

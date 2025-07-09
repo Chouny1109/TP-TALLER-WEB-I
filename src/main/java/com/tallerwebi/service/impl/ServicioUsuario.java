@@ -105,4 +105,14 @@ public class ServicioUsuario implements IServicioUsuario {
         }
     }
 
+    @Override
+    public boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar) {
+        return repositorioUsuario.usuarioTieneAvatar(idUsuario, idAvatar);
+    }
+
+    @Override
+    public List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario) {
+        return repositorioUsuario.obtenerIdsAvataresDelUsuario(idUsuario);
+    }
+
 }

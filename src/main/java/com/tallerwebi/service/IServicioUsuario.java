@@ -19,4 +19,6 @@ public interface IServicioUsuario {
     void desbanearUsuario(Long idUsuario);
     void asignarRol(Long idUsuario, ROL_USUARIO nuevoRol);
     List<Usuario> obtenerTodosLosUsuarios();
+    boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar);
+    List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario);
 }
