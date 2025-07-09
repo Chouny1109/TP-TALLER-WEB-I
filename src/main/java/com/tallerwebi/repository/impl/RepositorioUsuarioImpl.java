@@ -53,7 +53,7 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
     @Override
     public void modificar(Usuario usuario) {
-        sessionFactory.getCurrentSession().update(usuario);
+        sessionFactory.getCurrentSession().merge(usuario);
     }
 
     @Override
@@ -122,4 +122,36 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
                 .add(Restrictions.eq("nombreUsuario", nombreUsuario))
                 .uniqueResult();
     }
+    @Override
+    public boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<UsuarioAvatar> root = query.from(UsuarioAvatar.class);
+
+        query.select(cb.count(root));
+        query.where(
+                cb.and(
+                        cb.equal(root.get("usuario").get("id"), idUsuario),
+                        cb.equal(root.get("avatar").get("id"), idAvatar)
+                )
+        );
+
+        Long count = session.createQuery(query).getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<UsuarioAvatar> root = query.from(UsuarioAvatar.class);
+
+        query.select(root.get("avatar").get("id"))
+                .where(builder.equal(root.get("usuario").get("id"), idUsuario));
+
+        return session.createQuery(query).getResultList();
+    }
+
 }

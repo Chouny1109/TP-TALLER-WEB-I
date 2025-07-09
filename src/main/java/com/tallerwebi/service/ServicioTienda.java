@@ -11,4 +11,6 @@ public interface ServicioTienda {
     List<Avatar> obtenerAvatares();
     Moneda obtenerMonedaPorId(Long id);
     Trampa obtenerTrampaPorId(Long idTrampa);
+    Avatar obtenerAvatar(Long id);
+    void asignarAvatarAUsuario(Usuario usuario, Avatar avatar);
 }
