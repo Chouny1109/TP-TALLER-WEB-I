@@ -7,183 +7,22 @@
     <title>Misiones</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" th:href="@{resources/core/css/misiones.css}">
 
 </head>
 
 <body>
 
-<style>
-    body {
-        background-color: #ECFAE5;
-        width: 100%;
-        min-height: 100dvh;
-        display: flex;
-        font-family: Arial, Helvetica, sans-serif;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .container-misiones {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        margin: 2rem auto;
-        width: 100%;
-        min-width: 650px;
-    }
-
-    .card-misiones {
-        display: flex;
-        background-color: #98CD00;
-        width: 100%;
-        max-width: 800px;
-        min-height: 150px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.07), 0 6px 20px 0 rgba(0, 0, 0, 0.02);
-    }
-
-    .card-container-left {
-        background-color: white;
-        padding: 1rem;
-        width: fit-content;
-    }
-
-    .card-container-left img {
-        width: 70px;
-    }
-
-    .card-reward {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background-color: rgba(152, 205, 0, 0.41);
-        padding: 1rem;
-        border-radius: 50%;
-        width: 100%;
-        height: 100%;
-        min-width: 130px;
-    }
-
-    .card-reward span {
-        color: #1B676B;
-        font-weight: bold;
-    }
-
-    .card-information {
-        padding: 1rem;
-        width: 100%;
-    }
-
-    .cambiar-mision {
-        background-color: white;
-        border-radius: 7px;
-        padding: 5px;
-        display: flex;
-        place-self: end;
-        cursor: pointer;
-        width: fit-content;
-        margin-bottom: 1rem;
-    }
-
-    .card-title {
-        color: #0d3235;
-        text-align: center;
-        font-weight: normal;
-        font-size: 1.2rem;
-    }
-
-    .card-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-    }
-
-    .progress {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .button-modal {
-        border: none;
-        display: flex;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 5px;
-        margin-left: auto;
-    }
-
-    .progress span {
-        color: #0d3235;
-        z-index: 100;
-        text-align: center;
-        font-weight: bold;
-    }
-
-    .modal {
-        max-width: 450px;
-    }
-
-    .modal-title {
-        font-size: 1.5rem;
-    }
-
-</style>
-
-
 <main class="main">
 
-    <div class="container-misiones" th:if="${misiones != null && misiones.size() > 0}">
-        <div class="card-misiones" th:each="mision,i : ${misiones}">
-            <div class="card-container-left">
-                <div class="card-reward">
-                    <img th:src="@{/imgs/Recompensa.webp}" alt="">
-                    <span th:text="|x${mision.copas}|"></span>
-                </div>
-            </div>
-            <div class="card-information">
-
-                <!-- Modal Trigger -->
-                <button type="submit" th:attr="data-target='modal-' + ${i}" class=" modal-trigger button-modal">
-                    <img th:src="@{/imgs/arrow-counterclockwise.svg}" alt="">
-                </button>
-
-                <!-- Modal Structure -->
-                <div th:attr="id='modal-' + ${i}" class="modal">
-                    <div class="modal-content ">
-                        <p class="modal-title"
-                           th:text="'¿Te gustaría canjear la misión ' + ${mision.descripcion} + ' por 800 monedas?'"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <form th:action="@{/misiones/cambiarMision}" method="post">
-                            <input type="hidden" name="idMision" th:value="${mision.id}">
-                            <button type="submit" class="modal-close waves-effect waves-green btn-flat">Aceptar</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <span th:text="${mision.descripcion}" class="card-title"></span>
-                    <div class="progress" th:style="'height:20px'">
-                        <div class="determinate"
-                             th:style="'height:20px;width:' + (${mision.progreso} * 100 / ${mision.cantidad}) + '%'">
-                        </div>
-                        <span th:text="|${mision.progreso} / ${mision.cantidad}|"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container-misiones" id="containerMisiones">
+        <sl-spinner style="font-size: 3rem; --indicator-color:darkgreen ; --track-color: green;"></sl-spinner>
     </div>
 
-    <p th:if="${misiones==null or misiones.size()==0}">Actualmente no tenes misiones para mostrar</p>
 </main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let elems = document.querySelectorAll('.modal');
-        let instances = M.Modal.init(elems);
-    });
-</script>
+
+<script th:type="module" th:src="@{resources/core/js/misiones.js}"></script>
+<script type="module"
+        src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
 </body>
 </html>
