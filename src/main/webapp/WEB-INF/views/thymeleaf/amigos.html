@@ -211,7 +211,7 @@
 
     </style>
 </head>
-<body>
+<body th:attr="data-usuario=${session.USUARIO.nombreUsuario}">
 <!-- Navbar -->
 <nav class="navbar navbar-custom">
     <a th:href="@{/home}">
@@ -294,25 +294,107 @@
             </div>
         </div>
 
+        <!-- Sección de chats -->
         <div id="seccion-chats" class="d-none">
             <h3>Chats</h3>
             <div class="d-flex flex-column gap-3">
-                <div class="list-group-item">
+                <div class="list-group-item" th:each="amigo : ${amigos}">
                     <div class="amigo-info">
-                        <img src="/img/perfil-chat1.jpg" alt="Perfil" />
-                        <span>JugadorPro</span>
+                        <img src="" alt="Perfil" />
+                        <span th:text="${amigo.nombreUsuario}">Nombre</span>
                     </div>
-                    <button class="btn-desafiar">Abrir chat</button>
-                </div>
-                <div class="list-group-item">
-                    <div class="amigo-info">
-                        <img src="/img/perfil-chat2.jpg" alt="Perfil" />
-                        <span>AnaGamer</span>
-                    </div>
-                    <button class="btn-desafiar">Abrir chat</button>
+                    <button class="btn-desafiar"
+                            th:attr="data-usuario=${amigo.nombreUsuario}"
+                            onclick="seleccionarReceptorDesdeData(this)">
+                        Abrir chat
+                    </button>
+
+
                 </div>
             </div>
+
+
+            <!-- Chat box -->
+            <div id="chat-box" class="mt-3">
+                <h5>Chat con: <span id="receptorNombre">Selecciona un amigo</span></h5>
+                <div id="mensajes" style="height: 200px; overflow-y: auto; background: #f0f0f0; padding: 10px; border-radius: 10px;"></div>
+                <input id="mensajeInput" class="form-control mt-2" placeholder="Escribe tu mensaje..." />
+                <button class="btn btn-success mt-2" onclick="enviarMensaje()">Enviar</button>
+            </div>
         </div>
+
+        <p style="display:none;" th:text="${session.USUARIO.nombreUsuario}">usuario</p>
+
+        <!-- Scripts WebSocket -->
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+        <script>
+            let stompClient;
+            let receptorActual = null;
+            const usuarioActual = document.body.getAttribute("data-usuario");
+
+
+
+            function conectarWebSocket() {
+                const socket = new SockJS('/spring/chat-websocket');
+                stompClient = Stomp.over(socket);
+
+                stompClient.connect({}, function (frame) {
+                    console.log('Conectado WebSocket:', frame);
+                    stompClient.subscribe('/user/queue/mensajes', function (mensaje) {
+                        console.log("📥 Mensaje recibido:", mensaje.body);
+                        mostrarMensaje(JSON.parse(mensaje.body));
+                    });
+
+                });
+            }
+
+
+
+
+
+            function enviarMensaje() {
+                const contenido = document.getElementById("mensajeInput").value;
+                if (!contenido || !receptorActual) return;
+
+                const mensaje = {
+                    contenido: contenido,
+                    emisor: usuarioActual,
+                    receptor: receptorActual
+                };
+                stompClient.send("/app/chat/privado", {}, JSON.stringify(mensaje));
+                mostrarMensaje(mensaje);
+                document.getElementById("mensajeInput").value = '';
+            }
+
+            function mostrarMensaje(mensaje) {
+                const div = document.createElement("div");
+                div.textContent = `${mensaje.emisor}: ${mensaje.contenido}`;
+                document.getElementById("mensajes").appendChild(div);
+            }
+
+            function seleccionarReceptorDesdeData(boton) {
+                const nombre = boton.getAttribute("data-usuario");
+                console.log("Seleccionado:", nombre); // <- esto te dice si funciona
+                seleccionarReceptor(nombre);
+            }
+
+            function seleccionarReceptor(nombre) {
+                receptorActual = nombre;
+                document.getElementById("receptorNombre").textContent = nombre;
+                document.getElementById("mensajes").innerHTML = '';
+            }
+
+
+
+            conectarWebSocket();
+        </script>
+
+        <script>
+            console.log("Script cargado correctamente");
+        </script>
+
+
 
     </section>
 </div>
