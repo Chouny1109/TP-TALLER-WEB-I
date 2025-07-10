@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 public class SettingServiceTest {
@@ -38,7 +37,7 @@ public class SettingServiceTest {
 
         Usuario usuario = givenDadoUnUsuario();
 
-        List inputs = whenSeObtienenLosInputs(usuario);
+        List<InputField> inputs = whenSeObtienenLosInputs(usuario);
 
         thenSeObtienenLosInputsCorrectamenteConElNameYelValueEsElAtributoDelUsuario(inputs);
     }
@@ -50,7 +49,7 @@ public class SettingServiceTest {
         assertThat(inputs.get(1).getName(), is("email"));
         assertThat(inputs.get(1).getValue(), is("eze@test.com"));
         assertThat(inputs.get(2).getName(), is("password"));
-        assertThat(inputs.get(2).getValue(), is("123"));
+        assertThat(inputs.get(2).getValue(), is(nullValue()));
     }
 
     private List<InputField> whenSeObtienenLosInputs(Usuario usuario) {
@@ -64,7 +63,6 @@ public class SettingServiceTest {
         usuario.setPassword("123");
         return usuario;
     }
-
 
     @Test
     public void actualizarUsuarioActualizaCorrectamenteYModificaElUsuario() {

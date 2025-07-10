@@ -31,7 +31,9 @@ public class HomeController {
         if (usuario != null) {
             mav.addObject("nombreUsuario", usuario.getNombreUsuario());
             mav.addObject("nivel", usuario.getNivel());
-        }else{
+            mav.addObject("monedas", usuario.getMonedas());
+            mav.addObject("vidas", usuario.getVidas());
+        } else {
             return new ModelAndView("redirect:/login");
         }
 

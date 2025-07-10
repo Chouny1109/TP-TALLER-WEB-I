@@ -1,8 +1,9 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-body{
+
+body {
     min-height: 100dvh;
     display: flex;
     justify-content: center;
@@ -10,7 +11,8 @@ body{
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(159, 236, 156);
 }
-.container{
+
+.container {
     background-color: #85cf82;
     display: flex;
     flex-direction: column;
@@ -19,119 +21,130 @@ body{
     gap: 3rem;
     min-width: 600px;
 }
-.header{
-    width: fit-content;
+
+.header {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 1rem;
+    justify-content: space-between;
     background-color: #0b301068;
-    padding: .7rem .5rem ;
+    padding: .7rem .5rem;
     border-radius: 7px;
 }
 
-.header img{
+.header img {
     width: 30px;
 }
 
-.header-link{
+.header-link {
     color: white;
     text-decoration: none;
     font-size: 18px;
     font-weight: 600;
 }
-.header-link:hover{
+
+.header-link:hover {
     color: #0b3010;
 }
 
-.main{
+.main {
     background-color: #9fec9c;
     padding: 2rem;
     border-radius: 10px;
 }
 
-.user-profile{
+.user-profile {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: self-start;
     gap: 2rem;
 }
-.user-top{
+
+.user-top {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.user-information{
+.user-information {
     display: flex;
     flex-direction: column;
     gap: .5rem;
 }
-.user-id{
+
+.user-id {
     color: #0b3010;
     font-weight: 600;
 }
-.user-email{
+
+.user-email {
     font-size: 15px;
-    color:  #0b3010;
+    color: #0b3010;
 }
 
-.user-img{
+.user-img {
     width: 120px;
     background-color: rgb(255, 255, 255);
     height: 120px;
     border-radius: 50%;
 }
 
-form{
+form {
     display: flex;
     flex-direction: column;
     padding: 1rem;
     width: 100%;
+
     gap: 2rem;
 }
 
-form input::placeholder{
+form input::placeholder {
     color: rgba(0, 0, 0, 0.381);
     font-size: .9rem;
     font-weight: 500;
 }
 
-.form-element{
+.form-element {
     display: flex;
     flex-direction: column;
     color: white;
     gap: .8rem;
     width: 100%;
 }
-.input-container{
+
+.input-container {
     position: relative;
     width: 100%;
 }
-.input-container button{
+
+.input-container button {
     border: none;
     background-color: transparent;
     cursor: pointer;
 }
 
-.form-element button{
+.form-element button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     right: 20px;
 }
 
-form label{
+form label {
     font-size: 17px;
     font-weight: 600;
-    color:  #0b3010;;
+    color: #0b3010;;
 }
-.form-container{
+
+.form-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-form input{
+
+form input {
     padding: 1rem 0 1rem 1rem;
     border-radius: 5px;
     border: none;
@@ -140,7 +153,8 @@ form input{
     background-color: rgb(255, 255, 255);
     transition: .3s ease;
 }
-.form-buttons button{
+
+.form-buttons button {
     padding: 1rem 2rem;
     color: white;
     cursor: pointer;
@@ -150,7 +164,8 @@ form input{
     background-color: #0b3010cd;
     transition: .3s ease;
 }
-.form-buttons{
+
+.form-buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -162,4 +177,12 @@ form input{
 
 #form-setting button[type="submit"]:disabled {
     background-color: rgba(11, 48, 16, 0.53);
+}
+
+form input {
+    transition: .3s ease;
+}
+
+form input:focus {
+    box-shadow: 0 0 0 2px #031e09;
 }
