@@ -1,6 +1,7 @@
 package com.tallerwebi.controller;
 
 import com.tallerwebi.components.InputField;
+import com.tallerwebi.dominio.excepcion.UsuarioNoAutenticadoException;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.DatosSetting;
 import com.tallerwebi.model.Usuario;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -54,5 +56,19 @@ public class SettingsController {
 
         return ("redirect:/settings");
     }
+
+    @PostMapping("/cerrarSesion")
+    public String cerrarSesion(HttpServletRequest request) {
+        Usuario logueado = sessionUtil.getUsuarioLogueado(request);
+
+        if (logueado == null) {
+            throw new UsuarioNoAutenticadoException("El usuario no se encuentra autenticado");
+        }
+
+        sessionUtil.cerrarSesion(request);
+
+        return ("redirect:/login");
+    }
+
 }
 
