@@ -33,8 +33,7 @@ public class ServicioScheduledUsuarioMisionImpl implements ServicioScheduledMisi
         List<UsuarioMision> relaciones = new ArrayList<>();
 
         for (Usuario usuario : usuariosBd) {
-            if (!servicioMisionesUsuario.tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas)
-                    && ROL_USUARIO.JUGADOR.equals(usuario.getRol())) {
+            if (!servicioMisionesUsuario.tieneMisionesAsignadas(usuario, usuariosConMisionesAsignadas) && ROL_USUARIO.JUGADOR.equals(usuario.getRol())) {
                 List<Mision> misionesAleatorias = servicioMisionesUsuario.obtenerMisionesAleatorias(misionesBd);
                 relaciones.addAll(servicioMisionesUsuario.crearRelacionUsuarioMision(usuario, misionesAleatorias));
             }

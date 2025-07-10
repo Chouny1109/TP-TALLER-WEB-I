@@ -31,18 +31,23 @@ body {
     width: 100%;
     align-items: center;
     justify-content: center;
-
 }
 
 .card-misiones {
     display: flex;
     width: 100%;
     padding: 1rem 2rem;
-    max-width: 950px;
+    max-width: 600px;
     background: white;
-    border-radius: 10px;
+    border-radius: 20px;
     min-height: 150px;
+    transition: box-shadow 0.3s ease;
+}
 
+.card-misiones:hover {
+    box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
+    -webkit-box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
+    -moz-box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
 }
 
 .container-trofeos {
@@ -72,8 +77,14 @@ body {
 .cambiar-mision {
     align-self: end;
     cursor: pointer;
-    display: grid;
-    border-radius: 0.2rem;
+    padding: 0.5rem;
+    background: transparent;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .mision-content {
@@ -90,7 +101,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 1.5rem;
     gap: 1.3rem;
 }
 
@@ -102,7 +112,7 @@ body {
 
 .progreso {
     width: 100%;
-    max-width: 450px;
+    max-width: 350px;
     --height: 20px;
     position: relative;
     text-align: center;

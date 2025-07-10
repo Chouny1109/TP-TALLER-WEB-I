@@ -386,7 +386,7 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
             <div class="d-flex overflow-auto px-2">
-                <div th:each="moneda : ${monedas}" class="shop-card">
+                <div th:each="moneda : ${monedas}" id="monedas" class="shop-card">
                     <img th:src="@{'/imgs/Monedas/' + ${moneda.imagen}}" alt="Imagen de monedas" class="shop-card-img" />
                     <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
                     <div class="price-badge status-icons">

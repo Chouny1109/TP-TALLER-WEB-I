@@ -53,6 +53,8 @@ public class MisionesRestController {
             throw new UsuarioNoAutenticadoException("El usuario no se encuentra autenticado");
         }
         servicio.cambiarMision(logueado, id);
-        return ResponseEntity.ok().build();
+
+        List<UsuarioMisionDTO> misionesDelUsuario = servicio.obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
+        return ResponseEntity.ok(misionesDelUsuario);
     }
 }
