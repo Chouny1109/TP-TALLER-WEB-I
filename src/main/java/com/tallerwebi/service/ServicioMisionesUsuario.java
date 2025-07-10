@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface ServicioMisionesUsuario {
-    List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) throws UsuarioNoExistente;
+    List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha);
 
     void actualizarUsuario(Usuario usuario);
 
