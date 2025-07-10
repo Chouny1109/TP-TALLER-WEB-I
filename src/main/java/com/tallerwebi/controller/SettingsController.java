@@ -1,6 +1,7 @@
 package com.tallerwebi.controller;
 
 import com.tallerwebi.components.InputField;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.DatosSetting;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioSetting;

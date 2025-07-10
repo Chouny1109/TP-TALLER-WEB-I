@@ -1,6 +1,8 @@
 package com.tallerwebi.service.impl;
 
 import com.tallerwebi.components.InputField;
+import com.tallerwebi.dominio.excepcion.UsuarioExistente;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.DatosSetting;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioUsuario;
@@ -28,7 +30,7 @@ public class ServicioSettingImpl implements ServicioSetting {
         return new ArrayList<>(Arrays.asList(
                 new InputField("text", "userName", "Usuario", usuarioLogueado.getNombreUsuario()),
                 new InputField("email", "email", "Email", usuarioLogueado.getEmail()),
-                new InputField("password", "password", "Contraseña", usuarioLogueado.getPassword())
+                new InputField("password", "password", "Contraseña", null)
         ));
     }
 
