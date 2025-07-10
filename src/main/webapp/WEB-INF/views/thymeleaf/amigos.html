@@ -222,6 +222,7 @@
     <h2 class="navbar-title">AMIGOS</h2>
     <input
             type="search"
+            id="buscadorAmigos"
             class="search-input"
             placeholder="Busca amigos"
             aria-label="Buscar amigos"
@@ -424,5 +425,26 @@
         });
     });
 </script>
+
+<script>
+    document.getElementById("buscadorAmigos").addEventListener("input", function () {
+        const filtro = this.value.toLowerCase();
+
+        // Filtra amigos en la sección "Mis amigos"
+        const amigosMisAmigos = document.querySelectorAll("#seccion-amigos .list-group-item");
+        amigosMisAmigos.forEach(amigo => {
+            const nombre = amigo.querySelector(".amigo-info span").textContent.toLowerCase();
+            amigo.style.display = nombre.includes(filtro) ? "" : "none";
+        });
+
+        const amigosChats = document.querySelectorAll("#seccion-chats .list-group-item");
+        amigosChats.forEach(amigo => {
+            const nombre = amigo.querySelector(".amigo-info span").textContent.toLowerCase();
+            amigo.style.display = nombre.includes(filtro) ? "" : "none";
+        });
+    });
+</script>
+
+
 </body>
 </html>
