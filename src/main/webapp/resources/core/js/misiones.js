@@ -31,11 +31,6 @@ const obtenerMisiones = async () => {
                 break;
             }
 
-            case 204: {
-                mostrarMensaje("No se encontraron misiones para el usuario");
-                break;
-            }
-
             case 401: {
                 window.location.href = "/spring/login"
                 break;
@@ -96,17 +91,21 @@ const asignarIdMision = () => {
     })
 }
 
-
 const renderizarMisiones = (misiones) => {
     containerMisiones.innerHTML = '';
 
-    misiones.forEach(mision => {
-        const div = document.createElement('div');
-        div.classList.add('card-misiones');
-        div.innerHTML = generarContenidoHTML(mision);
+    if (misiones && misiones.length > 0) {
+        misiones.forEach(mision => {
+            const div = document.createElement('div');
+            div.classList.add('card-misiones');
+            div.innerHTML = generarContenidoHTML(mision);
+            containerMisiones.appendChild(div);
 
-        containerMisiones.appendChild(div);
-    })
+            asignarIdMision();
+        })
+    } else {
+        mostrarMensaje("No se encontraron misiones para el usuario");
+    }
 }
 
 const mostrarLoader = () => {
@@ -155,7 +154,6 @@ const cerrarModal = () => {
 document.addEventListener('DOMContentLoaded', async () => {
     await obtenerMisiones();
     cambiarMisiones();
-    asignarIdMision();
 });
 
 

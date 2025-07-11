@@ -2,6 +2,8 @@ package com.tallerwebi.service.impl;
 
 import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.dominio.enums.TIPO_MISION;
+import com.tallerwebi.dominio.excepcion.UsuarioNoAutenticadoException;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
@@ -51,7 +53,13 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Transactional(readOnly = true)
     @Override
-    public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) {
+    public List<UsuarioMisionDTO> obtenerLasMisionesDelUsuarioPorId(Long id, LocalDate fecha) throws UsuarioNoExistente {
+        Usuario usuario = this.repositorioUsuario.buscarUsuarioPorId(id);
+
+        if (usuario == null) {
+            throw new UsuarioNoExistente();
+        }
+
         List<UsuarioMision> usuarioMisiones = this.repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(id, fecha);
 
         return usuarioMisiones.stream().map(m ->
