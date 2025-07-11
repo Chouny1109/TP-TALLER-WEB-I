@@ -1,7 +1,9 @@
 package com.tallerwebi.service.impl;
 
 import com.tallerwebi.model.*;
+import com.tallerwebi.repository.RepositorioAvatar;
 import com.tallerwebi.repository.RepositorioTienda;
+import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.repository.impl.RepositorioTiendaImpl;
 import com.tallerwebi.service.ServicioTienda;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,14 @@ import java.util.List;
 public class ServicioTiendaImpl implements ServicioTienda {
     
     private final RepositorioTienda repositorioTienda;
+    private final RepositorioAvatar repositorioAvatar;
+    private final RepositorioUsuario repositorioUsuario;
 
     @Autowired
-    public ServicioTiendaImpl(RepositorioTienda respositorioTienda) {
+    public ServicioTiendaImpl(RepositorioTienda respositorioTienda, RepositorioAvatar repositorioAvatar, RepositorioUsuario repositorioUsuario) {
         this.repositorioTienda = respositorioTienda;
+        this.repositorioAvatar = repositorioAvatar;
+        this.repositorioUsuario = repositorioUsuario;
     }
     
     @Override
@@ -45,4 +51,23 @@ public class ServicioTiendaImpl implements ServicioTienda {
     public Moneda obtenerMonedaPorId(Long id) {
         return repositorioTienda.obtenerMonedaPorId(id);
     }
+
+    @Override
+    public Trampa obtenerTrampaPorId(Long id) {
+        return repositorioTienda.obtenerTrampaPorId(id);
+    }
+
+    @Override
+    public Avatar obtenerAvatar(Long id) {
+        return repositorioAvatar.obtenerAvatar(id);
+    }
+
+    @Override
+    public void asignarAvatarAUsuario(Usuario usuario, Avatar avatar) {
+        UsuarioAvatar ua = new UsuarioAvatar();
+        ua.setUsuario(usuario);
+        ua.setAvatar(avatar);
+        repositorioUsuario.asignarAvatarPorDefecto(ua);
+    }
+
 }

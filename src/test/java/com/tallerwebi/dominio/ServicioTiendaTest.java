@@ -1,7 +1,9 @@
 package com.tallerwebi.dominio;
 
 import com.tallerwebi.model.*;
+import com.tallerwebi.repository.RepositorioAvatar;
 import com.tallerwebi.repository.RepositorioTienda;
+import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioTienda;
 import com.tallerwebi.service.impl.ServicioTiendaImpl;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,8 @@ public class ServicioTiendaTest {
 
     private ServicioTiendaImpl givenServicio() {
         RepositorioTienda repositorioMock = mock(RepositorioTienda.class);
+        RepositorioAvatar repositorioAvatarMock = mock(RepositorioAvatar.class);
+        RepositorioUsuario repositorioUsuarioMock = mock(RepositorioUsuario.class);
 
         when(repositorioMock.obtenerTrampas()).thenReturn(List.of(
                 new Trampa("Bomba", 100),
@@ -78,7 +82,7 @@ public class ServicioTiendaTest {
                 new Avatar("Barto", 500)
         ));
 
-        return new ServicioTiendaImpl(repositorioMock);
+        return new ServicioTiendaImpl(repositorioMock, repositorioAvatarMock, repositorioUsuarioMock);
     }
 
     private List<Trampa> whenObtenerTrampas(ServicioTiendaImpl servicio) {

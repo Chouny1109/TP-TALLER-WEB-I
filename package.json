@@ -2,6 +2,7 @@
   "dependencies": {
     "@shoelace-style/shoelace": "^2.20.1",
     "@tailwindcss/cli": "^4.1.11",
-    "@tailwindcss/postcss": "^4.1.11"
+    "@tailwindcss/postcss": "^4.1.11",
+    "notyf": "^3.10.0"
   }
 }

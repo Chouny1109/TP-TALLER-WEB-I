@@ -61,4 +61,10 @@ public class RepositorioTiendaImpl implements RepositorioTienda{
         Session session = sessionFactory.getCurrentSession();
         return session.get(Moneda.class, id);
     }
+
+    @Override
+    public Trampa obtenerTrampaPorId(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Trampa.class, id);
+    }
 }

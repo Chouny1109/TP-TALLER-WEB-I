@@ -1,5 +1,6 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.IServicioUsuario;
@@ -38,6 +39,39 @@ public class ServicioUsuario implements IServicioUsuario {
     }
 
     @Override
+    public boolean tieneMonedasSuficientes(Long idUsuario, int costo) {
+        Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
+        return usuario.getMonedas() >= costo;
+    }
+
+    @Override
+    public Long obtenerCantidadDeUsuarios() {
+        return repositorioUsuario.contarUsuarios();
+    }
+
+    @Override
+    public void banearUsuario(Long idUsuario) {
+        repositorioUsuario.banearUsuario(idUsuario);
+    }
+
+    @Override
+    public void desbanearUsuario(Long idUsuario) {
+        repositorioUsuario.desbanearUsuario(idUsuario);
+
+    }
+
+    @Override
+    public void asignarRol(Long idUsuario, ROL_USUARIO nuevoRol) {
+        repositorioUsuario.asignarRol(idUsuario, nuevoRol);
+
+    }
+
+    @Override
+    public List<Usuario> obtenerTodosLosUsuarios() {
+        return repositorioUsuario.obtenerUsuarios();
+    }
+
+    @Override
     public boolean descontarMonedas(Long idUsuario, int cantidad) {
         Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
         if (usuario.getMonedas() >= cantidad) {
@@ -69,6 +103,16 @@ public class ServicioUsuario implements IServicioUsuario {
             repositorioUsuario.modificar(usuario);
             repositorioUsuario.modificar(amigo);
         }
+    }
+
+    @Override
+    public boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar) {
+        return repositorioUsuario.usuarioTieneAvatar(idUsuario, idAvatar);
+    }
+
+    @Override
+    public List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario) {
+        return repositorioUsuario.obtenerIdsAvataresDelUsuario(idUsuario);
     }
 
 }

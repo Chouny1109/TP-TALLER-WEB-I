@@ -2,6 +2,9 @@ const URL = "/spring/api/misiones"
 const containerMisiones = document.getElementById('containerMisiones')
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/progress-bar/progress-bar.js';
 
+var notyf = new Notyf();
+
+
 async function obtenerFormatoJSON(response) {
     return await response.json();
 }
@@ -52,16 +55,23 @@ const obtenerMisiones = async () => {
 const generarContenidoHTML = (mision) => {
     const porcentaje = Math.floor((mision.progreso * 100) / mision.cantidad);
 
-    return `<div class="container-trofeos">
+    return `
+            <div class="container-trofeos">
                 <div class="trofeos-content" >
                     <img alt="imagen de trofeo" src="/spring/imgs/LegendTrophy.webp"/>
                      <span>x${mision.copas}</span>           
                 </div>
             </div>
+            
             <div class="mision-content">
-                <img class="cambiar-mision" src="/spring/imgs/arrow-counterclockwise.svg" alt="">
                 
-                
+                <img data-bs-target="#exampleModal"
+                data-id ="${mision.id}"
+                class="cambiar-mision"
+                data-bs-toggle="modal"
+                src="/spring/imgs/arrow-counterclockwise.svg"
+                alt="">
+               
                 <div class="mision-description">
                     <h2 class="mision-title">${mision.descripcion}</h2>
                     
@@ -70,9 +80,22 @@ const generarContenidoHTML = (mision) => {
                     </sl-progress-bar>
                     
                 </div>
+                
             </div>
 `;
 }
+
+const asignarIdMision = () => {
+    const button = document.querySelectorAll('.cambiar-mision');
+
+    button.forEach((e) => {
+        e.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-id');
+            document.querySelector('#confirmar-cambio').setAttribute('data-id', id);
+        })
+    })
+}
+
 
 const renderizarMisiones = (misiones) => {
     containerMisiones.innerHTML = '';
@@ -86,5 +109,55 @@ const renderizarMisiones = (misiones) => {
     })
 }
 
+const mostrarLoader = () => {
+    containerMisiones.innerHTML = '';
+    const p = document.createElement('p');
+    p.innerHTML = `<sl-spinner style="font-size: 3rem; --indicator-color:darkgreen ; --track-color: green;"></sl-spinner>`;
+    containerMisiones.appendChild(p);
+}
 
-document.addEventListener('DOMContentLoaded', obtenerMisiones);
+const cambiarMisiones = () => {
+    document.getElementById('confirmar-cambio').addEventListener('click', async (e) => {
+
+        const id = e.target.getAttribute('data-id');
+        mostrarLoader();
+
+        cerrarModal();
+
+        try {
+            const response = await fetch(`/spring/api/misiones/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'}
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.error || 'Hubo un problema al cambiar la mision');
+            }
+
+            const misiones = await obtenerFormatoJSON(response);
+            renderizarMisiones(misiones);
+            notyf.success('La mision se cambio con exito');
+
+        } catch (error) {
+            notyf.error('Hubo un problema al cambiar la mision');
+            window.location.href = "/spring/tienda/#monedas"
+        }
+    });
+}
+
+const cerrarModal = () => {
+    const modalElement = document.getElementById('exampleModal');
+    const modalBootstrap = bootstrap.Modal.getInstance(modalElement);
+    modalBootstrap.hide();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await obtenerMisiones();
+    cambiarMisiones();
+    asignarIdMision();
+});
+
+
+
+

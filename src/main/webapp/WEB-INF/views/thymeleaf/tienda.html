@@ -263,6 +263,15 @@
 
 </div>
 
+<div class="container mt-4">
+    <div th:if="${mensaje}" class="alert alert-success" role="alert">
+        <span th:text="${mensaje}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+</div>
+
 <div class="carrousel-section-container">
 
     <section class="store-section mb-5">
@@ -285,7 +294,11 @@
                             <span th:text="${trampa.valor}">100</span>
                         </div>
                     </div>
-                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
+                    <form th:action="@{'/tienda/comprar-trampa/' + ${trampa.id}}" method="get">
+                        <button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+                            Comprar
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -299,23 +312,37 @@
         <div class="h2-container">
             <h2 class="section-title">Avatars</h2>
         </div>
+
         <div class="carousel-wrapper">
             <button class="nav-arrow" aria-label="Anterior">
                 <i class="bi bi-chevron-left"></i>
             </button>
+
             <div class="d-flex overflow-auto px-2">
                 <div th:each="avatar : ${avatares}" class="shop-card">
-                    <i class="bi bi-info-circle info-icon"></i>
+                    <!--<img th:src="@{'/imgs/Avatares/' + ${avatar.link}}" alt="Imagen del avatar" class="shop-card-img" /> -->
+                    <p class="item-name" th:text="${avatar.nombre}">Nombre del avatar</p>
+
                     <div class="price-badge status-icons">
                         <div class="status-item">
                             <span class="mdi--star-four-points-circle"></span>
                             <span th:text="${avatar.valor}">200</span>
                         </div>
                     </div>
-                    <p class="item-name" th:text="${avatar.nombre}">Nombre del avatar</p>
-                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
+
+                    <div th:if="${#lists.contains(avatarIdsDelUsuario, avatar.id)}">
+                        <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Ya adquirido</button>
+                    </div>
+                    <div th:unless="${#lists.contains(avatarIdsDelUsuario, avatar.id)}">
+                        <form th:action="@{'/tienda/comprar-avatar/' + ${avatar.id}}" method="get">
+                            <button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+                                Comprar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
+
             <button class="nav-arrow" aria-label="Siguiente">
                 <i class="bi bi-chevron-right"></i>
             </button>
@@ -359,7 +386,7 @@
                 <i class="bi bi-chevron-left"></i>
             </button>
             <div class="d-flex overflow-auto px-2">
-                <div th:each="moneda : ${monedas}" class="shop-card">
+                <div th:each="moneda : ${monedas}" id="monedas" class="shop-card">
                     <img th:src="@{'/imgs/Monedas/' + ${moneda.imagen}}" alt="Imagen de monedas" class="shop-card-img" />
                     <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
                     <div class="price-badge status-icons">

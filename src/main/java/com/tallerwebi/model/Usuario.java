@@ -32,15 +32,17 @@ Usuario {
     @Column(name = "rol")
     private ROL_USUARIO rol;
 
-    private Boolean activo = false;
+    private Boolean activo;
 
     @Column(unique = true)
     private String token;
 
-    private Integer nivel = 1;
+    private Integer nivel;
 
     @Column(nullable = false)
-    private Integer monedas = 0;
+    private Integer monedas;
+
+    private Integer vidas;
 
     @ManyToMany
     @JoinTable(
@@ -49,7 +51,7 @@ Usuario {
             inverseJoinColumns = @JoinColumn(name = "amigo_id")
     )
     @JsonIgnoreProperties("amigos")
-    private Set<Usuario> amigos = new HashSet<>();
+    private Set<Usuario> amigos;
 
 
     /*
@@ -62,14 +64,30 @@ Usuario {
     @JsonManagedReference
     private List<UsuarioMision> misiones;
 
+    private Boolean baneado;
+
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
         this.misiones = new ArrayList<>();
+        this.vidas = 5;
+        this.monedas = 5000;
+        this.nivel = 1;
+        this.amigos = new HashSet<>();
+        this.baneado = false;
+        this.activo = false;
     }
 
     public Usuario() {
+    }
+
+    public Integer getVidas() {
+        return vidas;
+    }
+
+    public void setVidas(Integer vidas) {
+        this.vidas = vidas;
     }
 
     public String getNombreUsuario() {
@@ -166,9 +184,13 @@ Usuario {
         this.token = token;
     }
 
-    public Integer getMonedas() { return monedas; }
+    public Integer getMonedas() {
+        return monedas;
+    }
 
-    public void setMonedas(Integer monedas) { this.monedas = monedas; }
+    public void setMonedas(Integer monedas) {
+        this.monedas = monedas;
+    }
 
     public Set<Usuario> getAmigos() {
         return amigos;
@@ -178,4 +200,11 @@ Usuario {
         this.amigos = amigos;
     }
 
+    public Boolean getBaneado() {
+        return baneado;
+    }
+
+    public void setBaneado(Boolean baneado) {
+        this.baneado = baneado;
+    }
 }

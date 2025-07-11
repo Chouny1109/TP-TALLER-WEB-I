@@ -1,18 +1,14 @@
 package com.tallerwebi.repository.impl;
 
 import com.tallerwebi.dominio.enums.ESTADO_AVATAR;
+import com.tallerwebi.dominio.enums.ROL_USUARIO;
 import com.tallerwebi.model.*;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioUsuario;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -53,7 +49,7 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
 
     @Override
     public void modificar(Usuario usuario) {
-        sessionFactory.getCurrentSession().update(usuario);
+        sessionFactory.getCurrentSession().merge(usuario);
     }
 
     @Override
@@ -121,5 +117,77 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
         return (Usuario) session.createCriteria(Usuario.class)
                 .add(Restrictions.eq("nombreUsuario", nombreUsuario))
                 .uniqueResult();
+    }
+
+    @Override
+    public Long contarUsuarios() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "SELECT COUNT(u) FROM Usuario u";
+        Long cantidad = (Long) session.createQuery(hql).uniqueResult();
+        return cantidad;
+    }
+
+    @Override
+    public void banearUsuario(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+
+            String hql = "update Usuario set baneado = 1 where id = :id";
+            session.createQuery(hql)
+                    .setParameter("id", idUsuario)
+                    .executeUpdate();
+
+    }
+
+    @Override
+    public void desbanearUsuario(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+
+            String hql = "update Usuario set baneado = 0 where id = :id";
+            session.createQuery(hql)
+                    .setParameter("id", idUsuario)
+                    .executeUpdate();
+
+    }
+
+    @Override
+    public void asignarRol(Long idUsuario, ROL_USUARIO nuevoRol) {
+         Session session = sessionFactory.getCurrentSession();
+            String hql = "update Usuario set rol = :rol where id = :id";
+            session.createQuery(hql)
+                    .setParameter("rol", nuevoRol)
+                    .setParameter("id", idUsuario)
+                    .executeUpdate();
+
+    }
+    @Override
+    public boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<UsuarioAvatar> root = query.from(UsuarioAvatar.class);
+
+        query.select(cb.count(root));
+        query.where(
+                cb.and(
+                        cb.equal(root.get("usuario").get("id"), idUsuario),
+                        cb.equal(root.get("avatar").get("id"), idAvatar)
+                )
+        );
+
+        Long count = session.createQuery(query).getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<UsuarioAvatar> root = query.from(UsuarioAvatar.class);
+
+        query.select(root.get("avatar").get("id"))
+                .where(builder.equal(root.get("usuario").get("id"), idUsuario));
+
+        return session.createQuery(query).getResultList();
     }
 }

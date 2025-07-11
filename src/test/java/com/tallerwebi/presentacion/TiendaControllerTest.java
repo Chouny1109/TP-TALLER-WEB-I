@@ -4,6 +4,7 @@ import com.tallerwebi.controller.TiendaController;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioTienda;
+import com.tallerwebi.service.ServicioTrampaUsuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,6 +21,7 @@ public class TiendaControllerTest {
         ServicioTienda servicioTienda = givenServicioTiendaConDatos();
         IServicioUsuario servicioUsuario = mock(IServicioUsuario.class);
         HttpSession session = mock(HttpSession.class);
+        ServicioTrampaUsuario servicioTrampaUsuario = mock(ServicioTrampaUsuario.class);
 
         Usuario usuarioMock = new Usuario();
         usuarioMock.setId(1L);
@@ -28,7 +30,7 @@ public class TiendaControllerTest {
         when(session.getAttribute("USUARIO")).thenReturn(usuarioMock);
         when(servicioUsuario.buscarUsuarioPorId(1L)).thenReturn(usuarioMock);
 
-        ModelAndView mav = whenCargarTienda(servicioTienda, servicioUsuario, session);
+        ModelAndView mav = whenCargarTienda(servicioTienda, servicioUsuario, session, servicioTrampaUsuario);
 
         thenVistaYModelosSonCorrectos(mav);
     }
@@ -44,8 +46,8 @@ public class TiendaControllerTest {
         return servicioTienda;
     }
 
-    private ModelAndView whenCargarTienda(ServicioTienda servicioTienda, IServicioUsuario servicioUsuario, HttpSession session) {
-        TiendaController controller = new TiendaController(servicioTienda, servicioUsuario);
+    private ModelAndView whenCargarTienda(ServicioTienda servicioTienda, IServicioUsuario servicioUsuario, HttpSession session, ServicioTrampaUsuario servicioTrampaUsuario) {
+        TiendaController controller = new TiendaController(servicioTienda, servicioUsuario, servicioTrampaUsuario);
         return controller.cargarTienda(session);
     }
 

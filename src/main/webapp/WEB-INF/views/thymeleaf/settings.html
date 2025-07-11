@@ -18,13 +18,52 @@
 
 <body>
 
+<style>
+    .header {
+        justify-content: space-between;
+        width: 100%;
+    }
+.form-logout{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+.header-left{
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    gap: 1rem;
+}
+
+.form-logout button{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+</style>
+
+
 <main>
     <div class="container">
         <header class="header">
-            <a th:href="@{/home}">
-                <img th:src="@{/resources/imgs/arrow.svg}" alt="">
-            </a>
-            <span><a class="header-link" th:href="@{/home}">Regresar</a></span>
+            <div class="header-left">
+                <a th:href="@{/home}">
+                    <img th:src="@{/resources/imgs/arrow.svg}" alt="">
+                </a>
+                <span><a class="header-link" th:href="@{/home}">Regresar</a></span>
+
+            </div>
+
+            <form class="form-logout" th:action="@{/settings/cerrarSesion}" method="POST">
+                <button>Cerrar sesion</button>
+            </form>
+
         </header>
         <main class="main">
             <div class="user-profile">
@@ -43,9 +82,14 @@
                             <label th:for="${input.name}" th:text="${input.label}"></label>
                             <div class="input-container">
 
-                                <input th:type="${input.type}" th:name="${input.name}"
-                                       th:id="${input.name}" th:value="${input.value}"
-                                       th:attr="data-original=${input.value}" required readonly>
+                                <input th:type="${input.type}"
+                                       th:name="${input.name}"
+                                       th:id="${input.name}"
+                                       th:value="${input.type == 'password' ? null : input.value}"
+                                       th:placeholder="${input.type == 'password' ? '********' : ''}"
+                                       th:attr="data-original=${input.value}"
+                                       required
+                                       readonly>
 
                                 <button type="button" th:attr="data-target=${input.name}">
                                     <img th:src="@{/resources/imgs/settingEdit.svg}" alt="">

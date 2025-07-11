@@ -25,10 +25,18 @@ public class ServicioTrampaUsuarioImpl implements ServicioTrampaUsuario {
 
     @Override
     public void asignarTrampaAUsuario(Usuario usuario, Trampa trampa) {
-        TrampaUsuario tu = new TrampaUsuario();
-        tu.setUsuario(usuario);
-        tu.setTrampa(trampa);
-        repositorioTrampaUsuario.guardar(tu);
+        TrampaUsuario existente = repositorioTrampaUsuario.buscarPorUsuarioYTrampa(usuario.getId(), trampa.getId());
+
+        if (existente != null) {
+            existente.setCantidad(existente.getCantidad() + 1);
+            repositorioTrampaUsuario.modificar(existente);
+        } else {
+            TrampaUsuario nuevo = new TrampaUsuario();
+            nuevo.setUsuario(usuario);
+            nuevo.setTrampa(trampa);
+            nuevo.setCantidad(1);
+            repositorioTrampaUsuario.guardar(nuevo);
+        }
     }
 
     @Override
