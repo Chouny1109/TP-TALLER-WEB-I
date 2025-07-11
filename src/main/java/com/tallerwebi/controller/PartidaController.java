@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.transform.Result;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +56,7 @@ public class PartidaController {
         modelo.put("idUsuario", jugador.getId());
         modelo.put("modoJuego", modoJuego);
 
-        List<Partida> p = servicioPartida.obtenerPartidasAbiertasPorModo(modoJuego);
+        List<Partida> p = servicioPartida.obtenerPartidasAbiertasConTurnoEnNull(modoJuego, jugador);
 
         if (p.isEmpty() && modoJuego.equals(TIPO_PARTIDA.MULTIJUGADOR)) {
             Partida partida = servicioPartida.crearOUnirsePartida(jugador, modoJuego);
@@ -107,14 +110,29 @@ public class PartidaController {
         Usuario jugador = (Usuario) request.getSession().getAttribute("USUARIO");
         modelo.put("jugador", jugador);
         modelo.put("modoJuego", modoJuego);
+
+
+        // Obtener la entidad que tiene las categorías ganadas
+        Partida partida = servicioPartida.buscarPartidaPorId(idPartida);
+        Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
+
+        CategoriasGanadasEnPartida categoriasGanadas = servicioPartida.obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
+
+        Set<CATEGORIA_PREGUNTA> categorias = categoriasGanadas != null ? categoriasGanadas.getCategoriasGanadas() : Collections.emptySet();
+
+        modelo.put("categoriasGanadas", categorias);
+
         return new ModelAndView("ruletaCategoria", modelo);
     }
-    @GetMapping("/pregunta")
+
+
+    @PostMapping("/pregunta")
     public ModelAndView mostrarPregunta(@RequestParam("categoria") String categoria,
                                         @RequestParam("id") Long idPartida,
                                         @RequestParam("idUsuario") Long idUsuario,
                                         @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
                                         HttpServletRequest request) {
+
         Usuario jugador = (Usuario) request.getSession().getAttribute("USUARIO");
         if (jugador == null) {
             return new ModelAndView("redirect:/login");
@@ -127,11 +145,16 @@ public class PartidaController {
         modelo.put("idUsuario", idUsuario);
         modelo.put("modoJuego", modoJuego);
 
-        // Manejo especial para "CORONA"
-        if ("CORONA".equalsIgnoreCase(categoria)) {
-            return new ModelAndView("elegirCategoria", modelo);
-        } else if ("GENERAL".equalsIgnoreCase(categoria)) {
+        HttpSession session = request.getSession();
 
+        // Modo CORONA
+        if ("CORONA".equalsIgnoreCase(categoria)) {
+            session.setAttribute("modoCorona", true);
+            return new ModelAndView("elegirCategoria", modelo);
+        }
+
+        // Modo SUPERVIVENCIA / GENERAL
+        if ("GENERAL".equalsIgnoreCase(categoria)) {
             Pregunta pregunta = servicioPartida.obtenerPreguntaSupervivencia(idPartida, jugador, null).getSiguientePregunta();
 
             modelo.put("pregunta", pregunta);
@@ -139,23 +162,46 @@ public class PartidaController {
             return new ModelAndView("preguntas", modelo);
         }
 
-        // Validar que categoria sea válida para enum
+        Partida partida = servicioPartida.buscarPartidaPorId(idPartida);
+        Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
+
+        CategoriasGanadasEnPartida categoriasGanadas = servicioPartida.obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
+
+        Set<CATEGORIA_PREGUNTA> categorias = categoriasGanadas != null ? categoriasGanadas.getCategoriasGanadas() : Collections.emptySet();
+
+        modelo.put("categoriasGanadas", categorias);
+
+        // Validar que la categoría sea una del enum
         boolean valida = Arrays.stream(CATEGORIA_PREGUNTA.values())
                 .anyMatch(c -> c.name().equalsIgnoreCase(categoria));
-
         if (!valida) {
             return new ModelAndView("redirect:/errorCategoria");
         }
 
+        // Si la pregunta viene desde el modo CORONA, guardamos la categoría elegida
+        Boolean esCorona = (Boolean) session.getAttribute("modoCorona");
+        if (Boolean.TRUE.equals(esCorona)) {
+            CATEGORIA_PREGUNTA catElegida = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
+            session.setAttribute("categoriaCorona", catElegida);
+        }
+
+        // Pregunta normal (o desde corona pero ya con categoría)
         CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
         Pregunta p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
 
-        modelo.put("respondida", false);
+        if (p == null) {
+            modelo.put("error", "No se pudo obtener una pregunta para la categoría seleccionada.");
+            return new ModelAndView("errorVistaPregunta", modelo); // o redirigí a una página de error
+        }
+
+
 
         modelo.put("pregunta", p);
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\nPregunta: " + p.getEnunciado() + "\n\n\n\n\n\n\n\n\n\n\n\n\nrespuestas:" + p.getRespuestas().size());
+        modelo.put("respondida", false);
+
         return new ModelAndView("preguntas", modelo);
     }
+
 
     @PostMapping("/validar-respuesta")
     public ModelAndView validarRespuesta(
@@ -263,7 +309,7 @@ public class PartidaController {
                 modelo.put("respondida", true);
                 modelo.put("mensajeFinal", "Esperando a tu rival...");
 
-                // 🔴 CLAVE: para pintar correctamente botones en la vista
+
                 modelo.put("idRespuestaSeleccionada",
                         resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
                 modelo.put("respuestaCorrecta",
@@ -285,7 +331,7 @@ public class PartidaController {
 
             modelo.put("respondida", true);
 
-            // 🔴 CLAVE para pintar las opciones en vista final
+
             modelo.put("idRespuestaSeleccionada",
                     resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
             modelo.put("respuestaCorrecta",
@@ -301,5 +347,63 @@ public class PartidaController {
 
         return new ModelAndView("preguntas", modelo);
     }
+
+    @PostMapping("validar-turno")
+    public ModelAndView validarTurno(HttpServletRequest request,
+                                     @RequestParam("idRespuestaSeleccionada") Long idRespuestaSeleccionada,
+                                     @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
+                                     @RequestParam("idPartida") Long idPartida,
+                                     @RequestParam("preguntaRespondida") Long preguntaRespondida,
+                                     @RequestParam("idUsuario") Long idUsuario) {
+        ModelMap modelo = new ModelMap();
+        Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
+        Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
+
+        Respuesta respuestaSeleccionada = (idRespuestaSeleccionada != -1)
+                ? servicioPartida.buscarRespuestaPorId(idRespuestaSeleccionada)
+                : null;
+        Boolean tiempoTerminadoRespuestaNula = (idRespuestaSeleccionada == -1);
+
+        HttpSession session = request.getSession();
+        Boolean esCorona = (Boolean) session.getAttribute("modoCorona");
+        CATEGORIA_PREGUNTA categoriaCorona = (CATEGORIA_PREGUNTA) session.getAttribute("categoriaCorona");
+
+        ResultadoRespuesta resultado = servicioPartida.crearResultadoRespuestaParaMultijugador(idPartida, usuario, preguntaRespondida, idRespuestaSeleccionada);
+        ResultadoRespuesta resultadoRespuesta = servicioPartida.validarRespuesta(resultado, modoJuego);
+
+        if (resultadoRespuesta != null) {
+            modelo.put("idPartida", idPartida);
+            modelo.put("idUsuario", idUsuario);
+
+            Usuario jugador = (Usuario) request.getSession().getAttribute("USUARIO");
+            modelo.put("jugador", jugador);
+            modelo.put("modoJuego", modoJuego);
+
+            if (Boolean.TRUE.equals(esCorona) && categoriaCorona != null) {
+                servicioPartida.agregarCategoriaGanadaEnPartida(idPartida, usuario, categoriaCorona);
+            }
+            return new ModelAndView("ruletaCategoria", modelo);
+        }
+
+        // Cuando resultadoRespuesta es null (o no hay siguiente pregunta)
+        modelo.put("pregunta", preguntaResp);
+        modelo.put("respondida", true);
+
+        modelo.put("idRespuestaSeleccionada",
+                respuestaSeleccionada != null ? respuestaSeleccionada.getId() : -1L);
+        modelo.put("respuestaCorrecta",
+                preguntaResp.getRespuestas().stream()
+                        .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                        .findFirst()
+                        .orElse(null));
+
+        modelo.put("modoJuego", modoJuego);
+        modelo.put("idUsuario", idUsuario);
+        modelo.put("idPartida", idPartida);
+        modelo.put("mostrarVolver", true);
+
+        return new ModelAndView("preguntas", modelo);
+    }
+
 
 }

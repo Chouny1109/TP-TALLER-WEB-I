@@ -8,8 +8,10 @@ import org.hibernate.Criteria;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +24,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,31 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
 
     @Override
+    public List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria(Partida.class, "p")
+                .add(Restrictions.eq("estadoPartida", ESTADO_PARTIDA.ABIERTA))
+                .add(Restrictions.isNull("turnoActual"))
+                .add(Restrictions.eq("tipo", modoJuego));
+
+        // Subquery para UsuarioPartida
+        DetachedCriteria subquery = DetachedCriteria.forClass(UsuarioPartida.class, "up")
+                .add(Restrictions.eq("up.usuario", jugador))
+                .add(Restrictions.eqProperty("up.partida.id", "p.id"))
+                .setProjection(Projections.id());
+
+        // Agrego condición NOT EXISTS para excluir partidas donde el jugador ya está
+        criteria.add(Subqueries.notExists(subquery));
+
+        // Lock para evitar condiciones de carrera
+        criteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
+
+        return criteria.list();
+    }
+
+
+    @Override
     public Boolean guardarPartida(Partida partida) {
         sessionFactory.getCurrentSession().save(partida);
         return true;
@@ -44,7 +72,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
     @Override
     public void actualizarPartida(Partida partida) {
-        sessionFactory.getCurrentSession().update(partida);
+        sessionFactory.getCurrentSession().merge(partida);
 
     }
 
@@ -343,5 +371,46 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         }
     }
 
+    @Override
+    public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario) {
+        Session session = sessionFactory.getCurrentSession();
 
+        return (CategoriasGanadasEnPartida) session.createCriteria(CategoriasGanadasEnPartida.class)
+                .add(Restrictions.eq("partida", partida))
+                .add(Restrictions.eq("usuario", usuario))
+                .uniqueResult();
+    }
+
+    @Override
+    public void actualizarCategoriasGanadas(CategoriasGanadasEnPartida cat) {
+        sessionFactory.getCurrentSession().update(cat);
+    }
+
+    @Override
+    public void guardarCategoriasGanadas(CategoriasGanadasEnPartida cat) {
+        sessionFactory.getCurrentSession().save(cat);
+    }
+
+
+    @Override
+    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u){
+        Session session = sessionFactory.getCurrentSession();
+
+        // Hacemos un join desde UsuarioPartida para filtrar partidas por usuario
+        Criteria criteria = session.createCriteria(UsuarioPartida.class, "up")
+                .createAlias("up.partida", "p") // join con partida
+                .add(Restrictions.eq("up.usuario", u)) // partidas del usuario
+                .add(Restrictions.in("p.estadoPartida", Arrays.asList(ESTADO_PARTIDA.ABIERTA, ESTADO_PARTIDA.EN_CURSO))) // estados abiertos o en curso
+                .add(Restrictions.eq("p.tipo", TIPO_PARTIDA.MULTIJUGADOR)) // solo multijugador
+                .setLockMode("p", LockMode.PESSIMISTIC_WRITE); // bloqueo si necesitás
+
+        List<UsuarioPartida> usuarioPartidas = criteria.list();
+
+        // extraemos las partidas para devolverlas
+        List<Partida> partidas = usuarioPartidas.stream()
+                .map(UsuarioPartida::getPartida)
+                .collect(Collectors.toList());
+
+        return partidas;
+    }
 }

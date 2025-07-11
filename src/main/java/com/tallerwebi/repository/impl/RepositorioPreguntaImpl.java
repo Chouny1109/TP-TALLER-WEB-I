@@ -57,7 +57,7 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
 
         String hql = "select distinct p from Pregunta p " +
             "left join fetch p.respuestas r " +
-            "where p.tipoPregunta = :categoria " +
+            "where p.habilitada = true and p.tipoPregunta = :categoria " +
             "and not exists (" +
             "   select 1 from UsuarioRespondePregunta urp " +
             "   where urp.pregunta = p and urp.usuario.id = :idUsuario" +
@@ -155,7 +155,7 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
     @Override
     public List<Pregunta> obtenerPreguntasPorCategoria(String categoria) {
         Session session = sessionFactory.getCurrentSession();
-        String hql = "FROM Pregunta p WHERE p.tipoPregunta = :cat";
+        String hql = "FROM Pregunta p WHERE p.habilitada = true and p.tipoPregunta = :cat";
         return session.createQuery(hql, Pregunta.class)
                 .setParameter("cat", CATEGORIA_PREGUNTA.valueOf(categoria))
                 .getResultList();

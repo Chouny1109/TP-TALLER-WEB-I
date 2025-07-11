@@ -5,6 +5,19 @@ package com.tallerwebi.model;
         private boolean avanzarAutomaticamente;
         private String mensaje;
         private String estado; // "respondio", "esperandoRival", etc.
+        private Long idPartida;
+        private String nombreRival;
+        private String avatarUrlRival;
+        private Long usuarioId;
+
+        public Long getUsuarioId() {
+            return usuarioId;
+        }
+
+        public void setUsuarioId(Long usuarioId) {
+            this.usuarioId = usuarioId;
+        }
+
 
         // Getters y setters
 
@@ -32,5 +45,28 @@ package com.tallerwebi.model;
             this.estado = estado;
         }
 
+        public Long getIdPartida() {
+            return idPartida;
+        }
+
+        public void setIdPartida(Long idPartida) {
+            this.idPartida = idPartida;
+        }
+
+        public String getNombreRival() {
+            return nombreRival;
+        }
+
+        public void setNombreRival(String nombreRival) {
+            this.nombreRival = nombreRival;
+        }
+
+        public String getAvatarUrlRival() {
+            return avatarUrlRival;
+        }
+
+        public void setAvatarUrlRival(String avatarUrlRival) {
+            this.avatarUrlRival = avatarUrlRival;
+        }
     }
 

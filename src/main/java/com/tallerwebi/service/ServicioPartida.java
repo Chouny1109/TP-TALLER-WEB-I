@@ -4,7 +4,6 @@ import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public interface ServicioPartida {
     @Transactional
     ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego);
 
-    void notificarEstadoPartida(Long idPartida, Usuario quienRespondio, boolean ambosRespondieron, boolean terminoPartida);
+    void notificarEstadoPartida(Long idPartida, Usuario quienRespondio, boolean ambosRespondieron, boolean terminoPartida, TIPO_PARTIDA modoJuego);
     //metodos para la logica de la partida
 
     Pregunta buscarPreguntaPorId(Long idPregunta);
@@ -64,4 +63,17 @@ public interface ServicioPartida {
     SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Long idPartida, Integer orden);
 
     ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int ordenCorrecto, Pregunta siguientePregunta);
+
+    List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador);
+
+    @org.springframework.transaction.annotation.Transactional
+    ResultadoRespuesta crearResultadoRespuestaParaMultijugador(Long idPartida, Usuario usuario, Long idPregunta, Long idRespuesta);
+
+    @org.springframework.transaction.annotation.Transactional
+    CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario);
+
+    void agregarCategoriaGanadaEnPartida(Long idPartida, Usuario usuario, CATEGORIA_PREGUNTA categoriaCorona);
+
+    @org.springframework.transaction.annotation.Transactional
+    List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u);
 }

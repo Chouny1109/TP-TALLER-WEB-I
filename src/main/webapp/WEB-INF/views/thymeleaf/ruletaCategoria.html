@@ -75,12 +75,33 @@
 
         setTimeout(() => {
             const categoriaSeleccionada = categorias[elegido].nombre;
-            // Redirigir a la vista que muestra la pregunta
-            window.location.href = /*[[@{/partida/pregunta}]]*/ "/spring/partida/pregunta"
-                + "?categoria=" + encodeURIComponent(categoriaSeleccionada)
-                + "&id=" + encodeURIComponent(partidaId)
-                + "&idUsuario=" + encodeURIComponent(usuarioId)
-                + "&modoJuego=" + encodeURIComponent(modoJuego);
+
+            // Crear formulario POST dinámico
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = /*[[@{/partida/pregunta}]]*/ '/spring/partida/pregunta';
+
+            // Añadir inputs ocultos con datos
+            const datos = {
+                categoria: categoriaSeleccionada,
+                id: partidaId,
+                idUsuario: usuarioId,
+                modoJuego: modoJuego
+            };
+
+            for (const key in datos) {
+                if (datos.hasOwnProperty(key)) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = datos[key];
+                    form.appendChild(input);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+
             spinning = false;
         }, 5000);
     }

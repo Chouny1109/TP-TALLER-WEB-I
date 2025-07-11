@@ -92,44 +92,72 @@
                 <div class="partidas">
                     <div class="carta-interna">
 
-                        <div class="lista-partidas scroll-partidas"></div>
-                        <div class="partida">
-                            <div class="info-jugador">
-                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilFranklin.jpg}"></div>
-                                <div>Usuario_02</div>
+                        <!-- Aquí se insertarán las partidas dinámicamente -->
+                        <!-- Aquí se insertarán las partidas dinámicamente -->
+                        <div id="lista-partidas" class="lista-partidas scroll-partidas">
+
+                            <!-- Mostrar mensaje y botón si no hay partidas -->
+                            <div th:if="${#lists.isEmpty(partidasMultijugador)}" class="sin-partidas text-center p-3">
+                                <p>Sin partidas MULTIJUGADOR en curso</p>
+                                <form th:action="@{/partida/cargar}" method="GET">
+                                    <input type="hidden" name="modoJuego" value="MULTIJUGADOR" />
+                                    <button type="submit" style="background-color: #4CAF50; border-radius: 25px; padding: 10px">Jugar multijugador</button>
+                                </form>
                             </div>
-                            <button class="estado-turno tu-turno">¡Tu turno!</button>
-                        </div>
-                        <div class="partida">
-                            <div class="info-jugador">
-                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilAndrea.jpg}"></div>
-                                <div>Usuario_04</div>
+
+                            <!-- Mostrar partidas si hay -->
+                            <div th:if="${!#lists.isEmpty(partidasMultijugador)}">
+                                <div th:each="partida : ${partidasMultijugador}"
+                                     th:id="'partida-' + ${partida.id}"
+                                     class="partida">
+
+                                    <div class="info-jugador">
+                                        <div class="foto-perfil">
+                                            <!-- Menos de 2 jugadores: avatar default -->
+                                            <img th:if="${#lists.size(partida.jugadores) < 2}"
+                                                 th:src="@{/resources/imgs/default-avatar.png}"
+                                                 alt="Avatar Rival" />
+
+                                            <!-- 2 jugadores: avatar del rival -->
+                                            <img th:if="${#lists.size(partida.jugadores) == 2}"
+                                                 th:src="${partida.getRival(usuarioId).linkAvatar}"
+                                                 alt="Avatar Rival" />
+                                        </div>
+
+                                        <!-- Nombre rival o '?' -->
+                                        <div class="nombre-rival" th:if="${#lists.size(partida.jugadores) < 2}">?</div>
+
+                                        <div class="nombre-rival" th:if="${#lists.size(partida.jugadores) == 2}"
+                                             th:text="${partida.getRival(usuarioId).nombreUsuario}">
+                                            Rival
+                                        </div>
+                                    </div>
+
+                                    <!-- Solo una vez estado-turno -->
+                                    <div class="estado">
+                                        <form th:if="${partida.idTurnoActual} == ${usuarioId}"
+                                              th:action="@{/partida/ruletaCategoria}"
+                                              method="GET">
+
+                                            <input type="hidden" name="id" th:value="${partida.id}" />
+                                            <input type="hidden" name="modoJuego" value="MULTIJUGADOR" />
+                                            <input type="hidden" name="idUsuario" th:value="${usuarioId}" />
+
+                                            <button type="submit" class="estado-turno tu-turno">¡Tu turno!</button>
+                                        </form>
+
+                                        <span th:if="${partida.idTurnoActual} != ${usuarioId} or ${partida.idTurnoActual} == null"
+                                              class="estado-turno esperando">Esperando rival...
+                                        </span>
+                                    </div>
+
+                                </div>
                             </div>
-                            <button class="estado-turno tu-turno">¡Tu turno!</button>
-                        </div>
-                        <div class="partida">
-                            <div class="info-jugador">
-                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilCallou.jpg}"></div>
-                                <div>Usuario_01</div>
-                            </div>
-                            <div class="estado-turno esperando">Esperando...</div>
+
                         </div>
 
-                        <div class="partida">
-                            <div class="info-jugador">
-                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilMadMax.jpg}"></div>
-                                <div>Usuario_03</div>
-                            </div>
-                            <div class="estado-turno esperando">Esperando...</div>
-                        </div>
 
-                        <div class="partida">
-                            <div class="info-jugador">
-                                <div class="foto-perfil"><img th:src="@{/resources/imgs/perfilPSY.jpg}"></div>
-                                <div>Usuario_05</div>
-                            </div>
-                            <div class="estado-turno esperando">Esperando...</div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -218,6 +246,122 @@
 
 <!-- Bootstrap JS desde CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:inline="javascript">
+    const rutaRuleta = /*[[@{/partida/ruletaCategoria}]]*/ '/partida/ruletaCategoria';
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const socket = new SockJS(/*[[@{/chat-websocket}]]*/ '/spring/chat-websocket');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, frame => {
+            console.log('Conectado a WebSocket: ' + frame);
+            stompClient.subscribe('/user/queue/partida', msg => {
+                const dto = JSON.parse(msg.body);
+                actualizarPartida(dto);
+            });
+        });
+
+
+        function actualizarPartida(dto) {
+            if (!dto || !dto.idPartida) {
+                console.warn('Mensaje inválido o sin idPartida:', dto);
+                return;
+            }
+
+            const contenedor = document.getElementById('lista-partidas');
+            if (!contenedor) return;
+
+            const partidaDiv = document.getElementById('partida-' + dto.idPartida);
+            if (!partidaDiv) {
+                console.warn('Partida no encontrada en el DOM:', dto.idPartida);
+                return;
+            }
+
+            // Actualizar avatar y nombre del rival
+            const fotoPerfilImg = partidaDiv.querySelector('.foto-perfil img');
+            const nombreRivalDiv = partidaDiv.querySelector('.nombre-rival');
+
+            if (dto.nombreRival) {
+                if (fotoPerfilImg && dto.avatarUrlRival) {
+                    fotoPerfilImg.src = dto.avatarUrlRival;
+                }
+                if (nombreRivalDiv) {
+                    nombreRivalDiv.textContent = dto.nombreRival;
+                }
+            } else {
+                if (fotoPerfilImg) {
+                    fotoPerfilImg.src = '/resources/imgs/default-avatar.png';
+                }
+                if (nombreRivalDiv) {
+                    nombreRivalDiv.textContent = '?';
+                }
+            }
+
+            // Reemplazar estado
+            const estadoElem = partidaDiv.querySelector('.estado');
+            const esTuTurno = dto.estado && dto.estado.toLowerCase().includes('tu_turno');
+
+            const nuevoContenido = document.createElement('div');
+            nuevoContenido.className = 'estado';
+
+            if (esTuTurno) {
+                const form = document.createElement('form');
+                form.action = rutaRuleta;
+                form.method = 'GET';
+
+
+                const inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'id';
+                inputId.value = dto.idPartida;
+
+                const inputModo = document.createElement('input');
+                inputModo.type = 'hidden';
+                inputModo.name = 'modoJuego';
+                inputModo.value = 'MULTIJUGADOR'; // ⚠️ Cambiá si estás en modo SUPERVIVENCIA
+
+                const inputUsuario = document.createElement('input');
+                inputUsuario.type = 'hidden';
+                inputUsuario.name = 'idUsuario';
+                inputUsuario.value = dto.usuarioId;
+
+                const button = document.createElement('button');
+                button.type = 'submit';
+                button.className = 'estado-turno tu-turno';
+                button.textContent = '¡Tu turno!';
+
+                form.appendChild(inputId);
+                form.appendChild(inputModo);
+                form.appendChild(inputUsuario);
+                form.appendChild(button);
+
+                nuevoContenido.appendChild(form);
+            } else {
+                const esperando = document.createElement('span');
+                esperando.className = 'badge badge-secondary';
+                esperando.textContent = dto.mensaje || 'Esperando rival...';
+                nuevoContenido.appendChild(esperando);
+            }
+
+            if (estadoElem) {
+                estadoElem.replaceWith(nuevoContenido);
+            } else {
+                partidaDiv.appendChild(nuevoContenido);
+            }
+        }
+
+
+
+
+    });
+</script>
+
+
+
 </body>
 
 </html>

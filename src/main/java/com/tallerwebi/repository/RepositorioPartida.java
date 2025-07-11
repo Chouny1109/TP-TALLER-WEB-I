@@ -1,6 +1,5 @@
 package com.tallerwebi.repository;
 
-import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 
@@ -10,6 +9,8 @@ import java.util.List;
 
 
 public interface RepositorioPartida {
+
+     List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador);
 
     Boolean guardarPartida(Partida partida);
 
@@ -61,4 +62,11 @@ public interface RepositorioPartida {
 
     ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp);
 
+    CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario);
+
+    void actualizarCategoriasGanadas(CategoriasGanadasEnPartida cat);
+
+    void guardarCategoriasGanadas(CategoriasGanadasEnPartida cat);
+
+    List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u);
 }

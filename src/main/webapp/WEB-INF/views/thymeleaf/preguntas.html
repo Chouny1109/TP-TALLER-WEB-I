@@ -1,28 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pregunta</title>
 
-    <!-- SockJS (cliente WebSocket compatible) -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 
-    <!-- STOMP.js (protocolo de mensajería sobre SockJS) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- WebSocket libs -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nerko+One&family=Outfit:wght@100..900&display=swap');
 
-        body{
+        body {
             font-family: 'Outfit', sans-serif;
-
         }
-        .pregunta{
+        .pregunta {
             margin: auto auto 10px;
             display: flex;
             justify-content: center;
@@ -30,24 +28,25 @@
             border-radius: 20px;
             background-color: rgb(214, 211, 211);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 70% ;
+            width: 70%;
             height: 250px;
-            font-size:40px;
+            font-size: 40px;
             color: rgb(85, 83, 83);
             text-align: center;
-
         }
-        .botonOpcion{
+        .botonOpcion {
             text-decoration: none;
             background-color: #c9c9c9;
-
             border-radius: 24px;
             border-style: none;
-            margin: 7px;
+            margin: 7px 0;
             font-size: 20px;
             transition: 0.2s;
             color: #524d4d;
             font-weight: 500;
+            width: 100%;
+            padding: 10px;
+            border: none;
         }
         .botonOpcion:hover {
             background-color: rgb(159, 236, 156);
@@ -57,11 +56,10 @@
             color: #1b7c1e;
             font-weight: 600;
         }
-        .tipoPregunta{
+        .tipoPregunta {
             display: flex;
             background-color: #4caf50;
             color: white;
-
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             justify-content: center;
             align-items: center;
@@ -70,7 +68,7 @@
             padding: 10px 20px;
             transform: translateY(40px) translateX(-60px);
         }
-        .segundosRestantes{
+        .segundosRestantes {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -82,11 +80,47 @@
             width: 50px;
             height: 50px;
             font-size: 20px;
-            transform: translateY(40px) translateX(0px);
+            transform: translateY(40px) translateX(0);
+        }
+        .categorias {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 30px;
+            margin-bottom: -30px;
+        }
+        .cat {
+            background-color: #acacac;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            padding: 15px;
+            width: 70px;
+            height: 70px;
+            cursor: default;
+        }
+        .cat svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        .cat.ganada {
+            background-color: rgb(159, 236, 156) !important;
+            color: #1b7c1e !important;
+        }
+        .botonOpcion.respondida:hover {
+            background-color: inherit !important;
+            transform: none !important;
+            box-shadow: none !important;
+            color: inherit !important;
+            cursor: default;
         }
         .counter-item {
             text-align: center;
-            margin-bottom: 5px;
         }
         .counter-circle {
             width: 2.3em;
@@ -123,64 +157,35 @@
             padding: 10px;
             margin: 8px 0;
             font-size: 16px;
-            border-radius: 25px;
+            border-radius: 8px;
             border: none;
         }
         .urgente {
             color: red;
             font-weight: bold;
         }
-        .categorias{
-            display: flex;
-            flex-direction: row;
-            margin-top: 30px;
-
-            margin-bottom: -30px;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 18px;
-        }
-        .cat h4{
-            font-size: 19px;
-            margin: 0;
-            line-height: 1;
-            height: 100%;
-            display: flex;
-            align-items: center;
-        }
-        .cat{
-            background-color: #acacac;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-
-            color: white;
-            display: flex;
-            text-align: center;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            padding: 15px ;
-
-        }
-        .cat svg {
-            width: 40px;
-            height: 40px;
-            color: white;
+        .botonOpcion.respondida {
+            pointer-events: none;
+            cursor: default;
         }
 
-
-        /* Cuando está respondida, no hay efecto hover */
-        .botonOpcion.respondida:hover {
+        /* Remueve el hover en todos los estados post respuesta */
+        .botonOpcion.respondida:hover,
+        .botonOpcion.correcta:hover,
+        .botonOpcion.incorrecta:hover {
             background-color: inherit !important;
             transform: none !important;
             box-shadow: none !important;
             color: inherit !important;
-            cursor: default;
+            cursor: default !important;
         }
+
 
     </style>
 </head>
 <body>
 <div class="container">
+
 
     <div class="categorias" th:if="${modoJuego.name() == 'MULTIJUGADOR'}">
         <div class="cat" id="historia"></div>
@@ -190,6 +195,7 @@
         <div class="cat" id="ciencia"></div>
         <div class="cat" id="deporte"></div>
     </div>
+
     <div class="d-flex justify-content-between w-50 m-auto">
         <p class="tipoPregunta"><span th:text="${pregunta.tipoPregunta}"></span></p>
         <p class="segundosRestantes">10s</p>
@@ -202,7 +208,7 @@
     <div class="poderes d-flex gap-5 justify-content-center">
         <div class="counter-item" th:each="i : ${#numbers.sequence(1,4)}">
             <div class="counter-circle">
-                <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic">
+                <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic" />
             </div>
             <div class="counter-value">1</div>
         </div>
@@ -210,7 +216,7 @@
 
     <!-- Form para responder, solo si no respondí aún -->
     <form id="form-respuesta" th:if="${!respondida}" th:action="@{/partida/validar-respuesta}" method="post" class="d-grid w-50 m-auto">
-    <input type="hidden" name="idPartida" th:value="${idPartida}" />
+        <input type="hidden" name="idPartida" th:value="${idPartida}" />
         <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
         <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         <input type="hidden" name="idPreguntaRespondida" th:value="${pregunta.id}" />
@@ -231,78 +237,64 @@
             <button type="button"
                     class="botonOpcion respondida"
                     th:classappend="|${
-                    opcion.id == idRespuestaSeleccionada ?
+                        opcion.id == idRespuestaSeleccionada ?
                         (opcion.id == respuestaCorrecta.id ? 'correcta' : 'incorrecta') :
                         (opcion.id == respuestaCorrecta.id ? 'correcta' : '')
-                }|"
+                    }|"
                     th:text="${opcion.descripcion}"
                     disabled>
             </button>
         </div>
 
-
         <div id="mensajeEstado" style="color: gray; font-style: italic; margin-top: 10px; min-height: 1.5em;">
-            <!-- Aquí va el mensaje que llegará por WebSocket -->
+            <!-- Mensaje que llega por WebSocket -->
         </div>
 
-        <!-- Botón dinámico, lo llenamos con JS -->
         <div id="contenedorVolver" class="text-center mt-4"></div>
 
-
-        <form th:if="${respondida} and ${modoJuego.name() == 'SUPERVIVENCIA'}" th:action="@{/partida/validar-rival}" method="post"
+        <form th:if="${respondida and modoJuego.name() == 'SUPERVIVENCIA'}" th:action="@{/partida/validar-rival}" method="post"
               style="display: none" id="formSiguientePregunta">
-        <input type="hidden" name="idPartida" th:value="${idPartida}" />
-            <input type="hidden" name="preguntaRespondida" th:value="${pregunta.id}">
+            <input type="hidden" name="idPartida" th:value="${idPartida}" />
+            <input type="hidden" name="preguntaRespondida" th:value="${pregunta.id}" />
             <input type="hidden" name="idRespuestaSeleccionada" th:value="${idRespuestaSeleccionada}" />
             <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
             <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         </form>
 
-        <form th:if="${respondida} and ${modoJuego.name() == 'MULTIJUGADOR'}" th:action="@{/partida/validar-turno}" method="post"
+        <form th:if="${respondida and modoJuego.name() == 'MULTIJUGADOR'}" th:action="@{/partida/validar-turno}" method="post"
               style="display: none" id="formSiguientePreguntaTurno">
             <input type="hidden" name="idPartida" th:value="${idPartida}" />
-            <input type="hidden" name="preguntaRespondida" th:value="${pregunta.id}">
+            <input type="hidden" name="preguntaRespondida" th:value="${pregunta.id}" />
             <input type="hidden" name="idRespuestaSeleccionada" th:value="${idRespuestaSeleccionada}" />
             <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
             <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         </form>
-
 
         <div th:if="${mensajeFinal}" style="color: gray; font-style: italic; margin-top: 10px;">
             <p th:text="${mensajeFinal}"></p>
         </div>
 
         <div th:if="${mostrarVolver}" class="text-center mt-4">
-            <a href="/home" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>
+            <a  th:href="@{/home}" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>
         </div>
-
     </div>
-
 
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    let segundos = 10;
     const elementoTiempo = document.querySelector('.segundosRestantes');
     const form = document.getElementById('form-respuesta');
     let respondio = false;
-    let respondida = /*[[${respondida}]]*/ false;
 
-    if (respondida) {
-        // Si ya respondió, mostramos 0s y no iniciamos contador
+    const respondidaDesdeThymeleaf = /*[[${respondida}]]*/ false;
+
+    if (respondidaDesdeThymeleaf) {
+        // Ya respondida: mostrar 0s y no iniciar cuenta atrás
         if (elementoTiempo) elementoTiempo.textContent = '0s';
     } else {
-        // Si no respondió, arrancamos el contador normal
-        if (form) {
-            form.addEventListener('submit', function (e) {
-                if (respondio) {
-                    e.preventDefault(); // evita doble envío
-                } else {
-                    respondio = true;
-                }
-            });
-        }
+        // No respondida: iniciar cuenta regresiva desde 10
+        let segundos = 10;
+        if (elementoTiempo) elementoTiempo.textContent = segundos + 's';
 
         const intervalo = setInterval(() => {
             segundos--;
@@ -314,7 +306,6 @@
                 clearInterval(intervalo);
 
                 if (!respondio && form) {
-                    // Si no respondió, agregamos input con valor -1 y enviamos el form
                     const input = document.createElement("input");
                     input.type = "hidden";
                     input.name = "respuesta";
@@ -328,69 +319,23 @@
         }, 1000);
     }
 
+    // Evitar doble envío si ya se respondió
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (respondio) {
+                e.preventDefault();
+            } else {
+                respondio = true;
+            }
+        });
+    }
+
     /*]]>*/
 </script>
+
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    let terminada =/*[[${terminoPartida}]]*/ false;
-    let respondida = /*[[${respondida}]]*/ false;
-    let modoJuego = /*[['' + ${modoJuego.name()}]]*/ '';
-
-    // Para debug
-    console.log("respondida =", respondida);
-    console.log("modoJuego =", modoJuego);
-
-    if (respondida === true && modoJuego == 'SUPERVIVENCIA' && !terminada) {
-        const formSiguiente = document.getElementById("formSiguientePregunta");
-        if (formSiguiente) {
-            setTimeout(() => formSiguiente.submit(), 2000);
-        }
-    }
-
-    if (respondida === true && modoJuego == 'MULTIJUGADOR' && !terminada) {
-        const formSiguiente = document.getElementById("formSiguientePreguntaTurno");
-        if (formSiguiente) {
-            setTimeout(() => formSiguiente.submit(), 2000);
-        }
-    }
-
-    /*]]>*/
-</script>
-
-
-
-<script>
-    var socket = new SockJS('/spring/chat-websocket');
-    var stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function(frame) {
-        stompClient.subscribe('/user/queue/partida', function(message) {
-            var data = JSON.parse(message.body);
-            console.log("Mensaje WebSocket recibido:", message.body);
-            var contenedorMensaje = document.getElementById('mensajeEstado');
-
-            if(data.estado === 'respondio') {
-                if(contenedorMensaje) {
-                    contenedorMensaje.textContent = 'Esperando que responda tu rival...';
-                }
-            } else if (data.estado === 'finalizado') {
-                if (contenedorMensaje) {
-                    contenedorMensaje.textContent = '¡La partida ha finalizado!';
-                }
-                const contenedorVolver = document.getElementById('contenedorVolver');
-                if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
-                    contenedorVolver.innerHTML = '<a href="/home"  id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
-                }
-            } else {
-                if(contenedorMensaje) contenedorMensaje.textContent = '';
-            }
-        });
-    });
-</script>
-
-<script>
     const categorias = [
         { nombre: "HISTORIA", icono: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M19.146 22L17.393 9.98c-.142-.972-.213-1.457-.06-1.905c.318-.935 1.315-1.291 1.779-2.094c.068-.118.103-.251.17-.518l.567-2.22c.146-.572.22-.858.066-1.05C19.762 2 19.46 2 18.859 2h-1.064c-.67 0-.7.02-.948.629L16.34 3.87c-.249.61-.279.629-.948.629h-.514c-.688 0-.863-.127-1-.804l-.183-.892c-.138-.677-.313-.804-1-.804h-1.39c-.687 0-.862.127-1 .804l-.182.892c-.139.677-.313.804-1.001.804h-.514c-.67 0-.7-.02-.948-.629l-.507-1.24C6.904 2.019 6.874 2 6.205 2H5.141c-.602 0-.903 0-1.056.192c-.153.193-.08.479.066 1.05l.566 2.22c.069.268.103.401.171.52c.464.802 1.461 1.158 1.78 2.093c.152.448.081.933-.06 1.905L4.854 22'/><path d='m9 22l.608-3.039c.143-.718.215-1.076.407-1.342C10.494 16.96 11.262 17 12 17s1.507-.04 1.985.62c.192.264.264.623.407 1.341L15 22M3 22h18M7 8h10m-2 3h2M7 13h2'/></g></svg>` },
         { nombre: "CIENCIA", icono: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.211 19.7Q3.773 21 5.12 21h13.76q1.348 0 1.909-1.3t-.37-2.367L15.465 11V5h1.668a.92.92 0 0 0 .69-.283A1 1 0 0 0 18.096 4a1 1 0 0 0-.273-.717a.92.92 0 0 0-.69-.283H6.867a.92.92 0 0 0-.69.283A1 1 0 0 0 5.905 4q0 .434.273.717a.92.92 0 0 0 .69.283h1.668v6L3.58 17.333q-.93 1.066-.369 2.367m4.457-4.423h8.664l-2.792-3.544V5h-3.08v6.733z" clip-rule="evenodd" stroke-width="0.4" stroke="currentColor"/></svg>` },
@@ -405,21 +350,87 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         categorias.forEach(cat => {
-            // Convertir el nombre a id esperado
-            const id = cat.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // quita acentos
-
+            const id = cat.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const div = document.getElementById(id);
-            if (div) {
-                div.innerHTML = cat.icono;
+            if (div) div.innerHTML = cat.icono;
+        });
+
+        const categoriasGanadas = /*[[${categoriasGanadas}]]*/ [];
+
+
+        categoriasGanadas.forEach(nombreCat => {
+            const id = nombreCat.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const catDiv = document.getElementById(id);
+            if (catDiv) {
+                catDiv.classList.add('ganada');
             }
         });
+
+
     });
-
-
+    /*]]>*/
 </script>
 
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        var socket = new SockJS('/spring/chat-websocket');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/user/queue/partida', function(message) {
+                var data = JSON.parse(message.body);
+                console.log('Mensaje WebSocket recibido:', data);
+                var contenedorMensaje = document.getElementById('mensajeEstado');
+
+                if (data.estado === 'respondio') {
+                    if (contenedorMensaje) {
+                        contenedorMensaje.textContent = 'Esperando que responda tu rival...';
+                    }
+                } else if (data.estado === 'finalizado') {
+                    if (contenedorMensaje) {
+                        contenedorMensaje.textContent = '¡La partida ha finalizado!';
+                    }
+                    const contenedorVolver = document.getElementById('contenedorVolver');
+                    if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
+                        const urlHome = /*[[@{/home}]]*/ '/home';
+                        contenedorVolver.innerHTML = '<a href="${urlHome}" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
+                    }
+                } else {
+                    if (contenedorMensaje) contenedorMensaje.textContent = '';
+                }
+            });
+        });
+
+        const respondida = /*[[${respondida}]]*/ false;
+        const modoJuego = /*[['' + ${modoJuego.name()}]]*/ '';
+        const terminada = /*[[${terminoPartida}]]*/ false;
+
+
+        if (respondida && modoJuego === 'SUPERVIVENCIA' && !terminada) {
+            const formSiguientePregunta = document.getElementById('formSiguientePregunta');
+            setTimeout(() => {
+                const botonVolver = document.getElementById('btnVolverInicio');
+                if (!botonVolver && formSiguientePregunta) {
+                    formSiguientePregunta.submit();
+                }
+            }, 2000);
+        }
+
+        if (respondida && modoJuego === 'MULTIJUGADOR' && !terminada) {
+            const formSiguientePreguntaTurno = document.getElementById('formSiguientePreguntaTurno');
+            setTimeout(() => {
+                const botonVolver = document.getElementById('btnVolverInicio');
+                if (!botonVolver && formSiguientePreguntaTurno) {
+                    formSiguientePreguntaTurno.submit();
+                }
+            }, 2000);
+        }
+
+    });
+    /*]]>*/
+</script>
 
 </body>
-
-
 </html>

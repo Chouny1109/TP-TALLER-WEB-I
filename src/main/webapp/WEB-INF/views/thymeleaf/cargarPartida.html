@@ -147,12 +147,33 @@
                     if (modoJuego === 'SUPERVIVENCIA') {
                         const categoriaDefault = 'GENERAL'; // o la que uses para supervivencia
 
-                        window.location.href = /*[[@{/partida/pregunta}]]*/ '/partida/pregunta'
-                            + "?categoria=" + encodeURIComponent(categoriaDefault)
-                            + "&id=" + encodeURIComponent(idPartida)
-                            + "&idUsuario=" + encodeURIComponent(idJugador)
-                            + "&modoJuego=" + encodeURIComponent(modoJuego);
-                    } else {
+                        // Crear formulario POST dinámico
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = /*[[@{/partida/pregunta}]]*/ '/partida/pregunta';
+
+                        // Añadir inputs ocultos
+                        const datos = {
+                            categoria: categoriaDefault,
+                            id: idPartida,
+                            idUsuario: idJugador,
+                            modoJuego: modoJuego
+                        };
+
+                        for (const key in datos) {
+                            if (datos.hasOwnProperty(key)) {
+                                const input = document.createElement('input');
+                                input.type = 'hidden';
+                                input.name = key;
+                                input.value = datos[key];
+                                form.appendChild(input);
+                            }
+                        }
+
+                        document.body.appendChild(form);
+                        form.submit();
+
+                    }else {
                         window.location.href = /*[[@{/partida/ruletaCategoria}]]*/ '/partida/ruletaCategoria'
                             + "?id=" + encodeURIComponent(idPartida)
                             + "&idUsuario=" + encodeURIComponent(idJugador)

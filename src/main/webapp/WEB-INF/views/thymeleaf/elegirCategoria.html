@@ -49,13 +49,40 @@
         <div class="cat-name">${cat.nombre}</div>
     `;
         div.onclick = () => {
-            window.location.href = /*[[@{/partida/pregunta}]]*/ "/spring/partida/pregunta"
-                + "?categoria=" + encodeURIComponent(cat.nombre)
-                + "&id=" + encodeURIComponent(partidaId)
-                + "&idUsuario=" + encodeURIComponent(usuarioId)
-                + "&modoJuego=" + encodeURIComponent(modoJuego);  };
-        contenedor.appendChild(div);
-    });
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = /*[[@{/partida/pregunta}]]*/ "/spring/partida/pregunta";
+
+            const inputCategoria = document.createElement("input");
+            inputCategoria.type = "hidden";
+            inputCategoria.name = "categoria";
+            inputCategoria.value = cat.nombre;
+
+            const inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.name = "id";
+            inputId.value = partidaId;
+
+            const inputUsuario = document.createElement("input");
+            inputUsuario.type = "hidden";
+            inputUsuario.name = "idUsuario";
+            inputUsuario.value = usuarioId;
+
+            const inputModo = document.createElement("input");
+            inputModo.type = "hidden";
+            inputModo.name = "modoJuego";
+            inputModo.value = modoJuego;
+
+            form.appendChild(inputCategoria);
+            form.appendChild(inputId);
+            form.appendChild(inputUsuario);
+            form.appendChild(inputModo);
+
+            document.body.appendChild(form);
+            form.submit();
+        };
+    })
+
 </script>
 </body>
 </html>

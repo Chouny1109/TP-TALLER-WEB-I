@@ -13,6 +13,10 @@ public class JugadorDTO {
         this.nombreUsuario = usuario.getNombreUsuario();
         this.email = usuario.getEmail();
     }
+    public JugadorDTO() {
+        // Constructor vacío para crear un jugador con valores por defecto si es necesario
+    }
+
 
     @Override
     public String toString() {
