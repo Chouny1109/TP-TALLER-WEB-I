@@ -395,7 +395,7 @@
                     const contenedorVolver = document.getElementById('contenedorVolver');
                     if (contenedorVolver && !document.getElementById('btnVolverInicio')) {
                         const urlHome = /*[[@{/home}]]*/ '/home';
-                        contenedorVolver.innerHTML = '<a href="${urlHome}" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>';
+                        contenedorVolver.innerHTML = `<a href="${urlHome}" id="btnVolverInicio" class="btn btn-success">Volver al inicio</a>`;
                     }
                 } else {
                     if (contenedorMensaje) contenedorMensaje.textContent = '';
