@@ -13,31 +13,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsuarioNoAutenticadoException.class)
     public ResponseEntity<Map<String, String>> handleUsuarioNoAutenticado(UsuarioNoAutenticadoException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)//401
                 .body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(MisionNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleMisionNotFoundException(MisionNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)//404
                 .body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(MisionNoPerteneceAlUsuarioException.class)
     public ResponseEntity<Map<String, String>> handleMisionNoPerteneceAlUsuarioException(MisionNoPerteneceAlUsuarioException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)//403
                 .body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(MisionYaFinalizadaException.class)
     public ResponseEntity<Map<String, String>> handleMisionYaFinalizadaException(MisionYaFinalizadaException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)//403
                 .body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(MonedasInsuficientesException.class)
     public ResponseEntity<Map<String, String>> handleMonedasInsuficientesException(MonedasInsuficientesException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)//403
                 .body(Map.of("error", ex.getMessage()));
     }
 

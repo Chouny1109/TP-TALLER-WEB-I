@@ -99,10 +99,6 @@
                             <!-- Mostrar mensaje y botón si no hay partidas -->
                             <div th:if="${#lists.isEmpty(partidasMultijugador)}" class="sin-partidas text-center p-3">
                                 <p>Sin partidas MULTIJUGADOR en curso</p>
-                                <form th:action="@{/partida/cargar}" method="GET">
-                                    <input type="hidden" name="modoJuego" value="MULTIJUGADOR" />
-                                    <button type="submit" style="background-color: #4CAF50; border-radius: 25px; padding: 10px">Jugar multijugador</button>
-                                </form>
                             </div>
 
                             <!-- Mostrar partidas si hay -->
