@@ -34,10 +34,10 @@ Usuario {
 
     private Boolean activo;
 
+    private Integer experiencia;
+
     @Column(unique = true)
     private String token;
-
-    private Integer nivel;
 
     @Column(nullable = false)
     private Integer monedas;
@@ -73,10 +73,10 @@ Usuario {
         this.misiones = new ArrayList<>();
         this.vidas = 5;
         this.monedas = 5000;
-        this.nivel = 1;
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
+        this.experiencia = 0;
     }
 
     public Usuario() {
@@ -138,10 +138,6 @@ Usuario {
         this.activo = activo;
     }
 
-    public Integer getNivel() {
-        return nivel;
-    }
-
     public boolean activo() {
         return activo;
     }
@@ -162,11 +158,6 @@ Usuario {
         Usuario usuario = (Usuario) o;
         return email != null && email.equalsIgnoreCase(usuario.email);
     }
-
-    public void setNivel(Integer nivel) {
-        this.nivel = nivel;
-    }
-
 
     public List<UsuarioMision> getMisiones() {
         return misiones;

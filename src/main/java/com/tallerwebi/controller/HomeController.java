@@ -41,7 +41,6 @@ public class HomeController {
 
         if (usuario != null) {
             mav.addObject("nombreUsuario", usuario.getNombreUsuario());
-            mav.addObject("nivel", usuario.getNivel());
             // Agregamos el atributo con el nombre esperado por el WebSocket
             request.getSession().setAttribute("usuario", usuario);
             mav.addObject("monedas", usuario.getMonedas());
