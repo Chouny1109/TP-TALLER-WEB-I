@@ -10,14 +10,22 @@ import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.ServicioRecovery;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -40,11 +48,24 @@ public class HomeController {
         Usuario usuario = (Usuario) request.getSession().getAttribute("USUARIO");
 
         if (usuario != null) {
+            servicioUsuario.regenerarVidasSiCorresponde(usuario);
+            request.getSession().setAttribute("USUARIO", usuario);
             mav.addObject("nombreUsuario", usuario.getNombreUsuario());
             // Agregamos el atributo con el nombre esperado por el WebSocket
             request.getSession().setAttribute("usuario", usuario);
             mav.addObject("monedas", usuario.getMonedas());
             mav.addObject("vidas", usuario.getVidas());
+            if (usuario.getVidas() < 5 && usuario.getUltimaRegeneracionVida() != null) {
+                long segundosRestantes = Duration.between(LocalDateTime.now(),
+                        usuario.getUltimaRegeneracionVida().plusHours(1)).getSeconds();
+                if (segundosRestantes > 0) {
+                    mav.addObject("tiempoRestanteVida", segundosRestantes);
+                } else {
+                    mav.addObject("tiempoRestanteVida", 0);
+                }
+            }
+
+
 
         } else {
             return new ModelAndView("redirect:/login");
@@ -85,7 +106,51 @@ public class HomeController {
         mav.addObject("avatarImg", avatarImg);
         mav.addObject("modos", TIPO_PARTIDA.values());
 
+        if (usuario.getVidas() < 5) {
+            LocalDateTime ultima = usuario.getUltimaRegeneracionVida();
+            Duration duracion = Duration.between(LocalDateTime.now(), ultima.plusHours(1));
+            long segundosRestantes = duracion.getSeconds();
+            mav.addObject("tiempoRestanteVida", segundosRestantes);
+        }
+
         return mav;
     }
+
+    @GetMapping("/verificar-regeneracion")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> verificarRegeneracion(HttpSession session) {
+        Usuario usuario = (Usuario) session.getAttribute("USUARIO");
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        usuario = servicioUsuario.buscarUsuarioPorId(usuario.getId());
+        int vidasAntes = usuario.getVidas();
+        LocalDateTime ultimaRegen = usuario.getUltimaRegeneracionVida();
+        long horasPasadas = Duration.between(ultimaRegen, LocalDateTime.now()).toHours();
+
+        if (vidasAntes < 5 && horasPasadas >= 1) {
+            int nuevasVidas = (int) Math.min(horasPasadas, 5 - vidasAntes);
+            usuario.setVidas(vidasAntes + nuevasVidas);
+            usuario.setUltimaRegeneracionVida(ultimaRegen.plusHours(nuevasVidas));
+            servicioUsuario.actualizar(usuario);
+        }
+
+        session.setAttribute("USUARIO", usuario);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("vidas", usuario.getVidas());
+
+        if (usuario.getVidas() < 5) {
+            Duration nuevaEspera = Duration.between(LocalDateTime.now(), usuario.getUltimaRegeneracionVida().plusHours(1));
+            respuesta.put("tiempoRestante", nuevaEspera.getSeconds());
+        } else {
+            respuesta.put("tiempoRestante", 0);
+        }
+
+        return ResponseEntity.ok(respuesta);
+    }
+
 
 }

@@ -13,6 +13,7 @@ public class Vida {
     private String nombre;
     private Integer valor;
     private Integer cantidad;
+    private String imagen;
 
     public Vida() {}
 
@@ -29,4 +30,6 @@ public class Vida {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setValor(Integer valor) { this.valor = valor; }
     public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
+    public String getImagen() { return imagen; }
 }
