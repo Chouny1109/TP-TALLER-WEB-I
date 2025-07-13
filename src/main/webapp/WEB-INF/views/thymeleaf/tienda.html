@@ -320,7 +320,7 @@
 
             <div class="d-flex overflow-auto px-2">
                 <div th:each="avatar : ${avatares}" class="shop-card">
-                    <!--<img th:src="@{'/imgs/Avatares/' + ${avatar.link}}" alt="Imagen del avatar" class="shop-card-img" /> -->
+                    <img th:src="@{'/imgs/Avatares/' + ${avatar.link}}" alt="Imagen del avatar" class="shop-card-img" />
                     <p class="item-name" th:text="${avatar.nombre}">Nombre del avatar</p>
 
                     <div class="price-badge status-icons">
