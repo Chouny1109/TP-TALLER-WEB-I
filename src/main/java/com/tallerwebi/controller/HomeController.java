@@ -57,6 +57,9 @@ public class HomeController {
             request.getSession().setAttribute("usuario", usuario);
             mav.addObject("monedas", usuario.getMonedas());
             mav.addObject("vidas", usuario.getVidas());
+            mav.addObject("nivel", 1);
+
+
             if (usuario.getVidas() < 5 && usuario.getUltimaRegeneracionVida() != null) {
                 long segundosRestantes = Duration.between(LocalDateTime.now(),
                         usuario.getUltimaRegeneracionVida().plusHours(1)).getSeconds();

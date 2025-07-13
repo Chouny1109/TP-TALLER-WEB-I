@@ -35,7 +35,7 @@ Usuario {
 
     private Boolean activo;
 
-    private Integer experiencia;
+
 
     @Column(unique = true)
     private String token;
@@ -83,7 +83,7 @@ Usuario {
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
-        this.experiencia = 0;
+        this.xp = 0;
         this.ultimaRegeneracionVida = LocalDateTime.now();
     }
 
