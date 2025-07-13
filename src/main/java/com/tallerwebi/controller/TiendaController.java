@@ -3,6 +3,7 @@ package com.tallerwebi.controller;
 import com.tallerwebi.model.Avatar;
 import com.tallerwebi.model.Trampa;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.Vida;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioTienda;
 import com.tallerwebi.service.ServicioTrampaUsuario;
@@ -73,6 +74,8 @@ public class TiendaController {
         servicioUsuario.descontarMonedas(usuarioActualizado.getId(), trampa.getValor());
         servicioTrampaUsuario.asignarTrampaAUsuario(usuarioActualizado, trampa);
 
+        setearUsuarioEnSession(session, usuarioActualizado);
+
         redirectAttrs.addFlashAttribute("mensaje", "¡Has comprado la trampa exitosamente!");
         return new ModelAndView("redirect:/tienda");
     }
@@ -101,9 +104,40 @@ public class TiendaController {
         servicioTienda.asignarAvatarAUsuario(usuarioActualizado, avatar);
         servicioUsuario.descontarMonedas(usuarioActualizado.getId(), avatar.getValor());
 
+        setearUsuarioEnSession(session, usuarioActualizado);
 
         redirectAttributes.addFlashAttribute("mensaje", "¡Has comprado el avatar exitosamente!");
         return new ModelAndView("redirect:/tienda");
+    }
+
+    @GetMapping("/comprar-vida/{idVida}")
+    public ModelAndView comprarVida(@PathVariable Long idVida, HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("USUARIO");
+
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("error", "Debes iniciar sesión para comprar vidas.");
+            return new ModelAndView("redirect:/login");
+        }
+
+        Usuario usuarioActualizado = servicioUsuario.buscarUsuarioPorId(usuario.getId());
+        Vida vida = servicioTienda.obtenerVidaPorId(idVida);
+
+        if (!servicioUsuario.tieneMonedasSuficientes(usuarioActualizado.getId(), vida.getValor())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes suficientes monedas para comprar este pack de vidas.");
+            return new ModelAndView("redirect:/tienda");
+        }
+
+        servicioUsuario.descontarMonedas(usuarioActualizado.getId(), vida.getValor());
+        servicioUsuario.agregarVidas(usuarioActualizado.getId(), vida.getCantidad());
+
+        setearUsuarioEnSession(session, usuarioActualizado);
+
+        redirectAttributes.addFlashAttribute("mensaje", "¡Has comprado " + vida.getCantidad() + " vidas exitosamente!");
+        return new ModelAndView("redirect:/tienda");
+    }
+
+    private void setearUsuarioEnSession(HttpSession session, Usuario usuario) {
+        session.setAttribute("USUARIO", servicioUsuario.buscarUsuarioPorId(usuario.getId()));
     }
 
 }

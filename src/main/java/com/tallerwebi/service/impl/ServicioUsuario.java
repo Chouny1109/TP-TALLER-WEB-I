@@ -115,4 +115,12 @@ public class ServicioUsuario implements IServicioUsuario {
         return repositorioUsuario.obtenerIdsAvataresDelUsuario(idUsuario);
     }
 
+    @Override
+    public void agregarVidas(Long idUsuario, int cantidad) {
+        Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
+        usuario.setVidas(usuario.getVidas() + cantidad);
+        repositorioUsuario.modificar(usuario);
+    }
+
+
 }

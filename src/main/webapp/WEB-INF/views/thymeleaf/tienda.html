@@ -360,17 +360,22 @@
             </button>
             <div class="d-flex overflow-auto px-2">
                 <div th:each="vida : ${vidas}" class="shop-card">
-                    <i class="bi bi-info-circle info-icon"></i>
+                    <!--<img th:src="@{/imgs/Vidas/vida.png}" alt="Imagen de vida" class="shop-card-img" />-->
+                    <p class="item-name" th:text="${vida.nombre}">Nombre del pack de vidas</p>
                     <div class="price-badge status-icons">
                         <div class="status-item">
                             <span class="mdi--star-four-points-circle"></span>
                             <span th:text="${vida.valor}">200</span>
                         </div>
                     </div>
-                    <p class="item-name" th:text="${vida.nombre}">Pack de vidas</p>
-                    <button class="btn btn-outline-secondary btn-sm mt-2" disabled>Comprar</button>
+                    <form th:action="@{'/tienda/comprar-vida/' + ${vida.id}}" method="get">
+                        <button type="submit" class="btn btn-outline-primary btn-sm mt-2">
+                            Comprar
+                        </button>
+                    </form>
                 </div>
             </div>
+
             <button class="nav-arrow" aria-label="Siguiente">
                 <i class="bi bi-chevron-right"></i>
             </button>
