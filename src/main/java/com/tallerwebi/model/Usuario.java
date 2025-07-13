@@ -3,6 +3,7 @@ package com.tallerwebi.model;
 import com.tallerwebi.dominio.enums.ROL_USUARIO;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,10 +35,10 @@ Usuario {
 
     private Boolean activo;
 
+    private Integer experiencia;
+
     @Column(unique = true)
     private String token;
-
-    private Integer nivel;
 
     @Column(nullable = false)
     private Integer monedas;
@@ -69,6 +70,8 @@ Usuario {
     private List<UsuarioMision> misiones;
 
     private Boolean baneado;
+    private LocalDateTime ultimaRegeneracionVida;
+
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -77,10 +80,11 @@ Usuario {
         this.misiones = new ArrayList<>();
         this.vidas = 5;
         this.monedas = 5000;
-        this.nivel = 1;
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
+        this.experiencia = 0;
+        this.ultimaRegeneracionVida = LocalDateTime.now();
     }
 
     public Usuario() {
@@ -148,10 +152,6 @@ Usuario {
         this.activo = activo;
     }
 
-    public Integer getNivel() {
-        return nivel;
-    }
-
     public boolean activo() {
         return activo;
     }
@@ -172,11 +172,6 @@ Usuario {
         Usuario usuario = (Usuario) o;
         return email != null && email.equalsIgnoreCase(usuario.email);
     }
-
-    public void setNivel(Integer nivel) {
-        this.nivel = nivel;
-    }
-
 
     public List<UsuarioMision> getMisiones() {
         return misiones;
@@ -217,4 +212,13 @@ Usuario {
     public void setBaneado(Boolean baneado) {
         this.baneado = baneado;
     }
+
+    public LocalDateTime getUltimaRegeneracionVida() {
+        return ultimaRegeneracionVida;
+    }
+
+    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {
+        this.ultimaRegeneracionVida = ultimaRegeneracionVida;
+    }
+
 }

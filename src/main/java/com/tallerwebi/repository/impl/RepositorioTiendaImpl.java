@@ -67,4 +67,11 @@ public class RepositorioTiendaImpl implements RepositorioTienda{
         Session session = sessionFactory.getCurrentSession();
         return session.get(Trampa.class, id);
     }
+
+    @Override
+    public Vida obtenerVidaPorId(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Vida.class, id);
+    }
+
 }

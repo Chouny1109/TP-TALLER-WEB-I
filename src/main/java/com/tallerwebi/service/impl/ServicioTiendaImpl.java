@@ -70,4 +70,8 @@ public class ServicioTiendaImpl implements ServicioTienda {
         repositorioUsuario.asignarAvatarPorDefecto(ua);
     }
 
+    @Override
+    public Vida obtenerVidaPorId(Long id) {
+        return repositorioTienda.obtenerVidaPorId(id);
+    }
 }

@@ -59,11 +59,11 @@ public class ServicioTiendaTest {
         ));
 
         when(repositorioMock.obtenerVidas()).thenReturn(List.of(
-                new Vida("1 Vida", 200),
-                new Vida("2 Vidas", 350),
-                new Vida("3 Vidas", 500),
-                new Vida("4 Vidas", 650),
-                new Vida("5 Vidas", 800)
+                new Vida("1 Vida", 200, 1),
+                new Vida("2 Vidas", 350, 2),
+                new Vida("3 Vidas", 500, 3),
+                new Vida("4 Vidas", 650, 4),
+                new Vida("5 Vidas", 800, 5)
         ));
 
         when(repositorioMock.obtenerMonedas()).thenReturn(List.of(

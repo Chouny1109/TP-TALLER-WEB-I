@@ -39,7 +39,7 @@ public class TiendaControllerTest {
         ServicioTienda servicioTienda = mock(ServicioTienda.class);
 
         when(servicioTienda.obtenerTrampas()).thenReturn(List.of(new Trampa("Bomba", 100)));
-        when(servicioTienda.obtenerVidas()).thenReturn(List.of(new Vida("1 Vida", 200)));
+        when(servicioTienda.obtenerVidas()).thenReturn(List.of(new Vida("1 Vida", 200, 1)));
         when(servicioTienda.obtenerMonedas()).thenReturn(List.of(new Moneda("x100 monedas", 300)));
         when(servicioTienda.obtenerAvatares()).thenReturn(List.of(new Avatar("Lia", 200)));
 

@@ -33,7 +33,7 @@ public class MisionesRestController {
     }
 
     @GetMapping("/misiones")
-    public ResponseEntity<?> obtenerMisiones(HttpServletRequest request) {
+    public ResponseEntity<?> obtenerMisiones(HttpServletRequest request) throws UsuarioNoExistente {
         Usuario logueado = session.getUsuarioLogueado(request);
 
         if (logueado == null) {
@@ -46,7 +46,7 @@ public class MisionesRestController {
     }
 
     @PutMapping("/misiones/{id}")
-    public ResponseEntity<?> cambiarMision(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<?> cambiarMision(@PathVariable Long id, HttpServletRequest request) throws UsuarioNoExistente {
         Usuario logueado = session.getUsuarioLogueado(request);
 
         if (logueado == null) {

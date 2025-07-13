@@ -21,4 +21,7 @@ public interface IServicioUsuario {
     List<Usuario> obtenerTodosLosUsuarios();
     boolean usuarioTieneAvatar(Long idUsuario, Long idAvatar);
     List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario);
+    void agregarVidas(Long idUsuario, int cantidad);
+    void regenerarVidasSiCorresponde(Usuario usuario);
+    void actualizar(Usuario usuario);
 }
