@@ -44,6 +44,10 @@ Usuario {
 
     private Integer vidas;
 
+
+
+    private Integer xp = 0;
+
     @ManyToMany
     @JoinTable(
             name = "amistad",
@@ -97,7 +101,13 @@ Usuario {
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
+    public Integer getXp() {
+        return xp;
+    }
 
+    public void setXp(Integer xp) {
+        this.xp = xp;
+    }
     public Long getId() {
         return id;
     }

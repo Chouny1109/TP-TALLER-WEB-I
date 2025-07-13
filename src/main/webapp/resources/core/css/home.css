@@ -586,3 +586,77 @@ body {
     color: #ffffff;
 
 }
+#mensaje-popup {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#mensaje-popup.show {
+    opacity: 1;
+}
+
+#mensaje-popup.hide {
+    opacity: 0;
+}
+
+/* Animación de entrada tipo "pop" */
+@keyframes popupXPIn {
+    from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+}
+
+@keyframes popupXPOut {
+    from {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0;
+    }
+}
+
+.popup-xp-animar {
+    animation: popupXPIn 0.4s ease-out forwards;
+}
+
+.popup-xp-salir {
+    animation: popupXPOut 0.5s ease-in forwards;
+}
+
+
+@keyframes fadeInPopup {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes fadeOutPopup {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+.popup-show {
+    animation: fadeInPopup 0.4s ease forwards;
+}
+
+.popup-hide {
+    animation: fadeOutPopup 0.4s ease forwards;
+}

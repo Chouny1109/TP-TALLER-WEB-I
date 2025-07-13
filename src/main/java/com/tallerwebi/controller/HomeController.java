@@ -12,11 +12,13 @@ import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +51,14 @@ public class HomeController {
 
         } else {
             return new ModelAndView("redirect:/login");
+        }
+
+        HttpSession session = request.getSession();
+        Integer xpGanado = (Integer) session.getAttribute("xpGanadoUltimoTurno");
+
+        if (xpGanado != null) {
+            mav.addObject("xpGanado", xpGanado);
+            session.removeAttribute("xpGanadoUltimoTurno"); // lo quitás para que no quede fijo
         }
 
         List<Partida> partidas = servicioPartida.obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(usuario);
@@ -86,6 +96,19 @@ public class HomeController {
         mav.addObject("avatarImg", avatarImg);
         mav.addObject("modos", TIPO_PARTIDA.values());
 
+         session = request.getSession();
+        Boolean mostrarPopup = (Boolean) session.getAttribute("mostrarPopupVidas");
+        String mensajeVidas = (String) session.getAttribute("mensajeVidas");
+
+        if (Boolean.TRUE.equals(mostrarPopup) && mensajeVidas != null && !mensajeVidas.trim().isEmpty()) {
+            mav.addObject("mensajeVidas", mensajeVidas);
+        } else {
+            // Por seguridad evitá agregar mensaje vacio
+            mav.addObject("mensajeVidas", null);
+        }
+
+        session.removeAttribute("mensajeVidas");
+        session.removeAttribute("mostrarPopupVidas");
         return mav;
     }
 

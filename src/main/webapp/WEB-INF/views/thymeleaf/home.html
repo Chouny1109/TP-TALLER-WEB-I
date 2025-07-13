@@ -16,7 +16,7 @@
 
 </head>
 
-
+<body>
 <header>
     <div class="nav-container d-flex justify-content-between align-items-center p-3 bg-light">
         <div class="d-flex align-items-center">
@@ -51,14 +51,48 @@
 </header>
 
 <main class="container my-4 " >
+
+    <div id="overlay" style="
+    display:none;
+    position: fixed;
+    top:0; left:0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1040;">
+    </div>
+
+    <!-- Tu popup, que debería tener un z-index mayor para que esté arriba del overlay -->
+    <!-- Div oculto con el mensaje sin comillas -->
+    <div id="mensajeVidas" th:text="${mensajeVidas}" style="display:none;"></div>
+
+    <div id="mensaje-popup" class="alert alert-info" role="alert"
+         style="
+ display: none;
+ position: fixed;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ background-color: #4caf50;
+ color: white;
+ padding: 15px 25px;
+ border-radius: 15px;
+ font-size: 20px;
+ z-index: 1060;
+ font-weight: bold;
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+">
+        <span id="mensaje-texto"></span>
+    </div>
+
+
+
     <div class="contenedor-principal">
         <div class="contenedor-1">
             <div>
                 <div class="nivel-container">
-                    <div class="nivel-circulo" style="background-color: #4caf50; color: white;">5</div>
+                    <div class="nivel-circulo" style="background-color: #4caf50; color: white;" th:text="${nivel}"></div>
                     <div class="barra"><div class="barra-progreso" style="width: 50%;"></div></div>
                     <!-- Aquí 50% por 500/1000 -->
-                    <div class="nivel-circulo">6</div>
+                    <div class="nivel-circulo" th:text="${nivel + 1}"></div>
 
                 </div>
                 <div class="xp-container">
@@ -244,11 +278,57 @@
 
 </main>
 
+<!-- Popup XP ganado -->
+<div id="popup-xp" class="popup-xp" style="
+     display: none;
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     background-color: #4caf50;
+     color: white;
+     padding: 15px 25px;
+     border-radius: 15px;
+     font-size: 20px;
+     z-index: 1060;
+     font-weight: bold;
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+">
+    +<span id="xp-text"></span> XP
+</div>
+
+
 <!-- Bootstrap JS desde CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var xpGanado = /*[[${xpGanado} ?: 0]]*/ 0;
+    /*]]>*/
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (xpGanado && xpGanado > 0) {
+            const popupXP = document.getElementById('popup-xp');
+            const xpText = document.getElementById('xp-text');
+
+            xpText.textContent = xpGanado;
+            popupXP.style.display = 'block';
+            popupXP.classList.add('popup-xp-animar');
+
+            setTimeout(() => {
+                popupXP.classList.add('popup-xp-salir');
+                setTimeout(() => {
+                    popupXP.style.display = 'none';
+                    popupXP.classList.remove('popup-xp-animar', 'popup-xp-salir');
+                }, 500);
+            }, 2000);
+        }
+    });
+
+</script>
+
 <script th:inline="javascript">
     const rutaRuleta = /*[[@{/partida/ruletaCategoria}]]*/ '/partida/ruletaCategoria';
 </script>
@@ -359,6 +439,45 @@
 
     });
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mensajeDiv = document.getElementById('mensajeVidas');
+        const mensaje = mensajeDiv ? mensajeDiv.textContent.trim() : '';
+
+        if (mensaje !== '') {
+            const popup = document.getElementById('mensaje-popup');
+            const texto = document.getElementById('mensaje-texto');
+            const overlay = document.getElementById('overlay');
+
+            texto.textContent = mensaje;
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+
+            popup.classList.add('popup-show');
+
+            // ⬇️ Listener agregado inmediatamente
+            popup.addEventListener('animationend', function handler(e) {
+                if (e.animationName === 'fadeOutPopup') {
+                    popup.style.display = 'none';
+                    overlay.style.display = 'none';
+                    popup.classList.remove('popup-hide');
+                    popup.removeEventListener('animationend', handler);
+                }
+            });
+
+            // ⬇️ Cambia a la animación de salida
+            setTimeout(() => {
+                popup.classList.remove('popup-show');
+                popup.classList.add('popup-hide');
+            }, 3000);
+        }
+    });
+
+
+</script>
+
 
 
 

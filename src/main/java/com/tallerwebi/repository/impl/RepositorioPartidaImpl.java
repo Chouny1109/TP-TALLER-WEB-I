@@ -375,11 +375,13 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario) {
         Session session = sessionFactory.getCurrentSession();
 
-        return (CategoriasGanadasEnPartida) session.createCriteria(CategoriasGanadasEnPartida.class)
-                .add(Restrictions.eq("partida", partida))
-                .add(Restrictions.eq("usuario", usuario))
+        String hql = "SELECT c FROM CategoriasGanadasEnPartida c LEFT JOIN FETCH c.categoriasGanadas WHERE c.partida = :partida AND c.usuario = :usuario";
+        return session.createQuery(hql, CategoriasGanadasEnPartida.class)
+                .setParameter("partida", partida)
+                .setParameter("usuario", usuario)
                 .uniqueResult();
     }
+
 
     @Override
     public void actualizarCategoriasGanadas(CategoriasGanadasEnPartida cat) {

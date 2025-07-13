@@ -26,6 +26,7 @@
     const partidaId = /*[[${idPartida}]]*/ 0;
     const usuarioId = /*[[${idUsuario}]]*/ 0;
     let modoJuego = /*[[${modoJuego}]]*/ 'CLASICO';
+    const categoriasGanadas = /*[[${categoriasGanadas}]]*/ [];
     /*]]>*/
 </script>
 <script>
@@ -40,14 +41,17 @@
 
     const contenedor = document.getElementById("contenedorCategorias");
 
-    categorias.forEach(cat => {
+    // Filtrar categorías excluyendo las ganadas
+    const categoriasFiltradas = categorias.filter(cat => !categoriasGanadas.includes(cat.nombre));
+
+    categoriasFiltradas.forEach(cat => {
         const div = document.createElement("div");
         div.className = "cat-box";
         div.style.backgroundColor = cat.color;
         div.innerHTML = `
-        ${cat.icono}
-        <div class="cat-name">${cat.nombre}</div>
-    `;
+            ${cat.icono}
+            <div class="cat-name">${cat.nombre}</div>
+        `;
         div.onclick = () => {
             const form = document.createElement("form");
             form.method = "POST";
@@ -81,8 +85,8 @@
             document.body.appendChild(form);
             form.submit();
         };
-    })
-
+        contenedor.appendChild(div);
+    });
 </script>
 </body>
 </html>
