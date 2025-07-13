@@ -3,6 +3,7 @@ package com.tallerwebi.model;
 import com.tallerwebi.dominio.enums.ROL_USUARIO;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,6 +66,8 @@ Usuario {
     private List<UsuarioMision> misiones;
 
     private Boolean baneado;
+    private LocalDateTime ultimaRegeneracionVida;
+
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -77,6 +80,7 @@ Usuario {
         this.baneado = false;
         this.activo = false;
         this.experiencia = 0;
+        this.ultimaRegeneracionVida = LocalDateTime.now();
     }
 
     public Usuario() {
@@ -198,4 +202,13 @@ Usuario {
     public void setBaneado(Boolean baneado) {
         this.baneado = baneado;
     }
+
+    public LocalDateTime getUltimaRegeneracionVida() {
+        return ultimaRegeneracionVida;
+    }
+
+    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {
+        this.ultimaRegeneracionVida = ultimaRegeneracionVida;
+    }
+
 }

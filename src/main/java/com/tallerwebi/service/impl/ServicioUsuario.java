@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -114,5 +116,39 @@ public class ServicioUsuario implements IServicioUsuario {
     public List<Long> obtenerIdsAvataresDelUsuario(Long idUsuario) {
         return repositorioUsuario.obtenerIdsAvataresDelUsuario(idUsuario);
     }
+
+    @Override
+    public void agregarVidas(Long idUsuario, int cantidad) {
+        Usuario usuario = repositorioUsuario.buscarUsuarioPorId(idUsuario);
+        usuario.setVidas(usuario.getVidas() + cantidad);
+        repositorioUsuario.modificar(usuario);
+    }
+
+    @Override
+    public void regenerarVidasSiCorresponde(Usuario usuario) {
+        int vidasActuales = usuario.getVidas();
+        if (vidasActuales >= 5) {
+            return;
+        }
+
+        LocalDateTime ultimaRegen = usuario.getUltimaRegeneracionVida();
+        if (ultimaRegen == null) {
+            ultimaRegen = LocalDateTime.now().minusHours(1);
+        }
+
+        long horasPasadas = Duration.between(ultimaRegen, LocalDateTime.now()).toHours();
+        if (horasPasadas > 0) {
+            int nuevasVidas = (int) Math.min(horasPasadas, 5 - vidasActuales);
+            usuario.setVidas(vidasActuales + nuevasVidas);
+            usuario.setUltimaRegeneracionVida(ultimaRegen.plusHours(nuevasVidas));
+            actualizar(usuario);
+        }
+    }
+
+    @Override
+    public void actualizar(Usuario usuario) {
+        repositorioUsuario.modificar(usuario);
+    }
+
 
 }

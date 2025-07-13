@@ -11,4 +11,5 @@ public interface RepositorioTienda {
     List<Avatar> obtenerAvatares();
     Moneda obtenerMonedaPorId(Long id);
     Trampa obtenerTrampaPorId(Long id);
+    Vida obtenerVidaPorId(Long id);
 }
