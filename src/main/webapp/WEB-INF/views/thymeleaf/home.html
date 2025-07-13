@@ -445,33 +445,38 @@
         let tiempoRestante = parseInt(timerSpan.dataset.tiempoRestante);
 
         const actualizarDesdeServidor = async () => {
-            const resp = await fetch('/home/verificar-regeneracion');
-            if (!resp.ok) return;
+            try {
+                const resp = await fetch('/spring/home/verificar-regeneracion');
+                if (!resp.ok) return;
 
-            const data = await resp.json();
-            vidasCount.textContent = data.vidas;
+                const data = await resp.json();
+                vidasCount.textContent = data.vidas;
 
-            if (data.vidas < 5) {
-                tiempoRestante = data.tiempoRestante;
-            } else {
-                timerSpan.remove();
-                clearInterval(intervalo);
+                if (data.vidas < 5) {
+                    tiempoRestante = data.tiempoRestante;
+                } else {
+                    timerSpan.remove();
+                    clearInterval(intervalo);
+                }
+            } catch (e) {
+                console.error("Error al verificar regeneración:", e);
             }
         };
 
         const contador = async () => {
             if (tiempoRestante <= 0) {
                 await actualizarDesdeServidor();
-                return;
             }
 
-            const horas = Math.floor(tiempoRestante / 3600);
-            const minutos = Math.floor((tiempoRestante % 3600) / 60);
-            const segundos = tiempoRestante % 60;
+            if (tiempoRestante > 0) {
+                const horas = Math.floor(tiempoRestante / 3600);
+                const minutos = Math.floor((tiempoRestante % 3600) / 60);
+                const segundos = tiempoRestante % 60;
 
-            timerSpan.textContent = `(${horas}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')})`;
+                timerSpan.textContent = `(${horas}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')})`;
 
-            tiempoRestante--;
+                tiempoRestante--;
+            }
         };
 
         const intervalo = setInterval(contador, 1000);
