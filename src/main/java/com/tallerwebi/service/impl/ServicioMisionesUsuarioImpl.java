@@ -67,13 +67,32 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
                                 m.getId(),
                                 m.getMision().getDescripcion(),
                                 m.getProgreso(),
-                                m.getMision().getCantidad(),
+                                obtenerProgreso(m),
                                 m.getMision().getExperiencia(),
                                 m.getMision().getCopas(),
                                 m.getCompletada(),
                                 m.getCanjeada()
                         ))
                 .collect(Collectors.toList());
+    }
+
+    private Integer obtenerProgreso(UsuarioMision mision) {
+        TIPO_MISION tipoMision = mision.getMision().getTipoMision().getNombre();
+
+        Integer progreso = 0;
+
+        switch (tipoMision) {
+            case GANAR_PARTIDAS:
+            case JUGAR_PARTIDAS:
+                progreso = mision.getMision().getObjetivo();
+                break;
+
+            case GANAR_PARTIDA_CONSECUTIVA:
+            case NO_USAR_HABILIDADES:
+            case USAR_HABILIDADES:
+                progreso = mision.getMision().getCantidad();
+        }
+        return progreso;
     }
 
     @Transactional

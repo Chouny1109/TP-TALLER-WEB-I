@@ -28,6 +28,8 @@ public interface RepositorioPartida {
 
     List<UsuarioPartida>obtenerLasPartidasDelUsuarioParaDeterminadaFecha(Long id, LocalDateTime fecha);
 
+    Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDate fecha);
+
     void finalizarPartida(Long idPartida);
 
     Partida obtenerPartidaActivaDeJugador(Long idJugador);

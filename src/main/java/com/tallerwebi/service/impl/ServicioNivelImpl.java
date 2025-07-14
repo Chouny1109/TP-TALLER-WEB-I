@@ -1,6 +1,8 @@
 package com.tallerwebi.service.impl;
 
+import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Nivel;
+import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioNivel;
 import com.tallerwebi.service.ServicioNivel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +26,10 @@ public class ServicioNivelImpl implements ServicioNivel {
     @Override
     public Integer obtenerExperienciaRestanteParaElSiguienteNivel(Integer experiencia) {
         return 0;
+    }
+
+    @Override
+    public void otorgarExperiencia(Usuario usuario, Mision mision) {
+
     }
 }

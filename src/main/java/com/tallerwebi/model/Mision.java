@@ -27,17 +27,20 @@ public class Mision {
 
     private Integer cantidad;
 
+    private Integer objetivo;
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "id_tipoMision")// en que campo de la tabla actual se guarda la relacion hacia la otra entidad
     private TipoDeMision tipoMision;
 
-    public Mision(String descripcion, Integer experiencia, Integer copas, Integer cantidad) {
+    public Mision(String descripcion, Integer experiencia, Integer copas, Integer cantidad, Integer objetivo) {
         this.descripcion = descripcion;
         this.experiencia = experiencia;
         this.copas = copas;
         this.cantidad = cantidad;
         this.usuarios = new ArrayList<>();
+        this.objetivo = objetivo;
     }
 
     public Mision() {
@@ -50,6 +53,14 @@ public class Mision {
 
     public void setExperiencia(Integer experiencia) {
         this.experiencia = experiencia;
+    }
+
+    public Integer getObjetivo() {
+        return objetivo;
+    }
+
+    public void setObjetivo(Integer objetivo) {
+        this.objetivo = objetivo;
     }
 
     public Integer getCopas() {

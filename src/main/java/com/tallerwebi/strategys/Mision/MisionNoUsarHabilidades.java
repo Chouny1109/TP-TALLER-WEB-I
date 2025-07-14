@@ -4,35 +4,38 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioPartida;
+import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.repository.RepositorioUsuarioHabilidadPartida;
+import com.tallerwebi.service.ServicioNivel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class MisionNoUsarHabilidades implements EstrategiaMision {
+import java.time.LocalDate;
 
-    private final RepositorioMisionUsuario repositorioMisionUsuario;
+@Component
+public class MisionNoUsarHabilidades extends MisionPlantilla {
+
     private final RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida;
 
-    @Autowired
-    public MisionNoUsarHabilidades(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida) {
-        this.repositorioMisionUsuario = repositorioMisionUsuario;
+    public MisionNoUsarHabilidades(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuario repositorioUsuario, ServicioNivel servicioNivel, RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida) {
+        super(repositorioMisionUsuario, repositorioUsuario, servicioNivel);
         this.repositorioUsuarioHabilidadPartida = repositorioUsuarioHabilidadPartida;
+    }
 
+    private boolean tieneAlgunaPartidaGanadaSinHabilidades(Usuario usuario) {
+        return this.repositorioUsuarioHabilidadPartida.elUsuarioTienePartidasGanadasSinUsarHabilidades(usuario.getId(), LocalDate.now());
     }
 
     @Override
-    public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
+    protected boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision) {
+        return tieneAlgunaPartidaGanadaSinHabilidades(usuario);
+    }
 
-        if (usuario != null) {
-            boolean tienePartidasGanadasSinHabilidades = this.repositorioUsuarioHabilidadPartida.
-                    elUsuarioTienePartidasGanadasSinUsarHabilidades(usuario.getId());
-
-            if (tienePartidasGanadasSinHabilidades) {
-                usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
-                usuarioMision.setCompletada(Boolean.TRUE);
-                this.repositorioMisionUsuario.save(usuarioMision);
-            }
+    @Override
+    protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
+        if (tieneAlgunaPartidaGanadaSinHabilidades(usuario)) {
+            usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
+            usuarioMision.setCompletada(Boolean.TRUE);
         }
     }
 }
