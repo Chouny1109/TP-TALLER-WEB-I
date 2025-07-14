@@ -45,6 +45,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioPregunta = repositorioPregunta;
     }
+
     @Override
     @Transactional
     public Partida crearOUnirsePartida(Usuario jugador, TIPO_PARTIDA modoJuego) {
@@ -54,6 +55,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
             if (repositorioPartida.jugadorEstaJugando(jugador.getId())) {
                 partida = repositorioPartida.obtenerPartidaActivaDeJugador(jugador.getId());
             } else {
+
+                jugador.setVidas(jugador.getVidas() - 1);
+                repositorioUsuario.modificar(jugador);
+                em.flush();
+
                 List<Partida> partidasAbiertas = repositorioPartida.obtenerPartidasAbiertaPorModo(modoJuego);
 
                 Partida partidaParaUnirse = null;
@@ -346,6 +352,25 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 .orElse(null);
 
         if (respondioBien) {
+
+            //suma al total del xp del usuario
+            Integer xpActual = jugador.getXp();
+            if (xpActual == null) {
+                xpActual = 0;
+            }
+            jugador.setXp(xpActual + 10);
+            repositorioUsuario.modificar(jugador);
+
+            // suma a los xp del turno para mostrar cuantos gano
+            Integer xpTurno = resultado.getXpEnTurno();
+            if (xpTurno == null) {
+                xpTurno = 0;
+            }
+            resultado.setXpEnTurno(xpTurno+10);
+            repositorioPartida.actualizarResultadoRespuesta(resultado);
+
+            em.flush();
+
             // El jugador mantiene su turno, el rival espera
             if (rival != null) {
                 notificarEsperandoRival(jugador, rival, partida);
@@ -464,6 +489,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 resultadoRival.getRespuestaSeleccionada() == null ||
                 !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
 
+            if(resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId())) {
+                resultado.getUsuario().setXp(resultado.getUsuario().getXp() + 150);
+                repositorioUsuario.modificar(resultado.getUsuario());
+                em.flush();
+            }
             finalizarPartida(idPartida);
             return null;
         }

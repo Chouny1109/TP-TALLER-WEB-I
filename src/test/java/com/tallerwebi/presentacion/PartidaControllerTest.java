@@ -9,6 +9,7 @@ import com.tallerwebi.service.impl.ServicioUsuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,11 +23,14 @@ public class PartidaControllerTest {
     private ServicioPartida servicioPartida;
     private ServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
+    private RedirectAttributes redirectAttributes;
 
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
         servicioUsuario = mock(ServicioUsuario.class);
         messagingTemplate = mock(SimpMessagingTemplate.class);
+        redirectAttributes = mock(RedirectAttributes.class);
+
     }
 
     @Test

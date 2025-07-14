@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,6 +57,9 @@ public class HomeController {
             request.getSession().setAttribute("usuario", usuario);
             mav.addObject("monedas", usuario.getMonedas());
             mav.addObject("vidas", usuario.getVidas());
+            mav.addObject("nivel", 1);
+
+
             if (usuario.getVidas() < 5 && usuario.getUltimaRegeneracionVida() != null) {
                 long segundosRestantes = Duration.between(LocalDateTime.now(),
                         usuario.getUltimaRegeneracionVida().plusHours(1)).getSeconds();
@@ -69,6 +74,14 @@ public class HomeController {
 
         } else {
             return new ModelAndView("redirect:/login");
+        }
+
+        HttpSession session = request.getSession();
+        Integer xpGanado = (Integer) session.getAttribute("xpGanadoUltimoTurno");
+
+        if (xpGanado != null) {
+            mav.addObject("xpGanado", xpGanado);
+            session.removeAttribute("xpGanadoUltimoTurno"); // lo quitás para que no quede fijo
         }
 
         List<Partida> partidas = servicioPartida.obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(usuario);
@@ -106,12 +119,28 @@ public class HomeController {
         mav.addObject("avatarImg", avatarImg);
         mav.addObject("modos", TIPO_PARTIDA.values());
 
+
+         session = request.getSession();
+        Boolean mostrarPopup = (Boolean) session.getAttribute("mostrarPopupVidas");
+        String mensajeVidas = (String) session.getAttribute("mensajeVidas");
+
+        if (Boolean.TRUE.equals(mostrarPopup) && mensajeVidas != null && !mensajeVidas.trim().isEmpty()) {
+            mav.addObject("mensajeVidas", mensajeVidas);
+        } else {
+            // Por seguridad evitá agregar mensaje vacio
+            mav.addObject("mensajeVidas", null);
+        }
+
+        session.removeAttribute("mensajeVidas");
+        session.removeAttribute("mostrarPopupVidas");
+
         if (usuario.getVidas() < 5) {
             LocalDateTime ultima = usuario.getUltimaRegeneracionVida();
             Duration duracion = Duration.between(LocalDateTime.now(), ultima.plusHours(1));
             long segundosRestantes = duracion.getSeconds();
             mav.addObject("tiempoRestanteVida", segundosRestantes);
         }
+
 
         return mav;
     }

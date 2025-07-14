@@ -15,6 +15,16 @@ public class ResultadoRespuesta {
     @JoinColumn(name = "pregunta_id")
     private Pregunta pregunta;
 
+    public Integer getXpEnTurno() {
+        return xpEnTurno;
+    }
+
+    public void setXpEnTurno(Integer xpEnTurno) {
+        this.xpEnTurno = xpEnTurno;
+    }
+
+    private Integer xpEnTurno = 0;
+
     public Integer getOrden() {
         return orden;
     }
@@ -22,6 +32,8 @@ public class ResultadoRespuesta {
     public void setOrden(Integer orden) {
         this.orden = orden;
     }
+
+
 
     private Integer orden;
 

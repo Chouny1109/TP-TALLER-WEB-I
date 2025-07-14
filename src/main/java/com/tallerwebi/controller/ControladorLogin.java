@@ -39,6 +39,9 @@ public class ControladorLogin {
 
         Usuario usuarioBuscado = servicioLogin.consultarUsuario(datosLogin.getEmail(), datosLogin.getPassword());
 
+        request.getSession().removeAttribute("mensajeVidas");
+        request.getSession().removeAttribute("mostrarPopupVidas");
+
         if (usuarioBuscado != null) {
             request.getSession().setAttribute("ROL", usuarioBuscado.getRol());
             request.getSession().setAttribute("USUARIO", usuarioBuscado);

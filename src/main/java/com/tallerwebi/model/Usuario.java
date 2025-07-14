@@ -35,7 +35,7 @@ Usuario {
 
     private Boolean activo;
 
-    private Integer experiencia;
+
 
     @Column(unique = true)
     private String token;
@@ -44,6 +44,10 @@ Usuario {
     private Integer monedas;
 
     private Integer vidas;
+
+
+
+    private Integer xp = 0;
 
     @ManyToMany
     @JoinTable(
@@ -79,7 +83,7 @@ Usuario {
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
-        this.experiencia = 0;
+        this.xp = 0;
         this.ultimaRegeneracionVida = LocalDateTime.now();
     }
 
@@ -101,7 +105,13 @@ Usuario {
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
+    public Integer getXp() {
+        return xp;
+    }
 
+    public void setXp(Integer xp) {
+        this.xp = xp;
+    }
     public Long getId() {
         return id;
     }
