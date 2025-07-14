@@ -123,24 +123,29 @@
             text-align: center;
         }
         .counter-circle {
-            width: 2.3em;
-            height: 2.3em;
-            background-color: rgb(159, 236, 156);
+            width: 4em;
+            height: 4em;
+            background-color: rgb(250, 250, 250);
             border-radius: 50%;
+            border: 2px solid #999;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            color: #444;
+            overflow: hidden;
+            padding: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
         }
-        .counter-circle img{
-            width: 1.5em;
+
+        .counter-circle:hover {
+            transform: scale(1.1);
         }
-        .counter-value {
-            font-size: 12px;
-            margin-top: 4px;
-            color: #444;
-            font-weight: bold;
+
+        .counter-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
         }
         .correcta {
             background-color: #4CAF50 !important;
@@ -205,14 +210,20 @@
         <p th:text="${pregunta.enunciado}"></p>
     </div>
 
-    <div class="poderes d-flex gap-5 justify-content-center">
-        <div class="counter-item" th:each="i : ${#numbers.sequence(1,4)}">
-            <div class="counter-circle">
-                <img th:src="@{/resources/imgs/bomb.png}" alt="Perfil" class="profile-pic" />
-            </div>
-            <div class="counter-value">1</div>
+    <div class="poderes d-flex gap-5 justify-content-center" th:if="${trampas != null}">
+        <div class="counter-item" th:each="trampa : ${trampas}">
+            <form th:action="@{/trampa/usar}" method="post">
+                <input type="hidden" name="idTrampa" th:value="${trampa.trampa.id}" />
+                <input type="hidden" name="idPartida" th:value="${idPartida}" />
+                <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
+                <button type="submit" class="counter-circle" style="border: none; background: none;">
+                    <img th:src="@{'/resources/imgs/Trampas/' + ${trampa.trampa.imagen}}" alt="trampa" />
+                </button>
+                <div class="counter-value" th:text="${trampa.cantidad}">1</div>
+            </form>
         </div>
     </div>
+
 
     <!-- Form para responder, solo si no respondí aún -->
     <form id="form-respuesta" th:if="${!respondida}" th:action="@{/partida/validar-respuesta}" method="post" class="d-grid w-50 m-auto">

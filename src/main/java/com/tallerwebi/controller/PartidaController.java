@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioPartida;
+import com.tallerwebi.service.ServicioTrampaUsuario;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -36,12 +37,14 @@ public class PartidaController {
     private ServicioPartida servicioPartida;
     private IServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
+    private ServicioTrampaUsuario servicioTrampaUsuario;
 
     @Autowired
-    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate) {
+    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate, ServicioTrampaUsuario servicioTrampaUsuario) {
         this.servicioPartida = servicioPartida;
         this.servicioUsuario = servicioUsuario;
         this.messagingTemplate = messagingTemplate;
+        this.servicioTrampaUsuario = servicioTrampaUsuario;
     }
 
 
@@ -215,6 +218,8 @@ public class PartidaController {
         modelo.put("pregunta", p);
         modelo.put("respondida", false);
 
+        List<TrampaUsuario> trampasJugador = servicioTrampaUsuario.obtenerTrampasDelUsuario(idUsuario);
+        modelo.put("trampas", trampasJugador);
 
         return new ModelAndView("preguntas", modelo);
     }

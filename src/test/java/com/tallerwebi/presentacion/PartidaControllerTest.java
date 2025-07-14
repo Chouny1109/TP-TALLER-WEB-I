@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioPartida;
+import com.tallerwebi.service.ServicioTrampaUsuario;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -24,13 +25,14 @@ public class PartidaControllerTest {
     private ServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
     private RedirectAttributes redirectAttributes;
+    private ServicioTrampaUsuario servicioTrampaUsuario;
 
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
         servicioUsuario = mock(ServicioUsuario.class);
         messagingTemplate = mock(SimpMessagingTemplate.class);
         redirectAttributes = mock(RedirectAttributes.class);
-
+        servicioTrampaUsuario = mock(ServicioTrampaUsuario.class);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class PartidaControllerTest {
         // Configuramos el mock para el avatar
         when(servicioUsuario.obtenerImagenAvatarSeleccionado(anyLong())).thenReturn("avatar.png");
 
-        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate);
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario);
         return partidaController.cargarPartida(request, tipo);
     }
 
