@@ -122,7 +122,7 @@ const cambiarMisiones =async () => {
         const id = e.target.getAttribute('data-id');
         mostrarLoader();
         cerrarModal();
-        header.classList.remove('hidden');
+        header.classList.add('hidden');
 
 
 
