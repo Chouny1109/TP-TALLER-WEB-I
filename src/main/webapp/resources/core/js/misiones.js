@@ -1,7 +1,7 @@
 const URL = "/spring/api/misiones"
 const containerMisiones = document.getElementById('containerMisiones')
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/progress-bar/progress-bar.js';
-
+const header = document.querySelector('#header');
 var notyf = new Notyf();
 
 
@@ -28,6 +28,7 @@ const obtenerMisiones = async () => {
             case 200: {
                 const misiones = await obtenerFormatoJSON(response);
                 renderizarMisiones(misiones);
+                header.classList.remove('hidden');
                 break;
             }
 
