@@ -31,6 +31,7 @@ public abstract class MisionPlantilla implements EstrategiaMision {
         }
 
         guardarEnBd(usuario, usuarioMision);
+
     }
 
     protected abstract boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision);

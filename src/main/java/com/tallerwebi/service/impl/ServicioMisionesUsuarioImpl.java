@@ -166,7 +166,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     @Transactional
-    public void cambiarMision(Usuario logueado, Long idMision) {
+    public void cambiarMision(Usuario logueado, Long idMision, HttpServletRequest request) {
         Usuario usuarioBd = repositorioUsuario.buscarUsuarioPorId(logueado.getId());
         UsuarioMision usuarioMision = this.repositorioMisionUsuario.obtenerUsuarioMision(idMision);
 
@@ -178,7 +178,9 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
         borrarRelacionUsuarioMision(usuarioMision);
         actualizarUsuario(usuarioBd);
+        sessionUtil.setUsuarioEnSession(request, usuarioBd);
     }
+
 
     @Transactional
     @Override
