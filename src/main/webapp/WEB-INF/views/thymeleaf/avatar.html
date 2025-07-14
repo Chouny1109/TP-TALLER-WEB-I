@@ -226,163 +226,64 @@
     </div>
     <div class="profile-pic-container-flex d-flex">
         <div class="profile-pic-container">
-            <img th:src="@{/resources/imgs/Avatares/Lia.jpg}" alt="Perfil" class="profile-pic" id="avatarPrincipal">
+            <img th:src="@{'/resources/imgs/Avatares/' + ${usuario.getAvatarActual().getLink()}}" alt="Perfil" class="profile-pic" id="avatarPrincipal">
         </div>
         <div class="status-icons">
             <div class="status-item">
                 <span class="mdi--star-four-points-circle"></span>
-                <span th:text="${usuario.monedas}"></span>
+                <span th:text="${usuario.getMonedas()}"></span>
             </div>
         </div>
     </div>
 </div>
 
+
 <div class="container_avatares">
-    <div>
 
-        <div class="h2-container">
-
-            <h2 class="section-title">Avatares En Propiedad</h2>
-
-        </div>
-
+        <h2 class="section-title">Avatares En Propiedad</h2>
 
         <form id="avatarForm" method="post" th:action="@{/avatar/actualizarAvatar}">
-
             <input type="hidden" name="avatar" id="avatarSeleccionado"/>
 
             <section class="container">
-
                 <div class="row row-cols-3 g-4 justify-content-center">
 
-                    <div class="col text-center">
-                        <img th:src="@{/resources/imgs/Avatares/Lia.jpg}" alt="" class="avatares mb-1">
-                        <button type="button" class="btn btn-success" data-selectable
-                                onclick="seleccionar(this, 'Lia.jpg')">Seleccionar
-                        </button>
-                    </div>
-
-                    <div class="col text-center">
-                        <img th:src="@{/resources/imgs/Avatares/Pedro.jpg}" alt="" class="avatares mb-1">
-                        <button type="button" class="btn btn-success" data-selectable
-                                onclick="seleccionar(this, 'Pedro.jpg')">Seleccionar
-                        </button>
-                    </div>
-
-                    <div class="col text-center">
-                        <img th:src="@{/resources/imgs/Avatares/Cami.jpg}" alt="" class="avatares  mb-1">
-                        <button type="button" class="btn btn-success" data-selectable
-                                onclick="seleccionar(this, 'Cami.jpg')">Seleccionar
-                        </button>
-                    </div>
-
-                    <div class="col text-center">
-                        <img th:src="@{/resources/imgs/Avatares/Nacho.jpg}" alt="" class="avatares mb-1">
-                        <button type="button" class="btn btn-success" data-selectable
-                                onclick="seleccionar(this, 'Nacho.jpg')">Seleccionar
-                        </button>
-                    </div>
-
-                    <div class="col text-center">
-                        <img th:src="@{/resources/imgs/Avatares/Barto.jpg}" alt="" class="avatares  mb-1">
-                        <button type="button" class="btn btn-success" data-selectable
-                                onclick="seleccionar(this, 'Barto.jpg')">Seleccionar
+                    <div class="col text-center" th:each="avatar : ${avataresDisponibles}">
+                        <img th:src="@{'/resources/imgs/Avatares/' + ${avatar.getLink()}}" alt="" class="avatares mb-1"/>
+                        <button type="button"
+                                class="btn btn-success"
+                                data-selectable
+                                th:onclick="'seleccionar(this, ' + ${avatar.getId()} + ')'">
+                            Seleccionar
                         </button>
                     </div>
 
                 </div>
-
             </section>
-
         </form>
     </div>
-</div>
 <div class="container_avatares">
-    <div>
 
-        <div class="h2-container">
-
-            <h2 class="section-title">Avatares Bloqueados</h2>
-
+<h2 class="section-title">Avatares Bloqueados</h2>
+<div class="col text-center" th:each="avatar : ${avataresBloqueados}">
+    <div class="position-relative d-inline-block">
+        <img th:src="@{'/resources/imgs/Avatares/' + ${avatar.getLink()}}" alt=""
+             style="filter: blur(3px)" class="avatares mb-1">
+        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
+            <span class="bi bi-lock"></span>
+            <span th:text="'Precio: ' + ${avatar.getValor()} + ' monedas'"></span>
         </div>
-
-
-        <section class="container">
-            <div class="row row-cols-3 g-4 justify-content-center">
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/Lia.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
-                            <span class="bi bi-lock"></span>
-                            <span>Nivel 25</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/Pedro.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
-                            <span class="bi bi-lock"></span>
-                            <span>Nivel 30</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/Cami.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
-                            <span class="bi bi-lock"></span>
-                            <span>Nivel 35</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/Nacho.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
-                            <span class="bi bi-lock"></span>
-                            <span>Nivel 40</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/Barto.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded">
-                            <span class="bi bi-lock"></span>
-                            <span>Nivel 45</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-                <div class="col text-center">
-                    <div class="position-relative d-inline-block">
-                        <img th:src="@{/resources/imgs/Avatares/MadMax.jpg}" alt="" style="filter: blur(3px)" class="avatares mb-1">
-                        <div class="status-item position-absolute bottom-0 start-50 translate-middle-x bg-white text-dark px-1 py-2 rounded d-flex">
-                            <span class="bi bi-lock"></span>
-                            <span class="codicon-text-size">Nivel 50</span>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning mt-2">Bloqueado</button>
-                </div>
-
-            </div>
-        </section>
-
     </div>
+
+    <!-- Botón Comprar -->
+    <form th:action="@{/avatar/desbloquear}" method="post">
+        <input type="hidden" name="idAvatar" th:value="${avatar.getId()}" />
+        <button type="submit" class="btn btn-primary mt-2">Comprar</button>
+    </form>
+</div>
 </div>
 <script>
-    function seleccionar(botonSeleccionado, nombreAvatar) {
+    function seleccionar(botonSeleccionado, avatarId) {
         const botones = document.querySelectorAll('button[data-selectable]');
 
         botones.forEach(btn => {
@@ -393,6 +294,9 @@
         botonSeleccionado.textContent = 'En Uso';
         botonSeleccionado.className = "btn btn-danger";
 
+        // 👇 Asigna el ID numérico correctamente
+        document.getElementById("avatarSeleccionado").value = avatarId;
+        document.getElementById("avatarForm").submit();
     }
 </script>
 </div>

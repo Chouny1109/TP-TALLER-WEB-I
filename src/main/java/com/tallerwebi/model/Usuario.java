@@ -14,8 +14,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-public class
-Usuario {
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,8 +34,6 @@ Usuario {
 
     private Boolean activo;
 
-
-
     @Column(unique = true)
     private String token;
 
@@ -44,8 +41,6 @@ Usuario {
     private Integer monedas;
 
     private Integer vidas;
-
-
 
     private Integer xp = 0;
 
@@ -57,7 +52,6 @@ Usuario {
     )
     @JsonIgnoreProperties("amigos")
     private Set<Usuario> amigos;
-
 
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.
@@ -72,6 +66,17 @@ Usuario {
     private Boolean baneado;
     private LocalDateTime ultimaRegeneracionVida;
 
+    @ManyToOne
+    private Avatar avatarActual;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "UsuarioAvatar",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "avatar_id")
+    )
+    private List<Avatar> avataresEnPropiedad = new ArrayList<>();
+
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -85,97 +90,57 @@ Usuario {
         this.activo = false;
         this.xp = 0;
         this.ultimaRegeneracionVida = LocalDateTime.now();
+        this.avatarActual = new Avatar("Lia.jpg", 0);
     }
 
     public Usuario() {
     }
 
-    public Integer getVidas() {
-        return vidas;
-    }
+    public Integer getVidas() {return vidas;}
 
-    public void setVidas(Integer vidas) {
-        this.vidas = vidas;
-    }
+    public void setVidas(Integer vidas) {this.vidas = vidas;}
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public String getNombreUsuario() {return nombreUsuario;}
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-    public Integer getXp() {
-        return xp;
-    }
+    public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
 
-    public void setXp(Integer xp) {
-        this.xp = xp;
-    }
-    public Long getId() {
-        return id;
-    }
+    public Integer getXp() {return xp;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setXp(Integer xp) {this.xp = xp;}
 
-    public String getEmail() {
-        return email;
-    }
+    public Long getId() {return id;}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public void setId(Long id) {this.id = id;}
 
-    public String getPassword() {
-        return password;
-    }
+    public String getEmail() {return email;}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setEmail(String email) {this.email = email;}
 
-    public ROL_USUARIO getRol() {
-        return rol;
-    }
+    public String getPassword() {return password;}
 
-    public void setRol(ROL_USUARIO rol) {
-        this.rol = rol;
-    }
+    public void setPassword(String password) {this.password = password;}
 
-    public Boolean getActivo() {
-        return activo;
-    }
+    public ROL_USUARIO getRol() {return rol;}
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
+    public void setRol(ROL_USUARIO rol) {this.rol = rol;}
 
-    public boolean activo() {
-        return activo;
-    }
+    public Boolean getActivo() {return activo;}
 
-    public void activar() {
-        activo = true;
-    }
+    public void setActivo(Boolean activo) {this.activo = activo;}
 
-    @Override
-    public int hashCode() {
-        return email != null ? email.toLowerCase().hashCode() : 0;
-    }
+    public boolean activo() {return activo;}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
-        Usuario usuario = (Usuario) o;
-        return email != null && email.equalsIgnoreCase(usuario.email);
-    }
+    public void activar() {activo = true;}
 
-    public List<UsuarioMision> getMisiones() {
-        return misiones;
-    }
+    public Avatar getAvatarActual() {return avatarActual;}
+
+    public void setAvatarActual(Avatar avatarActual) {this.avatarActual = avatarActual;}
+
+    public List<Avatar> getAvataresEnPropiedad() {return avataresEnPropiedad;}
+
+    public void setAvataresEnPropiedad(List<Avatar> avataresEnPropiedad) {this.avataresEnPropiedad = avataresEnPropiedad;}
+
+    public List<UsuarioMision> getMisiones() {return misiones;}
 
     public void setMisiones(List<UsuarioMision> misiones) {
         this.misiones = misiones;
@@ -217,8 +182,18 @@ Usuario {
         return ultimaRegeneracionVida;
     }
 
-    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {
-        this.ultimaRegeneracionVida = ultimaRegeneracionVida;
+    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {this.ultimaRegeneracionVida = ultimaRegeneracionVida;}
+
+    @Override
+    public int hashCode() {
+        return email != null ? email.toLowerCase().hashCode() : 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return email != null && email.equalsIgnoreCase(usuario.email);
+    }
 }

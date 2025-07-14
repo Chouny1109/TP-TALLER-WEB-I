@@ -2,6 +2,7 @@ package com.tallerwebi.repository.impl;
 
 import com.tallerwebi.model.Avatar;
 import com.tallerwebi.model.Habilidad;
+import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioAvatar;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -31,10 +32,9 @@ public class RepositorioAvatarImpl implements RepositorioAvatar {
     }
 
     @Override
-    public void cambiarAvatar(Long idAvatar, Long idUsuario, int nuevoEstado) {
+    public void cambiarAvatar(Long idAvatar, Long idUsuario) {
         Session session = sessionFactory.getCurrentSession();
-        session.createNativeQuery("UPDATE UsuarioAvatar SET estadoAvatar = :estado, avatar_id = :idAvatar WHERE usuario_id = :idUsuario")
-                .setParameter("estado", nuevoEstado)
+        session.createNativeQuery("UPDATE Usuario u SET avatarActual_id = :idAvatar WHERE u.id = :idUsuario")
                 .setParameter("idUsuario", idUsuario)
                 .setParameter("idAvatar", idAvatar)
                 .executeUpdate();
@@ -46,12 +46,45 @@ public class RepositorioAvatarImpl implements RepositorioAvatar {
     }
 
     @Override
-    public List<Avatar> obtenerAvataresDisponibles(Long idUsuario) {
-        return List.of();
+    public List<Avatar> obtenerAvataresNoDisponibles(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+
+        String hql = "SELECT a " +
+                "FROM Avatar a " +
+                "WHERE a.id NOT IN (" +
+                "   SELECT a2.id " +
+                "   FROM Usuario u JOIN u.avataresEnPropiedad a2 " +
+                "   WHERE u.id = :idUsuario" +
+                ")";
+
+        return session.createQuery(hql, Avatar.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
     }
 
     @Override
-    public List<Avatar> obtenerAvataresNoDisponibles(Long idUsuario) {
-        return List.of();
+    public List<Avatar> obtenerAvataresDisponibles(Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+
+        String hql = "SELECT a FROM Usuario u JOIN u.avataresEnPropiedad a WHERE u.id = :idUsuario";
+
+        return session.createQuery(hql, Avatar.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
+    }
+
+    @Override
+    public void guardarAvatarAUsuario(Long idAvatar, Long idUsuario) {
+        Session session = sessionFactory.getCurrentSession();
+        session.createNativeQuery("INSERT INTO UsuarioAvatar (usuario_id, avatar_id) VALUES (:uid, :aid)")
+                .setParameter("uid", idUsuario)
+                .setParameter("aid", idAvatar)
+                .executeUpdate();
+    }
+
+    @Override
+    public void actualizar(Usuario usuario) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(usuario);
     }
 }
