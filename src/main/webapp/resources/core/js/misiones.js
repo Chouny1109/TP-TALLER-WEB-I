@@ -116,13 +116,15 @@ const mostrarLoader = () => {
     containerMisiones.appendChild(p);
 }
 
-const cambiarMisiones = () => {
+const cambiarMisiones =async () => {
     document.getElementById('confirmar-cambio').addEventListener('click', async (e) => {
 
         const id = e.target.getAttribute('data-id');
         mostrarLoader();
-
         cerrarModal();
+        header.classList.remove('hidden');
+
+
 
         try {
             const response = await fetch(`/spring/api/misiones/${id}`, {
@@ -141,7 +143,7 @@ const cambiarMisiones = () => {
 
         } catch (error) {
             notyf.error('Hubo un problema al cambiar la mision');
-            window.location.href = "/spring/tienda/#monedas"
+           await obtenerMisiones();
         }
     });
 }
