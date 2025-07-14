@@ -3,6 +3,8 @@ package com.tallerwebi.model;
 import com.tallerwebi.dominio.enums.ESTADO_AVATAR;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Avatar")
@@ -17,6 +19,8 @@ public class Avatar {
     @Column(columnDefinition = "LONGTEXT")
     private String link;
 
+    @ManyToMany(mappedBy = "avataresEnPropiedad")
+    private List<Usuario> usuarios = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Habilidad Habilidad;
@@ -28,7 +32,7 @@ public class Avatar {
     }
 
     public Avatar() {
-        
+
     }
 
 
