@@ -39,7 +39,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         this.sessionFactory = sessionFactory;
     }
 
-
     @Override
     public List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador) {
         Session session = sessionFactory.getCurrentSession();
@@ -64,7 +63,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         return criteria.list();
     }
 
-
     @Override
     public Boolean guardarPartida(Partida partida) {
         sessionFactory.getCurrentSession().save(partida);
@@ -74,7 +72,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     @Override
     public void actualizarPartida(Partida partida) {
         sessionFactory.getCurrentSession().merge(partida);
-
     }
 
     @Override
@@ -86,7 +83,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .setLockMode(LockMode.PESSIMISTIC_WRITE) // <-- Aquí el lock
                 .list();
     }
-
 
     @Override
     public void agregarUsuarioPartidaRelacion(UsuarioPartida usuarioPartida) {
@@ -164,14 +160,21 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
     @Override
-    public Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha) {
+    public Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDateTime fecha) {
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
 
+        LocalDateTime desde = fecha.toLocalDate().atStartOfDay();
+        LocalDateTime hasta = fecha.toLocalDate().plusDays(1).atStartOfDay();
+
         query.select(builder.countDistinct(root))
-                .where(builder.equal(root.get("usuario").get("id"), id))
-                .where(builder.equal(root.get("fecha").get("fecha"), fecha));
+                .where(
+                        builder.and(
+                                builder.equal(root.get("usuario").get("id"), id),
+                                builder.between(root.get("fecha"), desde, hasta)
+                        )
+                );
 
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
     }
@@ -182,11 +185,14 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         CriteriaQuery<UsuarioPartida> query = builder.createQuery(UsuarioPartida.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
 
+        LocalDateTime desde = fecha.toLocalDate().atStartOfDay();
+        LocalDateTime hasta = fecha.toLocalDate().plusDays(1).atStartOfDay();
+
         query.select(root)
                 .where(
                         builder.and(
                                 builder.equal(root.get("usuario").get("id"), id),
-                                builder.equal(root.get("fecha"), fecha)
+                                builder.between(root.get("fecha"), desde, hasta)
                         )
                 )
                 .orderBy(builder.asc(root.get("fecha")));  // <-- orden ascendente por fecha
@@ -205,7 +211,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .where(
                         builder.and(
                                 builder.equal(root.get("usuario").get("id"), id),
-                                builder.equal(root.get("fechaDeAsignacion"), fecha),
+                                builder.equal(root.get("fecha"), fecha),
                                 builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA)
                         )
                 );
@@ -213,7 +219,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
 
     }
-
 
     @Override
     public void finalizarPartida(Long idPartida) {
@@ -251,7 +256,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
     }
 
-
     @Override
     public List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida) {
         Session session = sessionFactory.getCurrentSession();
@@ -281,7 +285,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
         return count != null && count > 0;
     }
-
 
     @Override
     public void guardarUsuarioRespondePregunta(UsuarioRespondePregunta usp) {
@@ -316,7 +319,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
     }
 
-
     @Override
     public SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Partida partida, Integer orden) {
         Session session = sessionFactory.getCurrentSession();
@@ -332,7 +334,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
     }
 
-
     @Override
     public void guardarSiguientePregunta(SiguientePreguntaSupervivencia siguientePregunta) {
         sessionFactory.getCurrentSession().save(siguientePregunta);
@@ -347,7 +348,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .setParameter("idPartida", idPartida)
                 .uniqueResult();
     }
-
 
     @PersistenceContext
     private EntityManager em;
@@ -402,7 +402,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .uniqueResult();
     }
 
-
     @Override
     public void actualizarCategoriasGanadas(CategoriasGanadasEnPartida cat) {
         sessionFactory.getCurrentSession().update(cat);
@@ -412,7 +411,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     public void guardarCategoriasGanadas(CategoriasGanadasEnPartida cat) {
         sessionFactory.getCurrentSession().save(cat);
     }
-
 
     @Override
     public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u) {
