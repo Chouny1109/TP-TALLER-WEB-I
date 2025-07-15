@@ -39,5 +39,5 @@ public interface ServicioMisionesUsuario {
 
     void completarMisiones(HttpServletRequest request) throws UsuarioNoExistente;
 
-    void cambiarMision(Usuario logueado, Long idMision);
+    void cambiarMision(Usuario logueado, Long idMision, HttpServletRequest request);
 }

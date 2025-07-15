@@ -4,5 +4,5 @@ import java.time.LocalDate;
 
 public interface RepositorioUsuarioHabilidadPartida {
     boolean obtenerHabilidadesUsadasParaLaFecha(Long id, LocalDate fecha);
-    boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id);
+    boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id,LocalDate fecha);
 }

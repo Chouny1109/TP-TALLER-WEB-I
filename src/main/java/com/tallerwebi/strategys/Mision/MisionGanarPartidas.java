@@ -6,50 +6,46 @@ import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioPartida;
+import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class MisionGanarPartidas implements EstrategiaMision {
+public class MisionGanarPartidas extends MisionPlantilla {
 
     private final RepositorioPartida repositorioPartida;
-    private final RepositorioMisionUsuario repositorioMisionUsuario;
 
-    @Autowired
-    public MisionGanarPartidas(RepositorioPartida repositorioPartida, RepositorioMisionUsuario repositorioMisionUsuario) {
+    public MisionGanarPartidas(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuario repositorioUsuario, ServicioNivel servicioNivel, RepositorioPartida repositorioPartida) {
+        super(repositorioMisionUsuario, repositorioUsuario, servicioNivel);
         this.repositorioPartida = repositorioPartida;
-        this.repositorioMisionUsuario = repositorioMisionUsuario;
+    }
+
+    private Integer obtenerCantidadDePartidasGanadas(Usuario usuario) {
+        LocalDate fecha = LocalDate.now();
+        Long id = usuario.getId();
+        return this.repositorioPartida.obtenerCantidadDePartidasGanadasParaLaFecha(id, fecha);
     }
 
     @Override
-    public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
-        if (usuario != null && usuarioMision != null) {
-            LocalDateTime fecha = LocalDateTime.now();
-            List<UsuarioPartida> usuarioPartidas = this.repositorioPartida.
-                    obtenerLasPartidasDelUsuarioParaDeterminadaFecha(usuario.getId(), fecha);
-            Integer progreso = usuarioMision.getProgreso();
-            Integer objetivo = usuarioMision.getMision().getCantidad();
+    protected boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision) {
+        return obtenerCantidadDePartidasGanadas(usuario) >= usuarioMision.getMision().getObjetivo();
+    }
 
-            if (usuarioPartidas.isEmpty()) {
-                return;
-            }
+    @Override
+    protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
+        Integer cantidadPartidasGanadas = obtenerCantidadDePartidasGanadas(usuario);
 
-            int cantidadGanadas = (int) usuarioPartidas.stream().filter(
-                    partida -> partida.getEstado().equals(ESTADO_PARTIDA_JUGADOR.VICTORIA)
-            ).count();
+        if (cantidadPartidasGanadas > usuarioMision.getProgreso()) {
+            usuarioMision.setProgreso(cantidadPartidasGanadas);
+        }
 
-            if (cantidadGanadas > progreso) {
-                usuarioMision.setProgreso(cantidadGanadas);
-
-                if (cantidadGanadas >= objetivo) {
-                    usuarioMision.setCompletada(Boolean.TRUE);
-                }
-
-                this.repositorioMisionUsuario.save(usuarioMision);
-            }
+        if (cantidadPartidasGanadas >= usuarioMision.getMision().getObjetivo()) {
+            usuarioMision.setCompletada(Boolean.TRUE);
         }
     }
 }

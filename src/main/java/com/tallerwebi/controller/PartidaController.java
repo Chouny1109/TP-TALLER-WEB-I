@@ -2,6 +2,7 @@ package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioPartida;
@@ -316,7 +317,7 @@ public class PartidaController {
             @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
             @RequestParam("idPartida") Long idPartida,
             @RequestParam("preguntaRespondida") Long preguntaRespondida,
-            @RequestParam("idUsuario") Long idUsuario) {
+            @RequestParam("idUsuario") Long idUsuario,HttpServletRequest request) throws UsuarioNoExistente {
 
         ModelMap modelo = new ModelMap();
 
@@ -344,7 +345,7 @@ public class PartidaController {
 
         ResultadoRespuesta siguiente = null;
         if (ambosRespondieron) {
-            siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego);
+            siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego,request);
         }
 
         boolean terminoPartida = false;
@@ -420,7 +421,7 @@ public class PartidaController {
                                      @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
                                      @RequestParam("idPartida") Long idPartida,
                                      @RequestParam("preguntaRespondida") Long preguntaRespondida,
-                                     @RequestParam("idUsuario") Long idUsuario) {
+                                     @RequestParam("idUsuario") Long idUsuario) throws UsuarioNoExistente {
         ModelMap modelo = new ModelMap();
         Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
         Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
@@ -435,7 +436,7 @@ public class PartidaController {
         CATEGORIA_PREGUNTA categoriaCorona = (CATEGORIA_PREGUNTA) session.getAttribute("categoriaCorona");
 
         ResultadoRespuesta resultado = servicioPartida.crearResultadoRespuestaParaMultijugador(idPartida, usuario, preguntaRespondida, idRespuestaSeleccionada);
-        ResultadoRespuesta resultadoRespuesta = servicioPartida.validarRespuesta(resultado, modoJuego);
+        ResultadoRespuesta resultadoRespuesta = servicioPartida.validarRespuesta(resultado, modoJuego,request);
 
         Integer xpAcumuladoTurno = (Integer) session.getAttribute("xpAcumuladoTurno");
         if (xpAcumuladoTurno == null) xpAcumuladoTurno = 0;
