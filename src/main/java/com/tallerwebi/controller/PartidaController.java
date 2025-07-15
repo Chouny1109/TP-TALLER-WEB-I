@@ -21,10 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.Result;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +63,12 @@ public class PartidaController {
             request.getSession().setAttribute("mostrarPopupVidas", true);
             return new ModelAndView("redirect:/home");
         }
+
+        jugador.setVidas(jugador.getVidas() - 1);
+        jugador.setUltimaRegeneracionVida(LocalDateTime.now());
+        servicioUsuario.actualizar(jugador);
+        request.getSession().setAttribute("USUARIO", jugador);
+
         modelo.put("jugador", jugador);
         modelo.put("idUsuario", jugador.getId());
         modelo.put("modoJuego", modoJuego);
@@ -139,7 +143,7 @@ public class PartidaController {
     }
 
 
-    @PostMapping("/pregunta")
+    @RequestMapping(value = "/pregunta", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView mostrarPregunta(@RequestParam("categoria") String categoria,
                                         @RequestParam("id") Long idPartida,
                                         @RequestParam("idUsuario") Long idUsuario,
@@ -215,12 +219,38 @@ public class PartidaController {
             return new ModelAndView("errorVistaPregunta", modelo); // o redirigí a una página de error
         }
 
+        List<Respuesta> respuestasParaVista;
 
+        Long trampaActiva = (Long) session.getAttribute("trampaActiva");
+        if (trampaActiva != null && trampaActiva == 1L) {
+            List<Respuesta> originales = new ArrayList<>(p.getRespuestas());
+            List<Respuesta> incorrectas = originales.stream()
+                    .filter(r -> !r.getOpcionCorrecta())
+                    .collect(Collectors.toList());
+
+            Collections.shuffle(incorrectas);
+            respuestasParaVista = new ArrayList<>();
+            respuestasParaVista.addAll(incorrectas.subList(0, Math.min(2, incorrectas.size())));
+
+            originales.stream()
+                    .filter(Respuesta::getOpcionCorrecta)
+                    .findFirst()
+                    .ifPresent(respuestasParaVista::add);
+
+            Collections.shuffle(respuestasParaVista);
+            session.removeAttribute("trampaActiva");
+        } else {
+            respuestasParaVista = new ArrayList<>(p.getRespuestas());
+        }
+
+
+        modelo.put("respuestasVista", respuestasParaVista);
         modelo.put("pregunta", p);
         modelo.put("respondida", false);
 
         List<TrampaUsuario> trampasJugador = servicioTrampaUsuario.obtenerTrampasDelUsuario(idUsuario);
         modelo.put("trampas", trampasJugador);
+        session.setAttribute("preguntaActual", p);
 
         return new ModelAndView("preguntas", modelo);
     }
