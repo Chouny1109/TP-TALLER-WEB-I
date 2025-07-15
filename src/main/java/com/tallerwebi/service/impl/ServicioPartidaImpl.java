@@ -356,11 +356,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
         if (respondioBien) {
 
             //suma al total del xp del usuario
-            Integer xpActual = jugador.getXp();
-            if (xpActual == null) {
-                xpActual = 0;
-            }
-            jugador.setXp(xpActual + 10);
+//            Integer xpActual = jugador.getXp();
+//            if (xpActual == null) {
+//                xpActual = 0;
+//            }
+//            jugador.setXp(xpActual + 10);
             repositorioUsuario.modificar(jugador);
 
             // suma a los xp del turno para mostrar cuantos gano
@@ -491,7 +491,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
 
             if(resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId())) {
-                resultado.getUsuario().setXp(resultado.getUsuario().getXp() + 150);
+//                resultado.getUsuario().setXp(resultado.getUsuario().getXp() + 150);
                 repositorioUsuario.modificar(resultado.getUsuario());
                 em.flush();
             }

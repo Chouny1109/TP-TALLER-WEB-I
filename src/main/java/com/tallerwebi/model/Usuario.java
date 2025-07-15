@@ -99,6 +99,22 @@ Usuario {
 
     }
 
+    public Avatar getAvatarActual() {
+        return avatarActual;
+    }
+
+    public void setAvatarActual(Avatar avatarActual) {
+        this.avatarActual = avatarActual;
+    }
+
+    public List<Avatar> getAvataresEnPropiedad() {
+        return avataresEnPropiedad;
+    }
+
+    public void setAvataresEnPropiedad(List<Avatar> avataresEnPropiedad) {
+        this.avataresEnPropiedad = avataresEnPropiedad;
+    }
+
     public Integer getCopas() {
         return copas;
     }
@@ -118,9 +134,6 @@ Usuario {
         this.experiencia = experiencia;
     }
 
-    public Integer getVidas() {
-        return vidas;
-    }
     public Integer getVidas() {return vidas;}
 
     public void setVidas(Integer vidas) {this.vidas = vidas;}
@@ -129,17 +142,6 @@ Usuario {
 
     public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
 
-    public void setVidas(Integer vidas) {
-        this.vidas = vidas;
-    }
-
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
 
     public Long getId() {
         return id;
@@ -187,19 +189,6 @@ Usuario {
 
     public void activar() {
         activo = true;
-    }
-
-    @Override
-    public int hashCode() {
-        return email != null ? email.toLowerCase().hashCode() : 0;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
-        Usuario usuario = (Usuario) o;
-        return email != null && email.equalsIgnoreCase(usuario.email);
     }
 
     public List<UsuarioMision> getMisiones() {
