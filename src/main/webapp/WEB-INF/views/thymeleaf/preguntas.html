@@ -203,7 +203,7 @@
 
     <div class="d-flex justify-content-between w-50 m-auto">
         <p class="tipoPregunta"><span th:text="${pregunta.tipoPregunta}"></span></p>
-        <p class="segundosRestantes">10s</p>
+        <p class="segundosRestantes">20s</p>
     </div>
 
     <div class="pregunta">
@@ -216,6 +216,9 @@
                 <input type="hidden" name="idTrampa" th:value="${trampa.trampa.id}" />
                 <input type="hidden" name="idPartida" th:value="${idPartida}" />
                 <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
+                <input type="hidden" name="categoria" th:value="${categoria}" />
+                <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
+
                 <button type="submit" class="counter-circle" style="border: none; background: none;">
                     <img th:src="@{'/resources/imgs/Trampas/' + ${trampa.trampa.imagen}}" alt="trampa" />
                 </button>
@@ -225,6 +228,7 @@
     </div>
 
 
+
     <!-- Form para responder, solo si no respondí aún -->
     <form id="form-respuesta" th:if="${!respondida}" th:action="@{/partida/validar-respuesta}" method="post" class="d-grid w-50 m-auto">
         <input type="hidden" name="idPartida" th:value="${idPartida}" />
@@ -232,7 +236,7 @@
         <input type="hidden" name="modoJuego" th:value="${modoJuego}" />
         <input type="hidden" name="idPreguntaRespondida" th:value="${pregunta.id}" />
 
-        <div th:each="opcion : ${pregunta.respuestas}">
+        <div th:each="opcion : ${respuestasVista}">
             <button type="submit"
                     class="botonOpcion"
                     name="respuesta"
@@ -304,7 +308,7 @@
         if (elementoTiempo) elementoTiempo.textContent = '0s';
     } else {
         // No respondida: iniciar cuenta regresiva desde 10
-        let segundos = 10;
+        let segundos = 20;
         if (elementoTiempo) elementoTiempo.textContent = segundos + 's';
 
         const intervalo = setInterval(() => {

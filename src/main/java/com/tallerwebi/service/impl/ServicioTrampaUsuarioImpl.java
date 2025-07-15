@@ -76,4 +76,13 @@ public class ServicioTrampaUsuarioImpl implements ServicioTrampaUsuario {
         return true;
     }
 
+    @Override
+    public void consumirTrampa(Long idUsuario, Long idTrampa) {
+        TrampaUsuario tu = repositorioTrampaUsuario.buscarPorUsuarioYTrampa(idUsuario, idTrampa);
+        if (tu != null && tu.getCantidad() > 0) {
+            tu.setCantidad(tu.getCantidad() - 1);
+            repositorioTrampaUsuario.modificar(tu);
+        }
+    }
+
 }

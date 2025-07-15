@@ -12,4 +12,5 @@ public interface ServicioTrampaUsuario {
     List<TrampaUsuario> obtenerTrampasDelUsuario(Long idUsuario);
     Map<String, Trampa> obtenerTrampasPorDia();
     boolean reclamarTrampaDelDia(Usuario usuario, Trampa trampa);
+    void consumirTrampa(Long idUsuario, Long idTrampa);
 }
