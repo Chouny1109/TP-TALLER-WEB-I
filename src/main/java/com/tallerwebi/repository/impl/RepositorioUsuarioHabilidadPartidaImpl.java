@@ -44,7 +44,7 @@ public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuari
     }
 
     @Override
-    public boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id) {
+    public boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id, LocalDate fecha) {
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
@@ -59,9 +59,11 @@ public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuari
         Predicate esUsuario = builder.equal(root.get("usuario").get("id"), id);
         Predicate esPartidaGanada = builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA);
         Predicate noUsoHabilidades = builder.not(root.get("partida").get("id").in(subQuery));
+        Predicate fechaCoincide = builder.equal(root.get("fecha"), fecha); // 👈 Acá se filtra por fecha
+
 
         query.select(builder.count(root))
-                .where(esUsuario, esPartidaGanada, noUsoHabilidades);
+                .where(esUsuario, esPartidaGanada, noUsoHabilidades, fechaCoincide);
         Long cantidad = sessionFactory.getCurrentSession().createQuery(query).getSingleResult();
 
         return cantidad > 0;

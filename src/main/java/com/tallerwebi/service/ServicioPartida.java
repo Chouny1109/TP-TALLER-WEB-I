@@ -2,8 +2,10 @@ package com.tallerwebi.service;
 
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public interface ServicioPartida {
     boolean chequearAmbosRespondieron(Long idPartida, Usuario jugador, Integer orden);
 
     @Transactional
-    ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego);
+    ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego, HttpServletRequest request) throws UsuarioNoExistente;
 
     void notificarEstadoPartida(Long idPartida, Usuario quienRespondio, boolean ambosRespondieron, boolean terminoPartida, TIPO_PARTIDA modoJuego);
     //metodos para la logica de la partida

@@ -2,9 +2,11 @@ package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
 import com.tallerwebi.service.ServicioPartida;
+import com.tallerwebi.service.ServicioTrampaUsuario;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,10 +21,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.Result;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,12 +36,14 @@ public class PartidaController {
     private ServicioPartida servicioPartida;
     private IServicioUsuario servicioUsuario;
     private final SimpMessagingTemplate messagingTemplate;
+    private ServicioTrampaUsuario servicioTrampaUsuario;
 
     @Autowired
-    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate) {
+    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate, ServicioTrampaUsuario servicioTrampaUsuario) {
         this.servicioPartida = servicioPartida;
         this.servicioUsuario = servicioUsuario;
         this.messagingTemplate = messagingTemplate;
+        this.servicioTrampaUsuario = servicioTrampaUsuario;
     }
 
 
@@ -61,6 +63,12 @@ public class PartidaController {
             request.getSession().setAttribute("mostrarPopupVidas", true);
             return new ModelAndView("redirect:/home");
         }
+
+        jugador.setVidas(jugador.getVidas() - 1);
+        jugador.setUltimaRegeneracionVida(LocalDateTime.now());
+        servicioUsuario.actualizar(jugador);
+        request.getSession().setAttribute("USUARIO", jugador);
+
         modelo.put("jugador", jugador);
         modelo.put("idUsuario", jugador.getId());
         modelo.put("modoJuego", modoJuego);
@@ -135,7 +143,7 @@ public class PartidaController {
     }
 
 
-    @PostMapping("/pregunta")
+    @RequestMapping(value = "/pregunta", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView mostrarPregunta(@RequestParam("categoria") String categoria,
                                         @RequestParam("id") Long idPartida,
                                         @RequestParam("idUsuario") Long idUsuario,
@@ -177,6 +185,9 @@ public class PartidaController {
 
             modelo.put("pregunta", pregunta);
             modelo.put("respondida", false);
+            List<Respuesta>respuestasParaVista = new ArrayList<>(pregunta.getRespuestas());
+            modelo.put("respuestasVista", respuestasParaVista);
+
             return new ModelAndView("preguntas", modelo);
         }
 
@@ -211,10 +222,38 @@ public class PartidaController {
             return new ModelAndView("errorVistaPregunta", modelo); // o redirigí a una página de error
         }
 
+        List<Respuesta> respuestasParaVista;
 
+        Long trampaActiva = (Long) session.getAttribute("trampaActiva");
+        if (trampaActiva != null && trampaActiva == 1L) {
+            List<Respuesta> originales = new ArrayList<>(p.getRespuestas());
+            List<Respuesta> incorrectas = originales.stream()
+                    .filter(r -> !r.getOpcionCorrecta())
+                    .collect(Collectors.toList());
+
+            Collections.shuffle(incorrectas);
+            respuestasParaVista = new ArrayList<>();
+            respuestasParaVista.addAll(incorrectas.subList(0, Math.min(2, incorrectas.size())));
+
+            originales.stream()
+                    .filter(Respuesta::getOpcionCorrecta)
+                    .findFirst()
+                    .ifPresent(respuestasParaVista::add);
+
+            Collections.shuffle(respuestasParaVista);
+            session.removeAttribute("trampaActiva");
+        } else {
+            respuestasParaVista = new ArrayList<>(p.getRespuestas());
+        }
+
+
+        modelo.put("respuestasVista", respuestasParaVista);
         modelo.put("pregunta", p);
         modelo.put("respondida", false);
 
+        List<TrampaUsuario> trampasJugador = servicioTrampaUsuario.obtenerTrampasDelUsuario(idUsuario);
+        modelo.put("trampas", trampasJugador);
+        session.setAttribute("preguntaActual", p);
 
         return new ModelAndView("preguntas", modelo);
     }
@@ -260,7 +299,8 @@ public class PartidaController {
             modelo.put("categoriasGanadas", nombresCategorias);
         }
 
-
+        List<Respuesta>respuestasParaVista = new ArrayList<>(actual.getRespuestas());
+        modelo.put("respuestasVista", respuestasParaVista);
 
         modelo.put("idRespuestaSeleccionada", respuestaSeleccionada.getId());
         modelo.put("respuestaCorrecta", actual != null ? actual.getRespuestas().stream()
@@ -281,8 +321,7 @@ public class PartidaController {
             @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
             @RequestParam("idPartida") Long idPartida,
             @RequestParam("preguntaRespondida") Long preguntaRespondida,
-            @RequestParam("idUsuario") Long idUsuario) {
-
+            @RequestParam("idUsuario") Long idUsuario,HttpServletRequest request) throws UsuarioNoExistente {
         ModelMap modelo = new ModelMap();
 
         Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
@@ -309,7 +348,7 @@ public class PartidaController {
 
         ResultadoRespuesta siguiente = null;
         if (ambosRespondieron) {
-            siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego);
+            siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego, request);
         }
 
         if (siguiente != null) {
@@ -318,6 +357,8 @@ public class PartidaController {
             modelo.put("categoria", siguiente.getPregunta().getTipoPregunta().name());
             modelo.put("respondida", false);
             modelo.put("orden", siguiente.getOrden());
+            List<Respuesta>respuestasParaVista = new ArrayList<>(siguiente.getPregunta().getRespuestas());
+            modelo.put("respuestasVista", respuestasParaVista);
         } else if (servicioPartida.partidaTerminada(idPartida)) {
             // Partida finalizada
 
@@ -325,6 +366,8 @@ public class PartidaController {
             modelo.put("mensajeFinal", "¡La partida ha finalizado!");
             modelo.put("mostrarVolver", true);
             modelo.put("pregunta", resultadoRespuesta.getPregunta());
+            List<Respuesta>respuestasParaVista = new ArrayList<>(resultadoRespuesta.getPregunta().getRespuestas());
+            modelo.put("respuestasVista", respuestasParaVista);
             modelo.put("categoria", resultadoRespuesta.getPregunta().getTipoPregunta().name());
             modelo.put("orden", resultadoRespuesta.getOrden());
             modelo.put("respondida", true);
@@ -340,6 +383,8 @@ public class PartidaController {
         } else {
             // Mostrar la misma pregunta hasta que el otro jugador responda
             modelo.put("pregunta", resultadoRespuesta.getPregunta());
+            List<Respuesta>respuestasParaVista = new ArrayList<>(resultadoRespuesta.getPregunta().getRespuestas());
+            modelo.put("respuestasVista", respuestasParaVista);
             modelo.put("categoria", resultadoRespuesta.getPregunta().getTipoPregunta().name());
             modelo.put("orden", resultadoRespuesta.getOrden());
             modelo.put("respondida", true);
@@ -370,7 +415,7 @@ public class PartidaController {
                                      @RequestParam("modoJuego") TIPO_PARTIDA modoJuego,
                                      @RequestParam("idPartida") Long idPartida,
                                      @RequestParam("preguntaRespondida") Long preguntaRespondida,
-                                     @RequestParam("idUsuario") Long idUsuario) {
+                                     @RequestParam("idUsuario") Long idUsuario) throws UsuarioNoExistente {
         ModelMap modelo = new ModelMap();
         Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
         Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
@@ -385,7 +430,7 @@ public class PartidaController {
         CATEGORIA_PREGUNTA categoriaCorona = (CATEGORIA_PREGUNTA) session.getAttribute("categoriaCorona");
 
         ResultadoRespuesta resultado = servicioPartida.crearResultadoRespuestaParaMultijugador(idPartida, usuario, preguntaRespondida, idRespuestaSeleccionada);
-        ResultadoRespuesta resultadoRespuesta = servicioPartida.validarRespuesta(resultado, modoJuego);
+        ResultadoRespuesta resultadoRespuesta = servicioPartida.validarRespuesta(resultado, modoJuego,request);
 
         Integer xpAcumuladoTurno = (Integer) session.getAttribute("xpAcumuladoTurno");
         if (xpAcumuladoTurno == null) xpAcumuladoTurno = 0;

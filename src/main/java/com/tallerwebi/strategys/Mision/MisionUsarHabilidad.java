@@ -3,38 +3,40 @@ package com.tallerwebi.strategys.Mision;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
+import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.repository.RepositorioUsuarioHabilidadPartida;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tallerwebi.service.ServicioNivel;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
-public class MisionUsarHabilidad implements EstrategiaMision {
+public class MisionUsarHabilidad extends MisionPlantilla {
 
-    private final RepositorioMisionUsuario repositorioMisionUsuario;
     private final RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida;
 
-    @Autowired
-    public MisionUsarHabilidad(RepositorioMisionUsuario repositorioMisionUsuario,
-                               RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida) {
-        this.repositorioMisionUsuario = repositorioMisionUsuario;
+    public MisionUsarHabilidad(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuario repositorioUsuario, ServicioNivel servicioNivel, RepositorioUsuarioHabilidadPartida repositorioUsuarioHabilidadPartida) {
+        super(repositorioMisionUsuario, repositorioUsuario, servicioNivel);
         this.repositorioUsuarioHabilidadPartida = repositorioUsuarioHabilidadPartida;
     }
 
     @Override
-    public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
+    protected boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision) {
+        return tieneMasDeDosHabilidadesUsadasEnAlgunaPartida(usuario);
+    }
 
-        if (usuario != null) {
-            LocalDate fecha = LocalDate.now();
-            boolean cumplio = this.repositorioUsuarioHabilidadPartida.
-                    obtenerHabilidadesUsadasParaLaFecha(usuario.getId(), fecha);
+    private boolean tieneMasDeDosHabilidadesUsadasEnAlgunaPartida(Usuario usuario) {
+        LocalDate fecha = LocalDate.now();
+        Long id = usuario.getId();
+        return this.repositorioUsuarioHabilidadPartida.
+                obtenerHabilidadesUsadasParaLaFecha(id, fecha);
+    }
 
-            if (cumplio) {
-                usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
-                usuarioMision.setCompletada(Boolean.TRUE);
-                this.repositorioMisionUsuario.save(usuarioMision);
-            }
+    @Override
+    protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
+        if (tieneMasDeDosHabilidadesUsadasEnAlgunaPartida(usuario)) {
+            usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
+            usuarioMision.setCompletada(Boolean.TRUE);
         }
     }
 }

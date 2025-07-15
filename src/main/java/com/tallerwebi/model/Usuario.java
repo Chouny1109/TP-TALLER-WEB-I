@@ -35,7 +35,7 @@ Usuario {
 
     private Boolean activo;
 
-
+    private Integer experiencia;
 
     @Column(unique = true)
     private String token;
@@ -43,11 +43,9 @@ Usuario {
     @Column(nullable = false)
     private Integer monedas;
 
+    private Integer copas;
+
     private Integer vidas;
-
-
-
-    private Integer xp = 0;
 
     @ManyToMany
     @JoinTable(
@@ -72,6 +70,17 @@ Usuario {
     private Boolean baneado;
     private LocalDateTime ultimaRegeneracionVida;
 
+    @ManyToOne
+    private Avatar avatarActual;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "UsuarioAvatar",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "avatar_id")
+    )
+    private List<Avatar> avataresEnPropiedad = new ArrayList<>();
+
 
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
@@ -83,35 +92,57 @@ Usuario {
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
-        this.xp = 0;
+        this.experiencia = 0;
+        this.copas = 0;
         this.ultimaRegeneracionVida = LocalDateTime.now();
+        this.avatarActual = new Avatar("Lia.jpg", 0);
+
+    }
+
+    public Avatar getAvatarActual() {
+        return avatarActual;
+    }
+
+    public void setAvatarActual(Avatar avatarActual) {
+        this.avatarActual = avatarActual;
+    }
+
+    public List<Avatar> getAvataresEnPropiedad() {
+        return avataresEnPropiedad;
+    }
+
+    public void setAvataresEnPropiedad(List<Avatar> avataresEnPropiedad) {
+        this.avataresEnPropiedad = avataresEnPropiedad;
+    }
+
+    public Integer getCopas() {
+        return copas;
+    }
+
+    public void setCopas(Integer copas) {
+        this.copas = copas;
     }
 
     public Usuario() {
     }
 
-    public Integer getVidas() {
-        return vidas;
+    public Integer getExperiencia() {
+        return experiencia;
     }
 
-    public void setVidas(Integer vidas) {
-        this.vidas = vidas;
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
     }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public Integer getVidas() {return vidas;}
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-    public Integer getXp() {
-        return xp;
-    }
+    public void setVidas(Integer vidas) {this.vidas = vidas;}
 
-    public void setXp(Integer xp) {
-        this.xp = xp;
-    }
+    public String getNombreUsuario() {return nombreUsuario;}
+
+    public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
+
+
     public Long getId() {
         return id;
     }
@@ -160,19 +191,6 @@ Usuario {
         activo = true;
     }
 
-    @Override
-    public int hashCode() {
-        return email != null ? email.toLowerCase().hashCode() : 0;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
-        Usuario usuario = (Usuario) o;
-        return email != null && email.equalsIgnoreCase(usuario.email);
-    }
-
     public List<UsuarioMision> getMisiones() {
         return misiones;
     }
@@ -217,8 +235,18 @@ Usuario {
         return ultimaRegeneracionVida;
     }
 
-    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {
-        this.ultimaRegeneracionVida = ultimaRegeneracionVida;
+    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {this.ultimaRegeneracionVida = ultimaRegeneracionVida;}
+
+    @Override
+    public int hashCode() {
+        return email != null ? email.toLowerCase().hashCode() : 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Usuario)) return false;
+        Usuario usuario = (Usuario) o;
+        return email != null && email.equalsIgnoreCase(usuario.email);
+    }
 }

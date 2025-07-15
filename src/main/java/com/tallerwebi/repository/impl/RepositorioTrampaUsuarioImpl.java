@@ -1,5 +1,6 @@
 package com.tallerwebi.repository.impl;
 
+import com.tallerwebi.model.TrampaDia;
 import com.tallerwebi.model.TrampaUsuario;
 import com.tallerwebi.repository.RepositorioTrampaUsuario;
 import org.hibernate.Session;
@@ -56,5 +57,12 @@ public class RepositorioTrampaUsuarioImpl implements RepositorioTrampaUsuario {
     @Override
     public void modificar(TrampaUsuario trampaUsuario) {
         sessionFactory.getCurrentSession().update(trampaUsuario);
+    }
+
+    @Override
+    public List<TrampaDia> obtenerTrampasPorDia() {
+        return sessionFactory.getCurrentSession()
+                .createQuery("FROM TrampaDia", TrampaDia.class)
+                .list();
     }
 }

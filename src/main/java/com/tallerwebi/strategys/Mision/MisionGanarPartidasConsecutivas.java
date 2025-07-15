@@ -6,6 +6,8 @@ import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.model.UsuarioPartida;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioPartida;
+import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
@@ -13,43 +15,49 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class MisionGanarPartidasConsecutivas implements EstrategiaMision {
+public class MisionGanarPartidasConsecutivas extends MisionPlantilla {
 
     private final RepositorioPartida repositorioPartida;
-    private final RepositorioMisionUsuario repositorioMisionUsuario;
 
-    public MisionGanarPartidasConsecutivas(RepositorioPartida repositorioPartida,
-                                           RepositorioMisionUsuario repositorioMisionUsuario) {
+    public MisionGanarPartidasConsecutivas(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuario repositorioUsuario, ServicioNivel servicioNivel, RepositorioPartida repositorioPartida) {
+        super(repositorioMisionUsuario, repositorioUsuario, servicioNivel);
         this.repositorioPartida = repositorioPartida;
-        this.repositorioMisionUsuario = repositorioMisionUsuario;
+    }
+
+    private Integer obtenerCantidadDePartidasGanadasConsecutivas(Usuario usuario) {
+        Long id = usuario.getId();
+        LocalDateTime fecha = LocalDateTime.now();
+        List<UsuarioPartida> partidas = repositorioPartida.obtenerLasPartidasDelUsuarioParaDeterminadaFecha(id, fecha);
+
+        int rachaActual = 0;
+        int rachaMaxima = 0;
+
+        for (UsuarioPartida partida : partidas) {
+            if (partida.getEstado().equals(ESTADO_PARTIDA_JUGADOR.VICTORIA)) {
+                rachaActual++;
+                rachaMaxima = Math.max(rachaMaxima, rachaActual);
+            } else {
+                rachaActual = 0;
+            }
+        }
+
+        return rachaMaxima;
     }
 
     @Override
-    public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
+    protected boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision) {
+        return obtenerCantidadDePartidasGanadasConsecutivas(usuario) >= usuarioMision.getMision().getObjetivo();
+    }
 
-        if (usuario != null) {
-            int contador = 0;
-            Integer progreso = usuarioMision.getProgreso();
-            Integer objetivo = usuarioMision.getMision().getCantidad();
-            LocalDateTime fecha = LocalDateTime.now();
-            List<UsuarioPartida> usuarioPartidas = this.repositorioPartida.
-                    obtenerLasPartidasDelUsuarioParaDeterminadaFecha(usuario.getId(), fecha);
-
-            for (UsuarioPartida partida : usuarioPartidas) {
-                if (partida.getEstado().equals(ESTADO_PARTIDA_JUGADOR.VICTORIA)) {
-                    contador++;
-
-                    if (contador == objetivo) {
-                        usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
-                        usuarioMision.setCompletada(Boolean.TRUE);
-                        this.repositorioMisionUsuario.save(usuarioMision);
-                        return;
-                    }
-                } else {
-                    contador = 0;
-                }
-            }
+    @Override
+    protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
+        Integer cantidadPartidasGanadasConsecutivas = obtenerCantidadDePartidasGanadasConsecutivas(usuario);
+        if (cantidadPartidasGanadasConsecutivas > usuarioMision.getProgreso()) {
+            usuarioMision.setProgreso(cantidadPartidasGanadasConsecutivas);
+        }
+        if (cantidadPartidasGanadasConsecutivas >= usuarioMision.getMision().getObjetivo()) {
+            usuarioMision.setProgreso(usuarioMision.getProgreso() + 1);
+            usuarioMision.setCompletada(Boolean.TRUE);
         }
     }
 }
-

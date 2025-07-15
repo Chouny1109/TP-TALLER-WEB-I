@@ -3,10 +3,13 @@ package com.tallerwebi.service.impl;
 import com.tallerwebi.dominio.enums.CATEGORIA_PREGUNTA;
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.*;
 import com.tallerwebi.repository.RepositorioPartida;
 import com.tallerwebi.repository.RepositorioPregunta;
 import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioMisiones;
+import com.tallerwebi.service.ServicioMisionesUsuario;
 import com.tallerwebi.service.ServicioPartida;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -36,9 +40,14 @@ public class ServicioPartidaImpl implements ServicioPartida {
     private final RepositorioPregunta repositorioPregunta;
     private final SimpMessagingTemplate messagingTemplate;
     private static final Object lock = new Object();
+
+    @Autowired
+    private ServicioMisionesUsuario servicioMisionesUsuario;
     @Autowired
     private ServicioPartida servicioPartida;
-
+    private static final ConcurrentHashMap<Long, Object> locksPorPartida = new ConcurrentHashMap<>();
+    @Autowired
+    private ServicioPartidaTransaccional partidaTransaccional;
     @Autowired
     public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta,SimpMessagingTemplate messagingTemplate) {
         this.repositorioPartida = repositorioPartida;
@@ -47,6 +56,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         this.repositorioPregunta = repositorioPregunta;
     }
 
+    // --------------------------------- CREAR O UNIRSE A PARTIDA --------------------------------- //
     @Override
     @Transactional
     public Partida crearOUnirsePartida(Usuario jugador, TIPO_PARTIDA modoJuego) {
@@ -135,6 +145,8 @@ public class ServicioPartidaImpl implements ServicioPartida {
         }
     }
 
+
+    // --------------------------------- CONSULTAS, ETC --------------------------------- //
     @Override
     @Transactional
     public List<Partida> obtenerPartidasAbiertasPorModo(TIPO_PARTIDA tipo){
@@ -146,18 +158,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     public List<Usuario> obtenerJugadoresEnPartida(Long id){
         return this.repositorioPartida.obtenerJugadoresDePartida(id);
     }
-
-
-    /*@Override
-    public Pregunta obtenerPregunta(CATEGORIA_PREGUNTA categoria, Long idUsuario) {
-     Pregunta pregunta = this.repositorioPregunta.obtenerPregunta(categoria,idUsuario);
-        if (pregunta != null) {
-            List<Respuesta> mezcladas = new ArrayList<>(pregunta.getRespuestas());
-            Collections.shuffle(mezcladas);
-            pregunta.setRespuestas(new HashSet<>(mezcladas)); // si seguís usando Set
-        }
-        return pregunta;
-    }*/
 
 
 
@@ -175,8 +175,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
-
-
     @Override
     @Transactional
     public Respuesta buscarRespuestaPorId(Long idrespuestaSeleccionada) {
@@ -189,10 +187,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
 //        em.refresh(p);
         return p;
     }
-
-    private static final ConcurrentHashMap<Long, Object> locksPorPartida = new ConcurrentHashMap<>();
-    @Autowired
-    private ServicioPartidaTransaccional partidaTransaccional;
 
     @Override
     @Transactional
@@ -215,7 +209,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 return existente;
             }
 
-            // 🧠 Solo crear nueva si no existe aún
+            //  Solo crear nueva si no existe aún
             List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
             Pregunta nuevaPregunta = repositorioPregunta.obtenerPreguntaSupervivencia(jugadores);
 
@@ -239,11 +233,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
         }
     }
 
-
-
-
-
-
     @Override
     @Transactional
     public void finalizarPartida(Long idPartida) {
@@ -265,59 +254,151 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     }
 
+    @Override
+    public Pregunta buscarPreguntaPorId(Long idPregunta) {
+        return repositorioPregunta.buscarPreguntaPorId(idPregunta);
+    }
+
 
     @Override
     @Transactional
-    public ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego) {
+    public ResultadoRespuesta obtenerUltimoResultadoRespuestaDeJugador(Long idPartida, Usuario usuario){
+        return repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(idPartida, usuario);
+    }
 
-            //recibe resultadoRespuesta con la respuesta seleccionada desde el controller
-            // chequea q ambos hayan respondido (resultado respuesta del rival de mismo orden y misma pregunta)
-            // va a partida supervivencia, chequea respuesta del jugador con la del rival, devuelve resulado respuesta con siguiente pregunta y sin respuesta, o devuelve null.
-            Partida partida = resultado.getPartida();
-            Usuario jugador = resultado.getUsuario();
-            Pregunta preguntaRespondida = resultado.getPregunta();
-            Respuesta respuestaSeleccionada = resultado.getRespuestaSeleccionada();
-            Integer orden = resultado.getOrden();
+    @Transactional
+    @Override
+    public void actualizarResultadoRespuesta(ResultadoRespuesta rr) {
+        repositorioPartida.actualizarResultadoRespuesta(rr);
 
-            boolean existe = repositorioPartida.existeUsuarioRespondePregunta(jugador.getId(), preguntaRespondida.getId());
+        if (rr.getRespuestaSeleccionada() != null || Boolean.TRUE.equals(rr.getTiempoTerminadoRespuestaNula())) {
+            boolean existe = repositorioPartida.existeUsuarioRespondePregunta(rr.getUsuario().getId(), rr.getPregunta().getId());
             if (!existe) {
-                repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(jugador, preguntaRespondida));
+                repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(rr.getUsuario(), rr.getPregunta()));
             }
-            em.flush();
+        }
 
-            boolean ambosRespondieron = false;
+        em.flush();
+    }
 
+
+    @Override
+    @Transactional
+    public ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp) {
+        return repositorioPartida.obtenerResultadoPorPartidaUsuarioYPregunta(idPartida, usuario, preguntaResp);
+
+    }
+
+    @Override
+    public SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Long idPartida, Integer orden) {
+        return repositorioPartida.obtenerSiguientePreguntaEntidad(buscarPartidaPorId(idPartida), orden);
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int ordenCorrecto, Pregunta siguientePregunta) {
+        return repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, ordenCorrecto, siguientePregunta);
+    }
+
+    @Override
+    public List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador) {
+        return repositorioPartida.obtenerPartidasAbiertasConTurnoEnNull(modoJuego, jugador);
+    }
+
+
+    @Transactional
+    @Override
+    public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario){
+        return repositorioPartida.obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
+    }
+
+    @Override
+    @Transactional
+    public void agregarCategoriaGanadaEnPartida(Long idPartida, Usuario usuario, CATEGORIA_PREGUNTA categoriaCorona) {
+        Partida partida = buscarPartidaPorId(idPartida);
+        CategoriasGanadasEnPartida cat = obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
+
+        if (cat == null) {
+            cat = new CategoriasGanadasEnPartida();
+            cat.setPartida(partida);
+            cat.setUsuario(usuario);
+            cat.getCategoriasGanadas().add(categoriaCorona); // HashSet → no se repite
+            repositorioPartida.guardarCategoriasGanadas(cat);
+        } else {
+            cat.getCategoriasGanadas().add(categoriaCorona); // si ya existe, simplemente se agrega la nueva
+            repositorioPartida.actualizarCategoriasGanadas(cat);
+        }
+
+        em.flush();
+    }
+
+
+    @Transactional
+    @Override
+    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u){
+        return repositorioPartida.obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(u);
+    }
+
+
+    public Pregunta buscarPreguntaPorOrden(Long idPartida, int orden) {
+        SiguientePreguntaSupervivencia sp = repositorioPartida.obtenerSiguientePreguntaEntidad(buscarPartidaPorId(idPartida), orden);
+        if (sp != null) return sp.getSiguientePregunta();
+        return null;
+    }
+
+
+    // --------------------------------- SUPERVIVENCIA / MULTIJUGADOR --------------------------------- //
+    @Override
+    @Transactional
+    public ResultadoRespuesta validarRespuesta(ResultadoRespuesta resultado, TIPO_PARTIDA modoJuego, HttpServletRequest request) throws UsuarioNoExistente {
+
+        //recibe resultadoRespuesta con la respuesta seleccionada desde el controller
+        // chequea q ambos hayan respondido (resultado respuesta del rival de mismo orden y misma pregunta)
+        // va a partida supervivencia, chequea respuesta del jugador con la del rival, devuelve resulado respuesta con siguiente pregunta y sin respuesta, o devuelve null.
+        Partida partida = resultado.getPartida();
+        Usuario jugador = resultado.getUsuario();
+        Pregunta preguntaRespondida = resultado.getPregunta();
+        Respuesta respuestaSeleccionada = resultado.getRespuestaSeleccionada();
+        Integer orden = resultado.getOrden();
+
+        boolean existe = repositorioPartida.existeUsuarioRespondePregunta(jugador.getId(), preguntaRespondida.getId());
+        if (!existe) {
+            repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(jugador, preguntaRespondida));
+        }
+        em.flush();
+
+        boolean ambosRespondieron = false;
+
+        if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
+            ambosRespondieron = chequearAmbosRespondieron(partida.getId(), jugador, orden);
+
+        }
+
+        ResultadoRespuesta resultadoRespuestaSiguiente = null;
+        if (ambosRespondieron) {
             if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
-                ambosRespondieron = chequearAmbosRespondieron(partida.getId(), jugador, orden);
-
+                resultadoRespuestaSiguiente = partidaSupervivencia(resultado);
             }
-
-            ResultadoRespuesta resultadoRespuestaSiguiente = null;
-            if (ambosRespondieron) {
-                if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
-                    resultadoRespuestaSiguiente = partidaSupervivencia(resultado);
-                }
-            }
-            if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
-                resultadoRespuestaSiguiente = partidaMultijugador(resultado);
-            }
+        }
+        if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
+            resultadoRespuestaSiguiente = partidaMultijugador(resultado, request);
+        }
 
 
-            // Fallback si no avanzó la partida
+        // Fallback si no avanzó la partida
 
-            boolean terminoPartida = false;
-            if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
-                terminoPartida = partidaTerminada(partida.getId()) ||
-                        (resultadoRespuestaSiguiente == null && ambosRespondieron);
+        boolean terminoPartida = false;
+        if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
+            terminoPartida = partidaTerminada(partida.getId()) ||
+                    (resultadoRespuestaSiguiente == null && ambosRespondieron);
 
-                notificarEstadoPartida(partida.getId(), jugador, ambosRespondieron, terminoPartida, modoJuego);
-            } else {
-                terminoPartida = partidaTerminada(partida.getId());
-                notificarEstadoPartida(partida.getId(), jugador, false, terminoPartida, modoJuego);
-            }
+            notificarEstadoPartida(partida.getId(), jugador, ambosRespondieron, terminoPartida, modoJuego);
+        } else {
+            terminoPartida = partidaTerminada(partida.getId());
+            notificarEstadoPartida(partida.getId(), jugador, false, terminoPartida, modoJuego);
+        }
 
 
-            return resultadoRespuestaSiguiente;
+        return resultadoRespuestaSiguiente;
 
     }
 
@@ -336,8 +417,8 @@ public class ServicioPartidaImpl implements ServicioPartida {
                 !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
 
             if(resultado.getRespuestaSeleccionada() != null && resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId())) {
-                int xpActual = jugador.getXp() != null ? jugador.getXp() : 0;
-                jugador.setXp(xpActual + 150);
+                int xpActual = jugador.getExperiencia() != null ? jugador.getExperiencia() : 0;
+                jugador.setExperiencia(xpActual + 150);
                 resultado.getPartida().setGanador(jugador);
 
                 repositorioPartida.actualizarPartida(resultado.getPartida());
@@ -503,7 +584,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
-    private ResultadoRespuesta partidaMultijugador(ResultadoRespuesta resultado) {
+    private ResultadoRespuesta partidaMultijugador(ResultadoRespuesta resultado, HttpServletRequest request) throws UsuarioNoExistente {
 
         boolean respondioBien = resultado.getRespuestaSeleccionada() != null &&
                 resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId());
@@ -516,6 +597,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         if (ganadasUsuario != null && ganadasUsuario.getCategoriasGanadas() != null && ganadasUsuario.getCategoriasGanadas().size() == CATEGORIA_PREGUNTA.values().length) {
             finalizarPartida(partida.getId());
             notificarEstadoPartida(partida.getId(), jugador, false, true, TIPO_PARTIDA.MULTIJUGADOR);
+            servicioMisionesUsuario.completarMisiones(request);
             return null;
         }
 
@@ -526,7 +608,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
             partida.setTurnoActual(null);
             repositorioPartida.actualizarPartida(partida);
             em.flush();
-            notificarEsperandoRival(jugador,null, partida);
+            notificarEsperandoRival(jugador, null, partida);
             return null;
         }
 
@@ -539,11 +621,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
         if (respondioBien) {
 
             //suma al total del xp del usuario
-            Integer xpActual = jugador.getXp();
-            if (xpActual == null) {
-                xpActual = 0;
-            }
-            jugador.setXp(xpActual + 10);
+//            Integer xpActual = jugador.getXp();
+//            if (xpActual == null) {
+//                xpActual = 0;
+//            }
+//            jugador.setXp(xpActual + 10);
             repositorioUsuario.modificar(jugador);
 
             // suma a los xp del turno para mostrar cuantos gano
@@ -587,6 +669,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
         return null;
     }
+    // --------------------------------- WEB SOCKET --------------------------------- //
 
     private void notificarTurno(Usuario jugadorConTurno, Usuario rival, Partida partida) {
         EstadoPartidaDTO dto = new EstadoPartidaDTO();
@@ -621,11 +704,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
 
 
-            List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
+        List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
 
-            for (Usuario jugador : jugadores) {
-                EstadoPartidaDTO dto = new EstadoPartidaDTO();
-                if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
+        for (Usuario jugador : jugadores) {
+            EstadoPartidaDTO dto = new EstadoPartidaDTO();
+            if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA) {
 
                 if (terminoPartida) {
                     dto.setEstado("finalizado");
@@ -641,73 +724,23 @@ public class ServicioPartidaImpl implements ServicioPartida {
                     messagingTemplate.convertAndSendToUser(jugador.getNombreUsuario(), "/queue/partida", dto);
                 }
 
-                } else if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
+            } else if (modoJuego == TIPO_PARTIDA.MULTIJUGADOR) {
 
-                     if (terminoPartida) {
-                        dto.setEstado("finalizado");
-                        dto.setMensaje("La partida ha finalizado.");
-                        messagingTemplate.convertAndSendToUser(jugador.getNombreUsuario(), "/queue/partida", dto);
-                    }
+                if (terminoPartida) {
+                    dto.setEstado("finalizado");
+                    dto.setMensaje("La partida ha finalizado.");
+                    messagingTemplate.convertAndSendToUser(jugador.getNombreUsuario(), "/queue/partida", dto);
                 }
-
             }
 
-    }
-
-    @Override
-    public Pregunta buscarPreguntaPorId(Long idPregunta) {
-        return repositorioPregunta.buscarPreguntaPorId(idPregunta);
-    }
-
-
-    @Override
-    @Transactional
-    public ResultadoRespuesta obtenerUltimoResultadoRespuestaDeJugador(Long idPartida, Usuario usuario){
-        return repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(idPartida, usuario);
-    }
-
-    @Transactional
-    @Override
-    public void actualizarResultadoRespuesta(ResultadoRespuesta rr) {
-        repositorioPartida.actualizarResultadoRespuesta(rr);
-
-        if (rr.getRespuestaSeleccionada() != null || Boolean.TRUE.equals(rr.getTiempoTerminadoRespuestaNula())) {
-            boolean existe = repositorioPartida.existeUsuarioRespondePregunta(rr.getUsuario().getId(), rr.getPregunta().getId());
-            if (!existe) {
-                repositorioPartida.guardarUsuarioRespondePregunta(new UsuarioRespondePregunta(rr.getUsuario(), rr.getPregunta()));
-            }
         }
 
-        em.flush();
-    }
-
-
-    @Override
-    @Transactional
-    public ResultadoRespuesta obtenerResultadoPorPartidaUsuarioYPregunta(Long idPartida, Usuario usuario, Pregunta preguntaResp) {
-        return repositorioPartida.obtenerResultadoPorPartidaUsuarioYPregunta(idPartida, usuario, preguntaResp);
-
-    }
-
-    @Override
-    public SiguientePreguntaSupervivencia obtenerSiguientePreguntaEntidad(Long idPartida, Integer orden) {
-        return repositorioPartida.obtenerSiguientePreguntaEntidad(buscarPartidaPorId(idPartida), orden);
-    }
-
-    @Override
-    public ResultadoRespuesta obtenerResultadoPorOrdenYPregunta(Long idPartida, Usuario usuario, int ordenCorrecto, Pregunta siguientePregunta) {
-        return repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, ordenCorrecto, siguientePregunta);
-    }
-
-    @Override
-    public List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador) {
-        return repositorioPartida.obtenerPartidasAbiertasConTurnoEnNull(modoJuego, jugador);
     }
 
     @Transactional
     @Override
     public ResultadoRespuesta crearResultadoRespuestaParaMultijugador(Long idPartida, Usuario usuario, Long idPregunta, Long idRespuesta) {
-    Partida p = buscarPartidaPorId(idPartida);
+        Partida p = buscarPartidaPorId(idPartida);
 
         Pregunta preguntaRespondida = buscarPreguntaPorId(idPregunta);
 
@@ -743,45 +776,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
         return resultado;
     }
 
-    @Transactional
-    @Override
-    public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario){
-        return repositorioPartida.obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
-    }
-
-    @Override
-    @Transactional
-    public void agregarCategoriaGanadaEnPartida(Long idPartida, Usuario usuario, CATEGORIA_PREGUNTA categoriaCorona) {
-        Partida partida = buscarPartidaPorId(idPartida);
-        CategoriasGanadasEnPartida cat = obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
-
-        if (cat == null) {
-            cat = new CategoriasGanadasEnPartida();
-            cat.setPartida(partida);
-            cat.setUsuario(usuario);
-            cat.getCategoriasGanadas().add(categoriaCorona); // HashSet → no se repite
-            repositorioPartida.guardarCategoriasGanadas(cat);
-        } else {
-            cat.getCategoriasGanadas().add(categoriaCorona); // si ya existe, simplemente se agrega la nueva
-            repositorioPartida.actualizarCategoriasGanadas(cat);
-        }
-
-        em.flush();
-    }
-
-
-    @Transactional
-    @Override
-    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u){
-        return repositorioPartida.obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(u);
-    }
-
-
-    public Pregunta buscarPreguntaPorOrden(Long idPartida, int orden) {
-        SiguientePreguntaSupervivencia sp = repositorioPartida.obtenerSiguientePreguntaEntidad(buscarPartidaPorId(idPartida), orden);
-        if (sp != null) return sp.getSiguientePregunta();
-        return null;
-    }
 
     //web soquets, logica de las preguntas etc
 }

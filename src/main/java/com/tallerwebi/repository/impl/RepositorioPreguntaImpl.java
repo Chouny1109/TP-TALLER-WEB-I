@@ -109,7 +109,9 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
                 .map(Usuario::getId)
                 .collect(Collectors.toList());
 
+        // Trae la pregunta CON las respuestas cargadas
         String hql = "select distinct p from Pregunta p " +
+                "join fetch p.respuestas r " +
                 "where p.habilitada = true and p.id not in (" +
                 "   select urp.pregunta.id from UsuarioRespondePregunta urp " +
                 "   where urp.usuario.id in (:idsJugadores)" +
@@ -121,11 +123,7 @@ public class RepositorioPreguntaImpl implements RepositorioPregunta {
                 .setMaxResults(1)
                 .list();
 
-        if (preguntas.isEmpty()) {
-            return null;
-        }
-
-        return preguntas.get(0);
+        return preguntas.isEmpty() ? null : preguntas.get(0);
     }
 
     @Override
