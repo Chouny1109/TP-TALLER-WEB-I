@@ -1,6 +1,7 @@
 package com.tallerwebi.repository.impl;
 
 import com.tallerwebi.dominio.enums.ESTADO_PARTIDA;
+import com.tallerwebi.dominio.enums.ESTADO_PARTIDA_JUGADOR;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 import com.tallerwebi.repository.RepositorioPartida;
@@ -85,7 +86,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .setLockMode(LockMode.PESSIMISTIC_WRITE) // <-- Aquí el lock
                 .list();
     }
-
 
 
     @Override
@@ -194,6 +194,25 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
+    @Override
+    public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDate fecha) {
+
+        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
+
+        query.select(builder.countDistinct(root))
+                .where(
+                        builder.and(
+                                builder.equal(root.get("usuario").get("id"), id),
+                                builder.equal(root.get("fechaDeAsignacion"), fecha),
+                                builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA)
+                        )
+                );
+
+        return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
+
+    }
 
 
     @Override
@@ -233,19 +252,20 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
 
-
     @Override
-    public List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida){
+    public List<ResultadoRespuesta> obtenerResultadoRespuestaDeJugadoresEnPartida(Long idPartida) {
         Session session = sessionFactory.getCurrentSession();
         return (List<ResultadoRespuesta>) session.createCriteria(ResultadoRespuesta.class)
                 .createAlias("partida", "p")
                 .add(Restrictions.eq("p.id", idPartida))
                 .list();
     }
+
     @Override
     public void guardarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta) {
         sessionFactory.getCurrentSession().save(resultadoRespuesta);
     }
+
     @Override
     public void actualizarResultadoRespuesta(ResultadoRespuesta resultadoRespuesta) {
         sessionFactory.getCurrentSession().update(resultadoRespuesta);
@@ -264,9 +284,10 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
 
     @Override
-    public void guardarUsuarioRespondePregunta(UsuarioRespondePregunta usp){
+    public void guardarUsuarioRespondePregunta(UsuarioRespondePregunta usp) {
         sessionFactory.getCurrentSession().save(usp);
     }
+
     @Override
     public ResultadoRespuesta obtenerUltimoResultadoRespuestaEnPartidaPorJugador(Long idPartida, Usuario jugador) {
         Session session = sessionFactory.getCurrentSession();
@@ -310,7 +331,6 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .setMaxResults(1)
                 .uniqueResult();
     }
-
 
 
     @Override
@@ -395,7 +415,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
 
     @Override
-    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u){
+    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u) {
         Session session = sessionFactory.getCurrentSession();
 
         // Hacemos un join desde UsuarioPartida para filtrar partidas por usuario

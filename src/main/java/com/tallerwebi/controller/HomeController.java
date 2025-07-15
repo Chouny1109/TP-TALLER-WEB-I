@@ -48,7 +48,7 @@ public class HomeController {
         ModelAndView mav = new ModelAndView("home");
 
         Usuario usuario = (Usuario) request.getSession().getAttribute("USUARIO");
-
+        
         if (usuario != null) {
             servicioUsuario.regenerarVidasSiCorresponde(usuario);
             request.getSession().setAttribute("USUARIO", usuario);

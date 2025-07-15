@@ -2,8 +2,8 @@ const URL = "/spring/api/misiones"
 const containerMisiones = document.getElementById('containerMisiones')
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/progress-bar/progress-bar.js';
 
+const header = document.querySelector('#header');
 var notyf = new Notyf();
-
 
 async function obtenerFormatoJSON(response) {
     return await response.json();
@@ -28,6 +28,7 @@ const obtenerMisiones = async () => {
             case 200: {
                 const misiones = await obtenerFormatoJSON(response);
                 renderizarMisiones(misiones);
+                header.classList.remove('hidden');
                 break;
             }
 
@@ -59,14 +60,16 @@ const generarContenidoHTML = (mision) => {
             </div>
             
             <div class="mision-content">
+                <div class = 'container-img'>
+                    <img data-bs-target="#exampleModal"
+                        data-id ="${mision.id}"
+                        class="cambiar-mision"
+                        data-bs-toggle="modal"
+                        src="/spring/imgs/arrow-counterclockwise.svg"
+                        alt="">
+                </div>
                 
-                <img data-bs-target="#exampleModal"
-                data-id ="${mision.id}"
-                class="cambiar-mision"
-                data-bs-toggle="modal"
-                src="/spring/imgs/arrow-counterclockwise.svg"
-                alt="">
-               
+                
                 <div class="mision-description">
                     <h2 class="mision-title">${mision.descripcion}</h2>
                     
@@ -115,13 +118,14 @@ const mostrarLoader = () => {
     containerMisiones.appendChild(p);
 }
 
-const cambiarMisiones = () => {
+const cambiarMisiones = async () => {
     document.getElementById('confirmar-cambio').addEventListener('click', async (e) => {
 
         const id = e.target.getAttribute('data-id');
         mostrarLoader();
-
         cerrarModal();
+        header.classList.add('hidden');
+
 
         try {
             const response = await fetch(`/spring/api/misiones/${id}`, {
@@ -140,7 +144,7 @@ const cambiarMisiones = () => {
 
         } catch (error) {
             notyf.error('Hubo un problema al cambiar la mision');
-            window.location.href = "/spring/tienda/#monedas"
+            await obtenerMisiones();
         }
     });
 }

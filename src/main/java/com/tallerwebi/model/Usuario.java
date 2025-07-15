@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-public class Usuario {
+public class
+Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,15 +35,17 @@ public class Usuario {
 
     private Boolean activo;
 
+    private Integer experiencia;
+
     @Column(unique = true)
     private String token;
 
     @Column(nullable = false)
     private Integer monedas;
 
-    private Integer vidas;
+    private Integer copas;
 
-    private Integer xp = 0;
+    private Integer vidas;
 
     @ManyToMany
     @JoinTable(
@@ -52,6 +55,7 @@ public class Usuario {
     )
     @JsonIgnoreProperties("amigos")
     private Set<Usuario> amigos;
+
 
     /*
         Fetch Lazy -> No te trae todos los datos de ese usuario hasta que llames explicitamente a ese metodo.
@@ -88,12 +92,46 @@ public class Usuario {
         this.amigos = new HashSet<>();
         this.baneado = false;
         this.activo = false;
-        this.xp = 0;
+        this.experiencia = 0;
+        this.copas = 0;
         this.ultimaRegeneracionVida = LocalDateTime.now();
         this.avatarActual = new Avatar("Lia.jpg", 0);
+
+    }
+
+    public Avatar getAvatarActual() {
+        return avatarActual;
+    }
+
+    public void setAvatarActual(Avatar avatarActual) {
+        this.avatarActual = avatarActual;
+    }
+
+    public List<Avatar> getAvataresEnPropiedad() {
+        return avataresEnPropiedad;
+    }
+
+    public void setAvataresEnPropiedad(List<Avatar> avataresEnPropiedad) {
+        this.avataresEnPropiedad = avataresEnPropiedad;
+    }
+
+    public Integer getCopas() {
+        return copas;
+    }
+
+    public void setCopas(Integer copas) {
+        this.copas = copas;
     }
 
     public Usuario() {
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
     }
 
     public Integer getVidas() {return vidas;}
@@ -104,43 +142,58 @@ public class Usuario {
 
     public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
 
-    public Integer getXp() {return xp;}
 
-    public void setXp(Integer xp) {this.xp = xp;}
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() {return id;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public void setId(Long id) {this.id = id;}
+    public String getEmail() {
+        return email;
+    }
 
-    public String getEmail() {return email;}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public void setEmail(String email) {this.email = email;}
+    public String getPassword() {
+        return password;
+    }
 
-    public String getPassword() {return password;}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public void setPassword(String password) {this.password = password;}
+    public ROL_USUARIO getRol() {
+        return rol;
+    }
 
-    public ROL_USUARIO getRol() {return rol;}
+    public void setRol(ROL_USUARIO rol) {
+        this.rol = rol;
+    }
 
-    public void setRol(ROL_USUARIO rol) {this.rol = rol;}
+    public Boolean getActivo() {
+        return activo;
+    }
 
-    public Boolean getActivo() {return activo;}
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
 
-    public void setActivo(Boolean activo) {this.activo = activo;}
+    public boolean activo() {
+        return activo;
+    }
 
-    public boolean activo() {return activo;}
+    public void activar() {
+        activo = true;
+    }
 
-    public void activar() {activo = true;}
-
-    public Avatar getAvatarActual() {return avatarActual;}
-
-    public void setAvatarActual(Avatar avatarActual) {this.avatarActual = avatarActual;}
-
-    public List<Avatar> getAvataresEnPropiedad() {return avataresEnPropiedad;}
-
-    public void setAvataresEnPropiedad(List<Avatar> avataresEnPropiedad) {this.avataresEnPropiedad = avataresEnPropiedad;}
-
-    public List<UsuarioMision> getMisiones() {return misiones;}
+    public List<UsuarioMision> getMisiones() {
+        return misiones;
+    }
 
     public void setMisiones(List<UsuarioMision> misiones) {
         this.misiones = misiones;

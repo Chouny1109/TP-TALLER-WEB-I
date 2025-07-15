@@ -38,16 +38,11 @@ body {
     width: 100%;
     padding: 1rem 2rem;
     max-width: 600px;
-    background: white;
-    border-radius: 20px;
     min-height: 150px;
     transition: box-shadow 0.3s ease;
-}
-
-.card-misiones:hover {
-    box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
-    -webkit-box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
-    -moz-box-shadow: -20px 20px 123px -32px rgba(0,62,40,1);
+    border-radius: 58px;
+    background: darkgreen;
+    box-shadow: 5px 5px 21px #004b00, -5px -5px 21px #007d00;
 }
 
 .container-trofeos {
@@ -62,7 +57,6 @@ body {
 }
 
 .trofeos-content {
-    background: #4CAF50;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,7 +65,10 @@ body {
     font-weight: bold;
     color: #0b3010;
     padding: 1rem;
-    border-radius: 50%;
+    border-radius: 50px;
+    background: #D6EFD8;
+    box-shadow: 20px 20px 60px #114232,
+    -20px -20px 60px #114232;
 }
 
 .cambiar-mision {
@@ -107,7 +104,8 @@ body {
 .mision-title {
     font-weight: normal;
     font-size: 1rem;
-    color: #0b3010;
+    color: white;
+    margin: 0;
 }
 
 .progreso {
@@ -116,12 +114,12 @@ body {
     --height: 20px;
     position: relative;
     text-align: center;
-    border: 1px solid #0b3010;
-    border-radius: 0.2rem;
+    border: 1px solid #0b990b;
+    border-radius: 10px;
 }
 
 .progreso-text {
-    color: #3e8e41;
+    color: white;
     left: 50%;
     transform: translateX(-50%);
     font-weight: bold;

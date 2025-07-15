@@ -4,37 +4,46 @@ import com.tallerwebi.model.Usuario;
 import com.tallerwebi.model.UsuarioMision;
 import com.tallerwebi.repository.RepositorioMisionUsuario;
 import com.tallerwebi.repository.RepositorioPartida;
+import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
-public class MisionJugarPartidas implements EstrategiaMision {
+public class MisionJugarPartidas extends MisionPlantilla {
 
     private final RepositorioPartida repositorioPartida;
-    private final RepositorioMisionUsuario repositorioMisionUsuario;
 
-    public MisionJugarPartidas(RepositorioPartida repositorioPartida,
-                               RepositorioMisionUsuario repositorioMisionUsuario) {
+    public MisionJugarPartidas(RepositorioMisionUsuario repositorioMisionUsuario, RepositorioUsuario repositorioUsuario, ServicioNivel servicioNivel, RepositorioPartida repositorioPartida) {
+        super(repositorioMisionUsuario, repositorioUsuario, servicioNivel);
         this.repositorioPartida = repositorioPartida;
-        this.repositorioMisionUsuario = repositorioMisionUsuario;
     }
 
     @Override
-    public void completarMision(Usuario usuario, UsuarioMision usuarioMision) {
+    protected boolean verificarCumplimiento(Usuario usuario, UsuarioMision usuarioMision) {
+        Integer objetivo = usuarioMision.getMision().getObjetivo();
+        return obtenerCantidadDePartidasJugadas(usuario) >= objetivo;
+    }
+
+    private Integer obtenerCantidadDePartidasJugadas(Usuario usuario) {
         LocalDate fecha = LocalDate.now();
-        Integer partidasJugadas = this.repositorioPartida.
-                obtenerCantidadDePartidasJugadasParaLaFecha(usuario.getId(), fecha);
-        Integer objetivo = usuarioMision.getMision().getCantidad();
+        Long id = usuario.getId();
+        return this.repositorioPartida.obtenerCantidadDePartidasJugadasParaLaFecha(id, fecha);
+    }
+
+    @Override
+    protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
+        Integer partidasJugadas = obtenerCantidadDePartidasJugadas(usuario);
         Integer progreso = usuarioMision.getProgreso();
+        Integer objetivo = usuarioMision.getMision().getObjetivo();
 
         if (partidasJugadas > progreso) {
             usuarioMision.setProgreso(partidasJugadas);
-            if (partidasJugadas >= objetivo) {
-                usuarioMision.setCompletada(Boolean.TRUE);
-            }
-            this.repositorioMisionUsuario.save(usuarioMision);
+        }
+        if (partidasJugadas >= objetivo) {
+            usuarioMision.setCompletada(Boolean.TRUE);
         }
     }
 }

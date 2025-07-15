@@ -67,13 +67,32 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
                                 m.getId(),
                                 m.getMision().getDescripcion(),
                                 m.getProgreso(),
-                                m.getMision().getCantidad(),
+                                obtenerProgreso(m),
                                 m.getMision().getExperiencia(),
                                 m.getMision().getCopas(),
                                 m.getCompletada(),
                                 m.getCanjeada()
                         ))
                 .collect(Collectors.toList());
+    }
+
+    private Integer obtenerProgreso(UsuarioMision mision) {
+        TIPO_MISION tipoMision = mision.getMision().getTipoMision().getNombre();
+
+        Integer progreso = 0;
+
+        switch (tipoMision) {
+            case GANAR_PARTIDAS:
+            case JUGAR_PARTIDAS:
+                progreso = mision.getMision().getObjetivo();
+                break;
+
+            case GANAR_PARTIDA_CONSECUTIVA:
+            case NO_USAR_HABILIDADES:
+            case USAR_HABILIDADES:
+                progreso = mision.getMision().getCantidad();
+        }
+        return progreso;
     }
 
     @Transactional
@@ -147,7 +166,7 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
     @Override
     @Transactional
-    public void cambiarMision(Usuario logueado, Long idMision) {
+    public void cambiarMision(Usuario logueado, Long idMision, HttpServletRequest request) {
         Usuario usuarioBd = repositorioUsuario.buscarUsuarioPorId(logueado.getId());
         UsuarioMision usuarioMision = this.repositorioMisionUsuario.obtenerUsuarioMision(idMision);
 
@@ -159,7 +178,9 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
 
         borrarRelacionUsuarioMision(usuarioMision);
         actualizarUsuario(usuarioBd);
+        sessionUtil.setUsuarioEnSession(request, usuarioBd);
     }
+
 
     @Transactional
     @Override
