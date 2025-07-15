@@ -82,6 +82,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
 }
 
 .mision-content {
@@ -102,9 +103,8 @@ body {
 }
 
 .mision-title {
-    font-weight: normal;
     font-size: 1rem;
-    color: white;
+    color: rgba(173, 255, 47, 0.77);
     margin: 0;
 }
 
@@ -114,7 +114,7 @@ body {
     --height: 20px;
     position: relative;
     text-align: center;
-    border: 1px solid #0b990b;
+    border: 1px solid #d6efd88a;
     border-radius: 10px;
 }
 

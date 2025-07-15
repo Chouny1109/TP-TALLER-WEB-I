@@ -114,7 +114,26 @@ const renderizarMisiones = (misiones) => {
 const mostrarLoader = () => {
     containerMisiones.innerHTML = '';
     const p = document.createElement('p');
-    p.innerHTML = `<sl-spinner style="font-size: 3rem; --indicator-color:darkgreen ; --track-color: green;"></sl-spinner>`;
+    p.innerHTML = `<div class="container">
+            <div class="square">
+                <span style="--i:0;"></span>
+                <span style="--i:1;"></span>
+                <span style="--i:2;"></span>
+                <span style="--i:3;"></span>
+            </div>
+            <div class="square">
+                <span style="--i:0;"></span>
+                <span style="--i:1;"></span>
+                <span style="--i:2;"></span>
+                <span style="--i:3;"></span>
+            </div>
+            <div class="square">
+                <span style="--i:0;"></span>
+                <span style="--i:1;"></span>
+                <span style="--i:2;"></span>
+                <span style="--i:3;"></span>
+            </div>
+        </div>`
     containerMisiones.appendChild(p);
 }
 
