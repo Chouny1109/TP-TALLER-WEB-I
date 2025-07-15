@@ -58,14 +58,19 @@ public class PartidaController {
             return new ModelAndView("redirect:/login");
         }
 
+        servicioUsuario.regenerarVidasSiCorresponde(jugador);
+        jugador = servicioUsuario.buscarUsuarioPorId(jugador.getId());
+
         if(jugador.getVidas() <= 0){
             request.getSession().setAttribute("mensajeVidas", "No tenés vidas disponibles! Esperá a que se recarguen...");
             request.getSession().setAttribute("mostrarPopupVidas", true);
             return new ModelAndView("redirect:/home");
         }
 
+        if (jugador.getVidas() == 5) {
+            jugador.setUltimaRegeneracionVida(LocalDateTime.now());
+        }
         jugador.setVidas(jugador.getVidas() - 1);
-        jugador.setUltimaRegeneracionVida(LocalDateTime.now());
         servicioUsuario.actualizar(jugador);
         request.getSession().setAttribute("USUARIO", jugador);
 
