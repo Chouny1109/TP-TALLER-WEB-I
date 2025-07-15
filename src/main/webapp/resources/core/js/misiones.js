@@ -1,9 +1,9 @@
 const URL = "/spring/api/misiones"
 const containerMisiones = document.getElementById('containerMisiones')
 import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/progress-bar/progress-bar.js';
+
 const header = document.querySelector('#header');
 var notyf = new Notyf();
-
 
 async function obtenerFormatoJSON(response) {
     return await response.json();
@@ -60,14 +60,16 @@ const generarContenidoHTML = (mision) => {
             </div>
             
             <div class="mision-content">
+                <div class = 'container-img'>
+                    <img data-bs-target="#exampleModal"
+                        data-id ="${mision.id}"
+                        class="cambiar-mision"
+                        data-bs-toggle="modal"
+                        src="/spring/imgs/arrow-counterclockwise.svg"
+                        alt="">
+                </div>
                 
-                <img data-bs-target="#exampleModal"
-                data-id ="${mision.id}"
-                class="cambiar-mision"
-                data-bs-toggle="modal"
-                src="/spring/imgs/arrow-counterclockwise.svg"
-                alt="">
-               
+                
                 <div class="mision-description">
                     <h2 class="mision-title">${mision.descripcion}</h2>
                     
@@ -116,14 +118,13 @@ const mostrarLoader = () => {
     containerMisiones.appendChild(p);
 }
 
-const cambiarMisiones =async () => {
+const cambiarMisiones = async () => {
     document.getElementById('confirmar-cambio').addEventListener('click', async (e) => {
 
         const id = e.target.getAttribute('data-id');
         mostrarLoader();
         cerrarModal();
         header.classList.add('hidden');
-
 
 
         try {
@@ -143,7 +144,7 @@ const cambiarMisiones =async () => {
 
         } catch (error) {
             notyf.error('Hubo un problema al cambiar la mision');
-           await obtenerMisiones();
+            await obtenerMisiones();
         }
     });
 }
