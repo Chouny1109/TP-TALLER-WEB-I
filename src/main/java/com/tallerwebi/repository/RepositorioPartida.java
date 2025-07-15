@@ -34,7 +34,7 @@ public interface RepositorioPartida {
 
     Partida obtenerPartidaActivaDeJugador(Long idJugador);
 
-    Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDate fecha);
+    Integer obtenerCantidadDePartidasJugadasParaLaFecha(Long id, LocalDateTime fecha);
 
     Partida buscarPartidaPorId(Long idPartida);
 

@@ -147,14 +147,16 @@ public class ServicioMisionesUsuarioImpl implements ServicioMisionesUsuario {
     }
 
     @Override
+    @Transactional
     public void completarMisiones(HttpServletRequest request) {
         Usuario logueado = sessionUtil.getUsuarioLogueado(request);
 
         if (logueado != null) {
 
-            List<UsuarioMision> usuarioMision = logueado.getMisiones();
+            List<UsuarioMision> usuarioMision = repositorioMisionUsuario.obtenerMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
 
             usuarioMision.forEach((mision) -> {
+
                 if (!mision.getCompletada()) {
                     TIPO_MISION tipo = mision.getMision().getTipoMision().getNombre();
                     EstrategiaMision estrategiaMision = misionFactory.obtenerEstrategia(tipo);

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class MisionJugarPartidas extends MisionPlantilla {
@@ -28,7 +29,7 @@ public class MisionJugarPartidas extends MisionPlantilla {
     }
 
     private Integer obtenerCantidadDePartidasJugadas(Usuario usuario) {
-        LocalDate fecha = LocalDate.now();
+        LocalDateTime fecha = LocalDateTime.now();
         Long id = usuario.getId();
         return this.repositorioPartida.obtenerCantidadDePartidasJugadasParaLaFecha(id, fecha);
     }
@@ -36,6 +37,7 @@ public class MisionJugarPartidas extends MisionPlantilla {
     @Override
     protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
         Integer partidasJugadas = obtenerCantidadDePartidasJugadas(usuario);
+        System.out.println("Partidas jugadas: " + partidasJugadas);
         Integer progreso = usuarioMision.getProgreso();
         Integer objetivo = usuarioMision.getMision().getObjetivo();
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -44,7 +45,7 @@ public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuari
     }
 
     @Override
-    public boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id, LocalDate fecha) {
+    public boolean elUsuarioTienePartidasGanadasSinUsarHabilidades(Long id, LocalDateTime fecha) {
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);

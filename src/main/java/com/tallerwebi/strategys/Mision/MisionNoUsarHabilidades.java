@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class MisionNoUsarHabilidades extends MisionPlantilla {
@@ -23,7 +24,7 @@ public class MisionNoUsarHabilidades extends MisionPlantilla {
     }
 
     private boolean tieneAlgunaPartidaGanadaSinHabilidades(Usuario usuario) {
-        return this.repositorioUsuarioHabilidadPartida.elUsuarioTienePartidasGanadasSinUsarHabilidades(usuario.getId(), LocalDate.now());
+        return this.repositorioUsuarioHabilidadPartida.elUsuarioTienePartidasGanadasSinUsarHabilidades(usuario.getId(), LocalDateTime.now());
     }
 
     @Override

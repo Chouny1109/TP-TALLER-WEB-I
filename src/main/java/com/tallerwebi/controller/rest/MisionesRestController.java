@@ -42,6 +42,8 @@ public class MisionesRestController {
 
         List<UsuarioMisionDTO> misionesDelUsuario = servicio.obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
 
+        servicio.completarMisiones(request);
+
         return ResponseEntity.ok(misionesDelUsuario);
     }
 
@@ -52,7 +54,7 @@ public class MisionesRestController {
         if (logueado == null) {
             throw new UsuarioNoAutenticadoException("El usuario no se encuentra autenticado");
         }
-        servicio.cambiarMision(logueado, id,request);
+        servicio.cambiarMision(logueado, id, request);
 
         List<UsuarioMisionDTO> misionesDelUsuario = servicio.obtenerLasMisionesDelUsuarioPorId(logueado.getId(), LocalDate.now());
         return ResponseEntity.ok(misionesDelUsuario);
