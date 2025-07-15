@@ -30,6 +30,17 @@ public class Partida {
     private Usuario turnoActual;
 
 
+    @ManyToOne
+    @JoinColumn(name = "ganador_id")
+    private Usuario ganador;
+
+    public Usuario getGanador() {
+        return ganador;
+    }
+
+    public void setGanador(Usuario ganador) {
+        this.ganador = ganador;
+    }
 
     public boolean isFinalizada() {
         return this.estadoPartida.equals(ESTADO_PARTIDA.FINALIZADA);

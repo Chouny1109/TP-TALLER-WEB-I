@@ -3,6 +3,9 @@ package com.tallerwebi.model;
 import javax.persistence.*;
 import javax.swing.text.StyledEditorKit;
 
+@Table(
+        uniqueConstraints = @UniqueConstraint(columnNames = {"partida_id", "usuario_id", "orden", "pregunta_id"})
+)
 @Entity
 public class ResultadoRespuesta {
 

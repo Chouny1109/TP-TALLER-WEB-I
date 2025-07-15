@@ -312,64 +312,47 @@ public class PartidaController {
             siguiente = servicioPartida.validarRespuesta(resultadoRespuesta, modoJuego);
         }
 
-        boolean terminoPartida = false;
-        if (modoJuego == TIPO_PARTIDA.SUPERVIVENCIA && siguiente == null) {
-            int ordenSiguiente = resultadoRespuesta.getOrden() + 1;
-            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, ordenSiguiente);
-            terminoPartida = (siguienteGenerada == null); // SOLO termina si no hay siguiente
-        }
-
         if (siguiente != null) {
-            // Hay siguiente pregunta, mostrarla
+            // Avanzamos a la siguiente pregunta
             modelo.put("pregunta", siguiente.getPregunta());
             modelo.put("categoria", siguiente.getPregunta().getTipoPregunta().name());
             modelo.put("respondida", false);
-        } else if (!terminoPartida) {
-            // Aún no terminó, pero esperando al rival o la siguiente ya fue generada
-            int ordenSiguiente = resultadoRespuesta.getOrden() + 1;
-            SiguientePreguntaSupervivencia siguienteGenerada = servicioPartida.obtenerSiguientePreguntaEntidad(idPartida, ordenSiguiente);
+            modelo.put("orden", siguiente.getOrden());
+        } else if (servicioPartida.partidaTerminada(idPartida)) {
+            // Partida finalizada
 
-            if (siguienteGenerada != null) {
-                Pregunta pregunta = siguienteGenerada.getSiguientePregunta();
-                modelo.put("pregunta", pregunta);
-                modelo.put("categoria", pregunta.getTipoPregunta().name());
-                modelo.put("respondida", false);
-            } else {
-                // Todavía no se generó la siguiente porque falta el rival
-                modelo.put("pregunta", resultadoRespuesta.getPregunta());
-                modelo.put("respondida", true);
-                modelo.put("mensajeFinal", "Esperando a tu rival...");
-
-
-                modelo.put("idRespuestaSeleccionada",
-                        resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
-                modelo.put("respuestaCorrecta",
-                        resultadoRespuesta.getPregunta().getRespuestas().stream()
-                                .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
-                                .findFirst()
-                                .orElse(null));
-            }
-        } else {
-            // Terminó la partida
+            modelo.put("terminoPartida", true);
+            modelo.put("mensajeFinal", "¡La partida ha finalizado!");
+            modelo.put("mostrarVolver", true);
             modelo.put("pregunta", resultadoRespuesta.getPregunta());
+            modelo.put("categoria", resultadoRespuesta.getPregunta().getTipoPregunta().name());
             modelo.put("orden", resultadoRespuesta.getOrden());
-
-            if(servicioPartida.partidaTerminada(idPartida)) {
-                modelo.put("terminoPartida", true);
-                modelo.put("mensajeFinal", "¡La partida ha finalizado!");
-                modelo.put("mostrarVolver", true);
-            }
-
             modelo.put("respondida", true);
-
-
             modelo.put("idRespuestaSeleccionada",
-                    resultadoRespuesta.getRespuestaSeleccionada() != null ? resultadoRespuesta.getRespuestaSeleccionada().getId() : -1L);
+                    resultadoRespuesta.getRespuestaSeleccionada() != null
+                            ? resultadoRespuesta.getRespuestaSeleccionada().getId()
+                            : -1L);
             modelo.put("respuestaCorrecta",
                     resultadoRespuesta.getPregunta().getRespuestas().stream()
                             .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
                             .findFirst()
                             .orElse(null));
+        } else {
+            // Mostrar la misma pregunta hasta que el otro jugador responda
+            modelo.put("pregunta", resultadoRespuesta.getPregunta());
+            modelo.put("categoria", resultadoRespuesta.getPregunta().getTipoPregunta().name());
+            modelo.put("orden", resultadoRespuesta.getOrden());
+            modelo.put("respondida", true);
+            modelo.put("idRespuestaSeleccionada",
+                    resultadoRespuesta.getRespuestaSeleccionada() != null
+                            ? resultadoRespuesta.getRespuestaSeleccionada().getId()
+                            : -1L);
+            modelo.put("respuestaCorrecta",
+                    resultadoRespuesta.getPregunta().getRespuestas().stream()
+                            .filter(r -> Boolean.TRUE.equals(r.getOpcionCorrecta()))
+                            .findFirst()
+                            .orElse(null));
+            modelo.put("mensaje", "Esperando a que el otro jugador responda...");
         }
 
         modelo.put("modoJuego", modoJuego);
@@ -378,6 +361,8 @@ public class PartidaController {
 
         return new ModelAndView("preguntas", modelo);
     }
+
+
 
     @PostMapping("validar-turno")
     public ModelAndView validarTurno(HttpServletRequest request,

@@ -33,8 +33,6 @@ public interface ServicioPartida {
     boolean partidaTerminada(Long idPartida);
 
 
-    @org.springframework.transaction.annotation.Transactional
-    ResultadoRespuesta crearResultadoRespuestaConOrdenFijo(Long idPregunta, Long idPartida, Usuario usuario, Long idRespuesta, Integer ordenFijo);
 
     @Transactional
     boolean chequearAmbosRespondieron(Long idPartida, Usuario jugador, Integer orden);
@@ -47,7 +45,7 @@ public interface ServicioPartida {
 
     Pregunta buscarPreguntaPorId(Long idPregunta);
 
-    @Transactional
+
     ResultadoRespuesta crearResultadoRespuestaConSiguienteOrden(Long pregunta, Long partida, Usuario usuario, Long respuesta);
 
     @Transactional
@@ -76,4 +74,7 @@ public interface ServicioPartida {
 
     @org.springframework.transaction.annotation.Transactional
     List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u);
+
+
+    ResultadoRespuesta obtenerOCrearResultadoRespuesta(Long idPregunta, Long idPartida, Usuario usuario, Integer orden);
 }
