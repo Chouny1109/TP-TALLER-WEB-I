@@ -37,35 +37,43 @@ public class ServicioNivelImpl implements ServicioNivel {
         return this.repositorioNivel.obtenerNivelSiguiente(nivel);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public NivelUsuarioDTO construirInfoDeNivel(Usuario usuario) {
         Integer nivelActual = usuario.getNivel();
         Integer experienciaActual = usuario.getExperiencia();
 
+        Nivel nivelActualObj = obtenerNivelPorExperiencia(usuario.getExperiencia());
         Nivel siguiente = obtenerNivelSiguiente(nivelActual);
 
         if (siguiente == null) {
-            return new NivelUsuarioDTO(nivelActual, null, experienciaActual, null, null);
+            return new NivelUsuarioDTO(nivelActual, null, experienciaActual, null, null, 100);
         }
 
+        Integer experienciaBase = nivelActualObj.getExperienciaNecesaria();
         Integer experienciaNecesaria = siguiente.getExperienciaNecesaria();
         Integer restante = Math.max(0, experienciaNecesaria - experienciaActual);
+
+        int totalNecesaria = experienciaNecesaria - experienciaBase;
+        int experienciaGanada = experienciaActual - experienciaBase;
+        int porcentaje = (int) ((double) experienciaGanada * 100 / totalNecesaria);
 
         return new NivelUsuarioDTO(
                 nivelActual,
                 siguiente.getNivel(),
                 experienciaActual,
                 experienciaNecesaria,
-                restante
+                restante,
+                porcentaje
         );
     }
+
 
     @Transactional
     @Override
     public void verificarSiSubeDeNivel(Usuario usuario) {
-        Integer experienciaActual = Optional.ofNullable(usuario.getExperiencia()).orElse(0);
-        Integer nivelActual = usuario.getNivel();
+        Integer experienciaActual = Optional.ofNullable(usuario.getExperiencia()).orElse(0);//200
+        Integer nivelActual = usuario.getNivel();//1
 
         Nivel nuevoNivel = obtenerNivelPorExperiencia(experienciaActual);
 

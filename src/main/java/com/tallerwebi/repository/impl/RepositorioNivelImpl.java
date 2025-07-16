@@ -34,13 +34,13 @@ public class RepositorioNivelImpl implements RepositorioNivel {
     }
 
     @Override
-    public Nivel obtenerSiguienteNivel(Integer nivelActual) {
+    public Nivel obtenerNivelSiguiente(Integer nivel) {
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Nivel> query = builder.createQuery(Nivel.class);
         Root<Nivel> root = query.from(Nivel.class);
 
         query.select(root)
-                .where(builder.equal(root.get("nivel"), nivelActual + 1));
+                .where(builder.equal(root.get("nivel"), nivel + 1));
 
         return sessionFactory.getCurrentSession()
                 .createQuery(query)

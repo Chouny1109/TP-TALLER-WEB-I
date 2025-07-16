@@ -83,7 +83,7 @@ Usuario {
     )
 
     private List<Avatar> avataresEnPropiedad = new ArrayList<>();
-    
+
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;

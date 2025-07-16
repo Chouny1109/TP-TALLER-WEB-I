@@ -21,7 +21,7 @@
     <div class="nav-container d-flex justify-content-between align-items-center p-3 bg-light">
         <div class="d-flex align-items-center">
             <span class="material-symbols--star-rounded me-2"></span>
-            <span class="nivel mb-0" th:text="${nivel}"></span>
+            <span class="nivel mb-0" th:text="${nivelUsuarioDTO.getNivelActual()}"></span>
         </div>
 
         <div class="profile-wrapper d-flex align-items-center">
@@ -33,7 +33,8 @@
             <div class="status-item me-3">
                 <span class="mdi--heart" style="font-size: 1.3em; color: red;"></span>
                 <span id="vidas-count" style="font-weight: bold; font-size: 1.1em;" th:text="${vidas}"></span>
-                <span id="vida-timer" th:if="${vidas} < 5" th:attr="data-tiempo-restante=${tiempoRestanteVida}" style="color: lightgray; font-size: 0.9em;"></span>
+                <span id="vida-timer" th:if="${vidas} < 5" th:attr="data-tiempo-restante=${tiempoRestanteVida}"
+                      style="color: lightgray; font-size: 0.9em;"></span>
             </div>
             <div class="status-item me-3">
                 <span class="mdi--star-four-points-circle"></span>
@@ -51,7 +52,7 @@
     </div>
 </header>
 
-<main class="container my-4 " >
+<main class="container my-4 ">
 
     <div id="overlay" style="
     display:none;
@@ -85,19 +86,23 @@
     </div>
 
 
-
     <div class="contenedor-principal">
         <div class="contenedor-1">
             <div>
                 <div class="nivel-container">
-                    <div class="nivel-circulo" style="background-color: #4caf50; color: white;" th:text="${nivel}"></div>
-                    <div class="barra"><div class="barra-progreso" style="width: 50%;"></div></div>
+                    <div class="nivel-circulo" style="background-color: #4caf50; color: white;"
+                         th:text="${nivelUsuarioDTO.getNivelActual()}"></div>
+                    <div class="barra">
+                        <div class="barra-progreso" th:style="'width: ' + ${nivelUsuarioDTO.getPorcentaje()} + '%'"></div>
+                    </div>
                     <!-- Aquí 50% por 500/1000 -->
-                    <div class="nivel-circulo" th:text="${nivel + 1}"></div>
+                    <div class="nivel-circulo" th:text="${nivelUsuarioDTO.getNivelSiguiente()}"></div>
 
                 </div>
                 <div class="xp-container">
-                    <div class="xp-label">500xp</div>
+                    <div class="xp-label"
+                         th:text="${nivelUsuarioDTO.experienciaActual} + ' / ' + ${nivelUsuarioDTO.experienciaNecesaria} +' xp'">
+                    </div>
                 </div>
             </div>
             <div class="iconos">
@@ -147,12 +152,12 @@
                                             <!-- Menos de 2 jugadores: avatar default -->
                                             <img th:if="${#lists.size(partida.jugadores) < 2}"
                                                  th:src="@{/resources/imgs/default-avatar.png}"
-                                                 alt="Avatar Rival" />
+                                                 alt="Avatar Rival"/>
 
                                             <!-- 2 jugadores: avatar del rival -->
                                             <img th:if="${#lists.size(partida.jugadores) == 2}"
                                                  th:src="${partida.getRival(usuarioId).linkAvatar}"
-                                                 alt="Avatar Rival" />
+                                                 alt="Avatar Rival"/>
                                         </div>
 
                                         <!-- Nombre rival o '?' -->
@@ -170,9 +175,9 @@
                                               th:action="@{/partida/ruletaCategoria}"
                                               method="GET">
 
-                                            <input type="hidden" name="id" th:value="${partida.id}" />
-                                            <input type="hidden" name="modoJuego" value="MULTIJUGADOR" />
-                                            <input type="hidden" name="idUsuario" th:value="${usuarioId}" />
+                                            <input type="hidden" name="id" th:value="${partida.id}"/>
+                                            <input type="hidden" name="modoJuego" value="MULTIJUGADOR"/>
+                                            <input type="hidden" name="idUsuario" th:value="${usuarioId}"/>
 
                                             <button type="submit" class="estado-turno tu-turno">¡Tu turno!</button>
                                         </form>
@@ -188,12 +193,9 @@
                         </div>
 
 
-
                     </div>
                 </div>
             </div>
-
-
 
 
             <div class="ranking-card-container">
@@ -432,8 +434,6 @@
         }
 
 
-
-
     });
 </script>
 <script>
@@ -485,7 +485,6 @@
 </script>
 
 
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const mensajeDiv = document.getElementById('mensajeVidas');
@@ -522,8 +521,6 @@
 
 
 </script>
-
-
 
 
 </body>
