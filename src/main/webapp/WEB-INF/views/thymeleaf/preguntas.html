@@ -300,26 +300,35 @@
     const elementoTiempo = document.querySelector('.segundosRestantes');
     const form = document.getElementById('form-respuesta');
     let respondio = false;
+    let intervalo;
 
     const respondidaDesdeThymeleaf = /*[[${respondida}]]*/ false;
+    const esNuevaPregunta = /*[[${nuevaPregunta}]]*/ false;
 
-    if (respondidaDesdeThymeleaf) {
-        // Ya respondida: mostrar 0s y no iniciar cuenta atrás
-        if (elementoTiempo) elementoTiempo.textContent = '0s';
-    } else {
-        // No respondida: iniciar cuenta regresiva desde 10
-        let segundos = 20;
+    if (!respondidaDesdeThymeleaf) {
+        if (esNuevaPregunta) {
+            sessionStorage.removeItem('tiempoRestante');
+        }
+
+        let segundos = sessionStorage.getItem('tiempoRestante');
+        if (segundos === null) {
+            segundos = 20;
+        } else {
+            segundos = parseInt(segundos, 10);
+        }
+
         if (elementoTiempo) elementoTiempo.textContent = segundos + 's';
 
-        const intervalo = setInterval(() => {
+        intervalo = setInterval(() => {
             segundos--;
+            sessionStorage.setItem('tiempoRestante', segundos);
             if (elementoTiempo) {
                 elementoTiempo.textContent = segundos + 's';
             }
 
             if (segundos <= 0) {
                 clearInterval(intervalo);
-
+                sessionStorage.removeItem('tiempoRestante');
                 if (!respondio && form) {
                     const input = document.createElement("input");
                     input.type = "hidden";
@@ -332,7 +341,19 @@
                 }
             }
         }, 1000);
+    } else {
+        if (elementoTiempo) {
+            elementoTiempo.textContent = '0s';
+        }
     }
+
+    document.querySelectorAll('form[action*="/trampa/usar"]').forEach(formTrampa => {
+        formTrampa.addEventListener('submit', () => {
+            clearInterval(intervalo);
+            sessionStorage.setItem('tiempoRestante', segundos);
+            respondio = true;
+        });
+    });
 
     // Evitar doble envío si ya se respondió
     if (form) {
@@ -341,6 +362,8 @@
                 e.preventDefault();
             } else {
                 respondio = true;
+                clearInterval(intervalo);
+                sessionStorage.removeItem('tiempoRestante');
             }
         });
     }

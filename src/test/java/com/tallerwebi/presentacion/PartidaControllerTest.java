@@ -37,22 +37,33 @@ public class PartidaControllerTest {
 
     @Test
     public void siElUsuarioEstaLogeado_seCargaLaPartida() {
-        HttpServletRequest request = givenUsuarioEnSesion();
+        Usuario jugador = new Usuario("Nicolas127", "nico@caba.com", "123456");
+        jugador.setId(1L);
 
-        ModelAndView mav = whenCargarPartida(request, TIPO_PARTIDA.SUPERVIVENCIA);
+        HttpServletRequest request = givenUsuarioEnSesion(jugador);
+
+        when(servicioUsuario.buscarUsuarioPorId(anyLong())).thenReturn(jugador);
+        doNothing().when(servicioUsuario).regenerarVidasSiCorresponde(any(Usuario.class));
+        doNothing().when(servicioUsuario).actualizar(any(Usuario.class));
+
+        when(servicioUsuario.obtenerImagenAvatarSeleccionado(anyLong())).thenReturn("avatar.png");
+
+        Partida partidaMock = new Partida();
+        partidaMock.setId(100L);
+        when(servicioPartida.crearOUnirsePartida(any(Usuario.class), eq(TIPO_PARTIDA.SUPERVIVENCIA)))
+                .thenReturn(partidaMock);
+
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario);
+
+        ModelAndView mav = partidaController.cargarPartida(request, TIPO_PARTIDA.SUPERVIVENCIA);
         thenSeCargaLaVistaConElJugador(mav);
     }
 
-    private HttpServletRequest givenUsuarioEnSesion() {
+    private HttpServletRequest givenUsuarioEnSesion(Usuario jugador) {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpSession session = mock(HttpSession.class);
-
-        Usuario jugador = new Usuario("Nicolas127", "nico@caba.com", "123456");
-        jugador.setId(1L);  // Asignale un ID también
-
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("USUARIO")).thenReturn(jugador);
-
         return request;
     }
 

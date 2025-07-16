@@ -58,6 +58,9 @@ public class PartidaController {
             return new ModelAndView("redirect:/login");
         }
 
+        servicioUsuario.regenerarVidasSiCorresponde(jugador);
+        jugador = servicioUsuario.buscarUsuarioPorId(jugador.getId());
+
         if(jugador.getVidas() <= 0){
             request.getSession().setAttribute("mensajeVidas", "No tenés vidas disponibles! Esperá a que se recarguen...");
             request.getSession().setAttribute("mostrarPopupVidas", true);
@@ -65,7 +68,6 @@ public class PartidaController {
         }
 
         jugador.setVidas(jugador.getVidas() - 1);
-        jugador.setUltimaRegeneracionVida(LocalDateTime.now());
         servicioUsuario.actualizar(jugador);
         request.getSession().setAttribute("USUARIO", jugador);
 
@@ -187,6 +189,11 @@ public class PartidaController {
             modelo.put("respondida", false);
             List<Respuesta>respuestasParaVista = new ArrayList<>(pregunta.getRespuestas());
             modelo.put("respuestasVista", respuestasParaVista);
+            Boolean volviendoDeTrampa = (Boolean) session.getAttribute("volviendoDeTrampa");
+            if (volviendoDeTrampa == null || !volviendoDeTrampa) {
+                modelo.put("nuevaPregunta", true);
+            }
+            session.removeAttribute("volviendoDeTrampa");
 
             return new ModelAndView("preguntas", modelo);
         }
@@ -254,6 +261,12 @@ public class PartidaController {
         List<TrampaUsuario> trampasJugador = servicioTrampaUsuario.obtenerTrampasDelUsuario(idUsuario);
         modelo.put("trampas", trampasJugador);
         session.setAttribute("preguntaActual", p);
+
+        Boolean volviendoDeTrampa = (Boolean) session.getAttribute("volviendoDeTrampa");
+        if (volviendoDeTrampa == null || !volviendoDeTrampa) {
+            modelo.put("nuevaPregunta", true);
+        }
+        session.removeAttribute("volviendoDeTrampa");
 
         return new ModelAndView("preguntas", modelo);
     }
