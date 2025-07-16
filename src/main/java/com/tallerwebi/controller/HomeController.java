@@ -2,14 +2,13 @@ package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
-import com.tallerwebi.service.IServicioUsuario;
-import com.tallerwebi.service.ServicioNivel;
-import com.tallerwebi.service.ServicioPartida;
-import com.tallerwebi.service.ServicioRecovery;
+import com.tallerwebi.repository.RepositorioRanking;
+import com.tallerwebi.service.*;
 import com.tallerwebi.service.impl.ServicioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,12 +34,14 @@ public class HomeController {
     private final IServicioUsuario servicioUsuario;
     private final ServicioPartida servicioPartida;
     private final ServicioNivel servicioNivel;
+    private final ServicioRanking servicioRanking;
 
     @Autowired
-    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida, ServicioNivel servicioNivel) {
+    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida, ServicioNivel servicioNivel, ServicioRanking servicioRanking ) {
         this.servicioUsuario = servicioUsuario;
         this.servicioPartida = servicioPartida;
         this.servicioNivel = servicioNivel;
+        this.servicioRanking = servicioRanking;
     }
 
     @GetMapping
@@ -118,6 +119,7 @@ public class HomeController {
                 .collect(Collectors.toList());
 
 
+
         mav.addObject("partidasMultijugador", partidasDTO);
 
         mav.addObject("usuarioId", usuario.getId());
@@ -140,6 +142,17 @@ public class HomeController {
 
         session.removeAttribute("mensajeVidas");
         session.removeAttribute("mostrarPopupVidas");
+
+
+        // Agregar top 10 del ranking
+        List<Usuario> top10 = servicioRanking.obtenerTop10UsuariosPorXP();
+        mav.addObject("top10Ranking", top10);
+
+// Agregar posición del usuario actual
+        int posicionUsuario = servicioRanking.obtenerPosicionDeUsuarioPorXP(usuariobd);
+        mav.addObject("posicionRankingUsuario", posicionUsuario);
+
+        mav.addObject("usuarioLogueado", usuariobd);
 
         if (usuario.getVidas() < 5) {
             LocalDateTime ultima = usuario.getUltimaRegeneracionVida();
