@@ -73,7 +73,7 @@ public class PartidaController {
         if (jugador.getVidas() == 5) {
             jugador.setUltimaRegeneracionVida(LocalDateTime.now());
         }
-        jugador.setVidas(jugador.getVidas() - 1);
+
         servicioUsuario.actualizar(jugador);
         request.getSession().setAttribute("USUARIO", jugador);
 
