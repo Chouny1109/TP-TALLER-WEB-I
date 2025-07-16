@@ -78,12 +78,14 @@ public class ServicioRegistroImpl implements ServicioRegistro {
                 throw new RuntimeException("No se encontró el avatar por defecto con ID 1");
             }
             UsuarioAvatar relacion = new UsuarioAvatar();
+
             relacion.setAvatar(avatar);
             relacion.setUsuario(usuario);
             relacion.setEstado(ESTADO_AVATAR.SELECCIONADO);
 
             Usuario usuarioBd = this.repositorioUsuario.buscar(usuario.getEmail());
-
+            usuarioBd.setAvatarActual(avatar);
+            this.repositorioUsuario.modificar(usuarioBd);
             this.servicioMisionesUsuario.asignarMisionesAUsuario(usuarioBd);
             this.repositorioUsuario.asignarAvatarPorDefecto(relacion);
         }
