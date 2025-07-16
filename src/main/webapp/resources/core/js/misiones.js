@@ -160,6 +160,7 @@ const cambiarMisiones = async () => {
             const misiones = await obtenerFormatoJSON(response);
             renderizarMisiones(misiones);
             notyf.success('La mision se cambio con exito');
+            header.classList.remove('hidden');
 
         } catch (error) {
             notyf.error('Hubo un problema al cambiar la mision');

@@ -50,10 +50,6 @@ public class AvatarController {
         model.addAttribute("avataresDisponibles", avataresDisponibles);
         model.addAttribute("avataresBloqueados", avataresBloqueados);
 
-        System.out.println("\n\n\n-------------------------------------------------------DESBLOQUEADOS\n\n" + avataresBloqueados);
-
-        System.out.println("\n\n\n-------------------------------------------------------BLOQUEADOS\n\n" + avataresBloqueados);
-
         return new ModelAndView("avatar", model);
     }
 
