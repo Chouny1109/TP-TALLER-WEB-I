@@ -3,14 +3,14 @@ package com.tallerwebi.repository;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.*;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface RepositorioPartida {
 
-     List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador);
+    List<Partida> obtenerPartidasAbiertasConTurnoEnNull(TIPO_PARTIDA modoJuego, Usuario jugador);
 
     Boolean guardarPartida(Partida partida);
 
@@ -26,9 +26,9 @@ public interface RepositorioPartida {
 
     Boolean jugadorEstaJugando(Long idJugador);
 
-    List<UsuarioPartida>obtenerLasPartidasDelUsuarioParaDeterminadaFecha(Long id, LocalDateTime fecha);
+    List<UsuarioPartida> obtenerLasPartidasDelUsuarioParaDeterminadaFecha(Long id, LocalDateTime fecha);
 
-    Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDate fecha);
+    Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDateTime fecha);
 
     void finalizarPartida(Long idPartida);
 

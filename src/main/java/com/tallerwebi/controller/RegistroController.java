@@ -65,6 +65,7 @@ public class RegistroController {
             return new ModelAndView("nuevo-usuario", model);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Error al registrar el nuevo usuario: " + e.getMessage());
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
         }

@@ -102,6 +102,8 @@ body {
     gap: 1.3rem;
 }
 
+
+
 .mision-title {
     font-size: 1rem;
     color: rgba(173, 255, 47, 0.77);
@@ -125,6 +127,9 @@ body {
     font-weight: bold;
     position: absolute;
     z-index: 1;
+}
+.mostrar-mensaje{
+    color: white
 }
 
 sl-progress-bar::part(indicator) {

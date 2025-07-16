@@ -48,8 +48,9 @@ public class ServicioPartidaImpl implements ServicioPartida {
     private static final ConcurrentHashMap<Long, Object> locksPorPartida = new ConcurrentHashMap<>();
     @Autowired
     private ServicioPartidaTransaccional partidaTransaccional;
+
     @Autowired
-    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta,SimpMessagingTemplate messagingTemplate) {
+    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta, SimpMessagingTemplate messagingTemplate) {
         this.repositorioPartida = repositorioPartida;
         this.messagingTemplate = messagingTemplate;
         this.repositorioUsuario = repositorioUsuario;
@@ -60,7 +61,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
     @Override
     @Transactional
     public Partida crearOUnirsePartida(Usuario jugador, TIPO_PARTIDA modoJuego) {
-        synchronized(lock) {
+        synchronized (lock) {
             Partida partida;
 
             if (repositorioPartida.jugadorEstaJugando(jugador.getId())) {
@@ -102,7 +103,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
                     Partida nuevaPartida = new Partida();
                     nuevaPartida.setTipo(modoJuego);
                     nuevaPartida.setEstadoPartida(ESTADO_PARTIDA.ABIERTA);
-                    if(modoJuego.equals(MULTIJUGADOR)) {
+                    if (modoJuego.equals(MULTIJUGADOR)) {
                         nuevaPartida.setTurnoActual(jugador);
                     }
                     repositorioPartida.guardarPartida(nuevaPartida);
@@ -155,19 +156,17 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
 
     // --------------------------------- CONSULTAS, ETC --------------------------------- //
-
     @Override
     @Transactional
-    public List<Partida> obtenerPartidasAbiertasPorModo(TIPO_PARTIDA tipo){
+    public List<Partida> obtenerPartidasAbiertasPorModo(TIPO_PARTIDA tipo) {
         return repositorioPartida.obtenerPartidasAbiertaPorModo(tipo);
     }
 
     @Override
     @Transactional
-    public List<Usuario> obtenerJugadoresEnPartida(Long id){
+    public List<Usuario> obtenerJugadoresEnPartida(Long id) {
         return this.repositorioPartida.obtenerJugadoresDePartida(id);
     }
-
 
 
     @Override
@@ -189,9 +188,10 @@ public class ServicioPartidaImpl implements ServicioPartida {
     public Respuesta buscarRespuestaPorId(Long idrespuestaSeleccionada) {
         return repositorioPregunta.buscarRespuestaPorId(idrespuestaSeleccionada);
     }
+
     @Override
     @Transactional(readOnly = true)
-    public Partida buscarPartidaPorId(Long idPartida){
+    public Partida buscarPartidaPorId(Long idPartida) {
         Partida p = repositorioPartida.buscarPartidaPorId(idPartida);
 //        em.refresh(p);
         return p;
@@ -254,6 +254,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     @PersistenceContext
     private EntityManager em;
+
     // Método para chequear si la partida terminó
     @Transactional
     @Override
@@ -272,7 +273,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     @Override
     @Transactional
-    public ResultadoRespuesta obtenerUltimoResultadoRespuestaDeJugador(Long idPartida, Usuario usuario){
+    public ResultadoRespuesta obtenerUltimoResultadoRespuestaDeJugador(Long idPartida, Usuario usuario) {
         return repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(idPartida, usuario);
     }
 
@@ -317,7 +318,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     @Transactional
     @Override
-    public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario){
+    public CategoriasGanadasEnPartida obtenerCategoriasGanadasDeUsuarioEnPartida(Partida partida, Usuario usuario) {
         return repositorioPartida.obtenerCategoriasGanadasDeUsuarioEnPartida(partida, usuario);
     }
 
@@ -344,7 +345,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     @Transactional
     @Override
-    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u){
+    public List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u) {
         return repositorioPartida.obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(u);
     }
 
@@ -747,7 +748,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
             if (xpTurno == null) {
                 xpTurno = 0;
             }
-            resultado.setXpEnTurno(xpTurno+10);
+            resultado.setXpEnTurno(xpTurno + 10);
             repositorioPartida.actualizarResultadoRespuesta(resultado);
 
             em.flush();
