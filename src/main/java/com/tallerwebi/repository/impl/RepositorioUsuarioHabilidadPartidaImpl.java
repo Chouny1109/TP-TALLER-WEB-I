@@ -24,7 +24,7 @@ public class RepositorioUsuarioHabilidadPartidaImpl implements RepositorioUsuari
     }
 
     @Override
-    public boolean obtenerHabilidadesUsadasParaLaFecha(Long id, LocalDate fecha) {
+    public boolean obtenerHabilidadesUsadasParaLaFecha(Long id, LocalDateTime fecha) {
         CriteriaBuilder cb = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
         Root<UsuarioHabilidadPartida> root = query.from(UsuarioHabilidadPartida.class);

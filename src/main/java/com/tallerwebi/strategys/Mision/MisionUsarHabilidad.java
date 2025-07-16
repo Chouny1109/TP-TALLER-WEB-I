@@ -9,6 +9,7 @@ import com.tallerwebi.service.ServicioNivel;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class MisionUsarHabilidad extends MisionPlantilla {
@@ -26,7 +27,7 @@ public class MisionUsarHabilidad extends MisionPlantilla {
     }
 
     private boolean tieneMasDeDosHabilidadesUsadasEnAlgunaPartida(Usuario usuario) {
-        LocalDate fecha = LocalDate.now();
+        LocalDateTime fecha = LocalDateTime.now();
         Long id = usuario.getId();
         return this.repositorioUsuarioHabilidadPartida.
                 obtenerHabilidadesUsadasParaLaFecha(id, fecha);
