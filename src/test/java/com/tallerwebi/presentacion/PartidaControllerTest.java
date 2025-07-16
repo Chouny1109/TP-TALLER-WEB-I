@@ -5,6 +5,8 @@ import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.model.Avatar;
 import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
+import com.tallerwebi.repository.RepositorioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.ServicioTrampaUsuario;
 import com.tallerwebi.service.impl.ServicioUsuario;
@@ -27,6 +29,7 @@ public class PartidaControllerTest {
     private final SimpMessagingTemplate messagingTemplate;
     private RedirectAttributes redirectAttributes;
     private ServicioTrampaUsuario servicioTrampaUsuario;
+    private ServicioNivel servicioNivel;
 
     public PartidaControllerTest() {
         servicioPartida = mock(ServicioPartida.class);
@@ -34,6 +37,7 @@ public class PartidaControllerTest {
         messagingTemplate = mock(SimpMessagingTemplate.class);
         redirectAttributes = mock(RedirectAttributes.class);
         servicioTrampaUsuario = mock(ServicioTrampaUsuario.class);
+        servicioNivel = mock(ServicioNivel.class);
     }
 
     @Test
@@ -57,7 +61,7 @@ public class PartidaControllerTest {
         when(servicioPartida.crearOUnirsePartida(any(Usuario.class), eq(TIPO_PARTIDA.SUPERVIVENCIA)))
                 .thenReturn(partidaMock);
 
-        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario);
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario, servicioNivel);
 
         ModelAndView mav = partidaController.cargarPartida(request, TIPO_PARTIDA.SUPERVIVENCIA);
         thenSeCargaLaVistaConElJugador(mav);
@@ -82,7 +86,7 @@ public class PartidaControllerTest {
         // Configuramos el mock para el avatar
         when(servicioUsuario.obtenerImagenAvatarSeleccionado(anyLong())).thenReturn("avatar.png");
 
-        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario);
+        PartidaController partidaController = new PartidaController(servicioPartida, servicioUsuario, messagingTemplate, servicioTrampaUsuario, servicioNivel);
         return partidaController.cargarPartida(request, tipo);
     }
 

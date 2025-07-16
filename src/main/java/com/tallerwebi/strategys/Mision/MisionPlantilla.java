@@ -40,10 +40,7 @@ public abstract class MisionPlantilla implements EstrategiaMision {
     protected void otorgarRecompensa(Usuario usuario, UsuarioMision usuarioMision) {
         Mision mision = usuarioMision.getMision();
         servicioNivel.otorgarExperiencia(usuario, mision);
-        System.out.println("Experiencia otorgada: " + mision.getExperiencia());
-        System.out.println("Copas otorgadas: " + mision.getCopas());
         Integer copasAnteriores = usuario.getCopas();
-        System.out.println("Copas anteriores: " + copasAnteriores);
         usuario.setCopas(copasAnteriores + mision.getCopas());
     }
 

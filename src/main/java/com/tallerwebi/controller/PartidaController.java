@@ -5,6 +5,7 @@ import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
 import com.tallerwebi.dominio.excepcion.UsuarioNoExistente;
 import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.ServicioTrampaUsuario;
 import com.tallerwebi.service.impl.ServicioUsuario;
@@ -32,24 +33,26 @@ import java.util.stream.Collectors;
 @RequestMapping("/partida")
 public class PartidaController {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    @Autowired
-    private ServicioPartida servicioPartida;
-    private IServicioUsuario servicioUsuario;
-    private final SimpMessagingTemplate messagingTemplate;
-    private ServicioTrampaUsuario servicioTrampaUsuario;
 
     @Autowired
-    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate, ServicioTrampaUsuario servicioTrampaUsuario) {
+    private final ServicioPartida servicioPartida;
+    private final IServicioUsuario servicioUsuario;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ServicioTrampaUsuario servicioTrampaUsuario;
+    private final ServicioNivel servicioNivel;
+
+    @Autowired
+    public PartidaController(ServicioPartida servicioPartida, IServicioUsuario servicioUsuario, SimpMessagingTemplate messagingTemplate, ServicioTrampaUsuario servicioTrampaUsuario, ServicioNivel servicioNivel) {
         this.servicioPartida = servicioPartida;
         this.servicioUsuario = servicioUsuario;
         this.messagingTemplate = messagingTemplate;
         this.servicioTrampaUsuario = servicioTrampaUsuario;
+        this.servicioNivel = servicioNivel;
     }
 
 
     @GetMapping("/cargar")
-    public ModelAndView cargarPartida(HttpServletRequest request,
-                                      @RequestParam("modoJuego") TIPO_PARTIDA modoJuego) {
+    public ModelAndView cargarPartida(HttpServletRequest request, @RequestParam("modoJuego") TIPO_PARTIDA modoJuego) {
 
         ModelMap modelo = new ModelMap();
 
@@ -61,7 +64,7 @@ public class PartidaController {
         servicioUsuario.regenerarVidasSiCorresponde(jugador);
         jugador = servicioUsuario.buscarUsuarioPorId(jugador.getId());
 
-        if(jugador.getVidas() <= 0){
+        if (jugador.getVidas() <= 0) {
             request.getSession().setAttribute("mensajeVidas", "No tenés vidas disponibles! Esperá a que se recarguen...");
             request.getSession().setAttribute("mostrarPopupVidas", true);
             return new ModelAndView("redirect:/home");
@@ -77,6 +80,7 @@ public class PartidaController {
         modelo.put("jugador", jugador);
         modelo.put("idUsuario", jugador.getId());
         modelo.put("modoJuego", modoJuego);
+
 
         List<Partida> p = servicioPartida.obtenerPartidasAbiertasConTurnoEnNull(modoJuego, jugador);
 
@@ -103,6 +107,15 @@ public class PartidaController {
             }, 20, TimeUnit.SECONDS);
 
         }
+        Usuario usuarioBd = servicioUsuario.buscarUsuarioPorId(jugador.getId());
+
+        if (usuarioBd != null) {
+            NivelUsuarioDTO infoNivel = servicioNivel.construirInfoDeNivel(usuarioBd);
+            modelo.put("nivelUsuario", infoNivel);
+        } else {
+            modelo.put("nivelUsuario", null);
+        }
+
         return new ModelAndView("cargarPartida", modelo);
     }
 
@@ -189,7 +202,7 @@ public class PartidaController {
 
             modelo.put("pregunta", pregunta);
             modelo.put("respondida", false);
-            List<Respuesta>respuestasParaVista = new ArrayList<>(pregunta.getRespuestas());
+            List<Respuesta> respuestasParaVista = new ArrayList<>(pregunta.getRespuestas());
             modelo.put("respuestasVista", respuestasParaVista);
             Boolean volviendoDeTrampa = (Boolean) session.getAttribute("volviendoDeTrampa");
             if (volviendoDeTrampa == null || !volviendoDeTrampa) {

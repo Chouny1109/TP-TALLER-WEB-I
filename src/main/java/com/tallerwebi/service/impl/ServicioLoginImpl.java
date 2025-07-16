@@ -29,15 +29,9 @@ public class ServicioLoginImpl implements ServicioLogin {
         this.passwordEncoder = passwordEncoder;
         this.repositorioUsuario = repositorioUsuario;
     }
-    @PostConstruct
-    public void init() {
-        System.out.println("Login: PasswordEncoder inyectado: " + (passwordEncoder != null));
-        System.out.println("Login: RepositorioUsuario inyectado: " + (repositorioUsuario != null));
-    }
-
 
     @Override
-    public Usuario consultarUsuario (String email, String password) {
+    public Usuario consultarUsuario(String email, String password) {
 
         Usuario usuario = repositorioUsuario.buscar(email);
         if (usuario != null && passwordEncoder.matches(password, usuario.getPassword())) {
