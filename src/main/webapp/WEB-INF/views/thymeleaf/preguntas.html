@@ -210,9 +210,11 @@
         <p th:text="${pregunta.enunciado}"></p>
     </div>
 
-    <div class="poderes d-flex gap-5 justify-content-center" th:if="${trampas != null}">
-        <div class="counter-item" th:each="trampa : ${trampas}">
-            <form th:action="@{/trampa/usar}" method="post">
+    <div class="poderes d-flex gap-5 justify-content-center" th:if="${trampas != null and !trampas.isEmpty()}">
+
+        <div class="counter-item" th:each="trampa : ${trampas}" th:if="${trampa.cantidad > 0}">
+
+        <form th:action="@{/trampa/usar}" method="post">
                 <input type="hidden" name="idTrampa" th:value="${trampa.trampa.id}" />
                 <input type="hidden" name="idPartida" th:value="${idPartida}" />
                 <input type="hidden" name="idUsuario" th:value="${idUsuario}" />
@@ -305,20 +307,30 @@
     const respondidaDesdeThymeleaf = /*[[${respondida}]]*/ false;
     const esNuevaPregunta = /*[[${nuevaPregunta}]]*/ false;
 
+    let segundos = 20; // valor por defecto
+    const segundosGuardados = sessionStorage.getItem('tiempoRestante');
+    if (segundosGuardados === null || esNuevaPregunta) {
+        sessionStorage.removeItem('tiempoRestante');
+    } else {
+        segundos = parseInt(segundosGuardados, 10);
+    }
+
+
+
+    let tiempoExtra = sessionStorage.getItem('sumarTiempoExtra');
+    console.log("Tiempo antes de sumar:", segundos);
+
+    if (tiempoExtra !== null) {
+        segundos += parseInt(tiempoExtra, 10);
+        console.log("Nuevo tiempo tras trampa:", segundos);
+
+        sessionStorage.removeItem('sumarTiempoExtra');
+    }
+
+    if (elementoTiempo) elementoTiempo.textContent = segundos + 's';
+
+
     if (!respondidaDesdeThymeleaf) {
-        if (esNuevaPregunta) {
-            sessionStorage.removeItem('tiempoRestante');
-        }
-
-        let segundos = sessionStorage.getItem('tiempoRestante');
-        if (segundos === null) {
-            segundos = 20;
-        } else {
-            segundos = parseInt(segundos, 10);
-        }
-
-        if (elementoTiempo) elementoTiempo.textContent = segundos + 's';
-
         intervalo = setInterval(() => {
             segundos--;
             sessionStorage.setItem('tiempoRestante', segundos);
@@ -335,7 +347,6 @@
                     input.name = "respuesta";
                     input.value = "-1";
                     form.appendChild(input);
-
                     console.log("⏳ Tiempo agotado, no se respondió.");
                     form.submit();
                 }
@@ -347,15 +358,34 @@
         }
     }
 
+
     document.querySelectorAll('form[action*="/trampa/usar"]').forEach(formTrampa => {
-        formTrampa.addEventListener('submit', () => {
+        formTrampa.addEventListener('submit', (e) => {
+            e.preventDefault(); // ✅ Detiene el envío automático
+
+            const trampaId = parseInt(formTrampa.querySelector('input[name="idTrampa"]').value);
+
+            let extra = 0;
+            if (trampaId === 4) {
+                extra = 5;
+            } else if (trampaId === 5) {
+                extra = 10;
+            }
+
+
+            sessionStorage.setItem('sumarTiempoExtra', extra);
+
+
             clearInterval(intervalo);
-            sessionStorage.setItem('tiempoRestante', segundos);
-            respondio = true;
+
+
+            formTrampa.submit();
         });
     });
 
-    // Evitar doble envío si ya se respondió
+
+
+
     if (form) {
         form.addEventListener('submit', function (e) {
             if (respondio) {
@@ -367,8 +397,8 @@
             }
         });
     }
-
     /*]]>*/
+
 </script>
 
 
