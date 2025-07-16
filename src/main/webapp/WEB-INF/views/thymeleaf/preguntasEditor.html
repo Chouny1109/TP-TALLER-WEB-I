@@ -53,20 +53,30 @@
                         th:attr="data-bs-target='#modalEditar__' + ${pregunta.id}">
                     Editar
                 </button>
-                <form action="editor/eliminarPregunta" method="post">
+                <form id="formEliminarPregunta" action="editor/eliminarPregunta" method="post">
                     <input type="hidden" name="idPregunta" th:value="${pregunta.id}" />
-                    <button type="submit" class="btn btn-sm btn-danger">
+                    <button type="submit" onclick="return confirmarEliminar()" class="btn btn-sm btn-danger">
                         <span>Eliminar</span>
                     </button>
+                    <script>
+                        function confirmarEliminar() {
+                            return confirm("¿Estás seguro de que deseas eliminar la pregunta?");
+                        }
+                    </script>
                 </form>
             </td>
             <td>
-            <form th:action="@{/editor/cambiarEstadoPregunta}" method="post" style="display:inline;">
+            <form id="fromEstadoPregunta" th:action="@{/editor/cambiarEstadoPregunta}" method="post" style="display:inline;">
                 <input type="hidden" name="idPregunta" th:value="${pregunta.id}" />
-                <button type="submit" class="btn btn-link p-0 border-0 text-decoration-none">
+                <button type="submit" onclick="return confirmarEnvio()" class="btn btn-link p-0 border-0 text-decoration-none">
                     <span th:if="${pregunta.habilitada}" class="text-success" title="Habilitada">✅</span>
                     <span th:if="${!pregunta.habilitada}" class="text-danger" title="Desabilitada">❌</span>
                 </button>
+                <script>
+                    function confirmarEnvio() {
+                        return confirm("¿Estás seguro de que deseas cambiar el estado de la pregunta?");
+                    }
+                </script>
             </form>
             </td>
         </tr>
