@@ -67,6 +67,9 @@ public class PartidaController {
             return new ModelAndView("redirect:/home");
         }
 
+        if (jugador.getVidas() == 5) {
+            jugador.setUltimaRegeneracionVida(LocalDateTime.now());
+        }
         jugador.setVidas(jugador.getVidas() - 1);
         servicioUsuario.actualizar(jugador);
         request.getSession().setAttribute("USUARIO", jugador);
@@ -222,7 +225,15 @@ public class PartidaController {
 
         // Pregunta normal (o desde corona pero ya con categoría)
         CATEGORIA_PREGUNTA catEnum = CATEGORIA_PREGUNTA.valueOf(categoria.toUpperCase());
-        Pregunta p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
+        Boolean volviendoDeTrampa = (Boolean) session.getAttribute("volviendoDeTrampa");
+        Pregunta p;
+
+        if (Boolean.TRUE.equals(volviendoDeTrampa)) {
+            p = (Pregunta) session.getAttribute("preguntaActual");
+        } else {
+            p = servicioPartida.obtenerPregunta(catEnum, idUsuario);
+            session.setAttribute("preguntaActual", p);
+        }
 
         if (p == null) {
             modelo.put("error", "No se pudo obtener una pregunta para la categoría seleccionada.");
@@ -284,9 +295,7 @@ public class PartidaController {
 
         List<TrampaUsuario> trampasJugador = servicioTrampaUsuario.obtenerTrampasDelUsuario(idUsuario);
         modelo.put("trampas", trampasJugador);
-        session.setAttribute("preguntaActual", p);
 
-        Boolean volviendoDeTrampa = (Boolean) session.getAttribute("volviendoDeTrampa");
         if (volviendoDeTrampa == null || !volviendoDeTrampa) {
             modelo.put("nuevaPregunta", true);
         }
