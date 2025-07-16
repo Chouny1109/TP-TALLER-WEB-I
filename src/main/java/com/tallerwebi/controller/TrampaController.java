@@ -33,6 +33,7 @@ public class TrampaController {
         redirectAttributes.addAttribute("idUsuario", idUsuario);
         redirectAttributes.addAttribute("categoria", categoria);
         redirectAttributes.addAttribute("modoJuego", modoJuego);
+        session.setAttribute("volviendoDeTrampa", true);
 
         return "redirect:/partida/pregunta";
     }
