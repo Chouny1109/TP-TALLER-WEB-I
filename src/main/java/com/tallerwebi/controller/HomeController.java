@@ -115,8 +115,8 @@ public class HomeController {
 
         mav.addObject("usuarioId", usuario.getId());
 
-        String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
-        mav.addObject("avatarImg", avatarImg);
+       // String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
+        mav.addObject("avatarImg", usuario.getAvatarActual().getLink());
         mav.addObject("modos", TIPO_PARTIDA.values());
 
 

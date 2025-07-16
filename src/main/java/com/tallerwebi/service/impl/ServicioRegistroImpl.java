@@ -73,6 +73,10 @@ public class ServicioRegistroImpl implements ServicioRegistro {
 
         if (registrado) {
             Avatar avatar = this.repositorioAvatar.obtenerAvatar(1L);
+
+            if (avatar == null) {
+                throw new RuntimeException("No se encontró el avatar por defecto con ID 1");
+            }
             UsuarioAvatar relacion = new UsuarioAvatar();
             relacion.setAvatar(avatar);
             relacion.setUsuario(usuario);

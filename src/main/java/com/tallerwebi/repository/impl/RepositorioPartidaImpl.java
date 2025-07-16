@@ -433,4 +433,40 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
         return partidas;
     }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoPorOrden(Long p, Usuario jugador, Integer orden) {
+        String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
+                "WHERE rr.partida.id = :idPartida " +
+                "AND rr.usuario = :usuario " +
+                "AND rr.orden = :orden ";
+
+        try {
+            return em.createQuery(jpql, ResultadoRespuesta.class)
+                    .setParameter("idPartida", p)
+                    .setParameter("usuario", jugador)
+                    .setParameter("orden", orden)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoRespuestaDeRivalPorOrden(Long idPartida, Usuario jugador, Integer orden) {
+        String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
+                "WHERE rr.partida.id = :idPartida " +
+                "AND rr.usuario.id <> :idUsuario" +
+                 " AND rr.orden = :orden ";
+
+        try {
+            return em.createQuery(jpql, ResultadoRespuesta.class)
+                    .setParameter("idPartida", idPartida)
+                    .setParameter("idUsuario", jugador.getId())
+                    .setParameter("orden", orden)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

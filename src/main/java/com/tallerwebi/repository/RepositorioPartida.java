@@ -71,4 +71,8 @@ public interface RepositorioPartida {
     void guardarCategoriasGanadas(CategoriasGanadasEnPartida cat);
 
     List<Partida> obtenerPartidasAbiertasOEnCursoMultijugadorDeUnJugador(Usuario u);
+
+    ResultadoRespuesta obtenerResultadoPorOrden(Long p, Usuario jugador, Integer orden);
+
+    ResultadoRespuesta obtenerResultadoRespuestaDeRivalPorOrden(Long idPartida, Usuario jugador, Integer orden);
 }

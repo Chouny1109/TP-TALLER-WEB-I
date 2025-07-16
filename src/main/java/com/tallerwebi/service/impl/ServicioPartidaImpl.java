@@ -146,7 +146,16 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
+
+
+
+
+
+
+
+
     // --------------------------------- CONSULTAS, ETC --------------------------------- //
+
     @Override
     @Transactional
     public List<Partida> obtenerPartidasAbiertasPorModo(TIPO_PARTIDA tipo){
@@ -187,6 +196,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
 //        em.refresh(p);
         return p;
     }
+
 
     @Override
     @Transactional
@@ -346,6 +356,15 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
+
+
+
+
+
+
+
+
+
     // --------------------------------- SUPERVIVENCIA / MULTIJUGADOR --------------------------------- //
     @Override
     @Transactional
@@ -402,6 +421,73 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
     }
 
+//    private ResultadoRespuesta partidaSupervivencia(ResultadoRespuesta resultado) {
+//        Long idPartida = resultado.getPartida().getId();
+//        Usuario jugador = resultado.getUsuario();
+//
+//        em.flush();
+//        em.clear();
+//
+//        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaDeRival(idPartida, jugador);
+//
+//
+//        if (resultadoRival == null ||
+//                resultado.getRespuestaSeleccionada() == null ||
+//                resultadoRival.getRespuestaSeleccionada() == null ||
+//                !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
+//
+//            if(resultado.getRespuestaSeleccionada() != null && resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId())) {
+//                int xpActual = jugador.getExperiencia() != null ? jugador.getExperiencia() : 0;
+//                jugador.setExperiencia(xpActual + 150);
+//                resultado.getPartida().setGanador(jugador);
+//
+//                repositorioPartida.actualizarPartida(resultado.getPartida());
+//                repositorioUsuario.modificar(jugador);
+//                em.flush();
+//            }
+//            finalizarPartida(idPartida);
+//            return null;
+//        }
+//
+//        SiguientePreguntaSupervivencia siguientePregunta = obtenerPreguntaSupervivencia(idPartida, jugador, resultado);
+//        if (siguientePregunta == null) {
+//            finalizarPartida(idPartida);
+//            return null;
+//        }
+//
+//        Pregunta pregunta = siguientePregunta.getSiguientePregunta();
+//        int nuevoOrden = siguientePregunta.getOrden();
+//
+//        // Crear resultados vacíos para orden anterior de ambos jugadores si faltan
+//        int ordenAnterior = nuevoOrden - 1;
+//        if (ordenAnterior > 0) {
+//            List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
+//            for (Usuario u : jugadores) {
+//                Pregunta pregAnterior = buscarPreguntaPorOrden(idPartida, ordenAnterior);
+//                if (pregAnterior != null) {
+//                    ResultadoRespuesta rrAnterior = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, u, ordenAnterior, pregAnterior);
+//                    if (rrAnterior == null) {
+//                        obtenerOCrearResultadoRespuesta(pregAnterior.getId(), idPartida, u, ordenAnterior);
+//                    }
+//                }
+//            }
+//        }
+//
+//        ResultadoRespuesta existenteJugador = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, jugador, nuevoOrden, pregunta);
+//        if (existenteJugador == null) {
+//            existenteJugador = partidaTransaccional.crearResultadoRespuestaConOrdenFijo(pregunta.getId(), idPartida, jugador, null, nuevoOrden);
+//        }
+//
+//        ResultadoRespuesta existenteRival = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, resultadoRival.getUsuario(), nuevoOrden, pregunta);
+//        if (existenteRival == null) {
+//            partidaTransaccional.crearResultadoRespuestaConOrdenFijo(pregunta.getId(), idPartida, resultadoRival.getUsuario(), null, nuevoOrden);
+//        }
+//
+//        em.flush();
+//
+//        return existenteJugador;
+//    }
+
     private ResultadoRespuesta partidaSupervivencia(ResultadoRespuesta resultado) {
         Long idPartida = resultado.getPartida().getId();
         Usuario jugador = resultado.getUsuario();
@@ -409,26 +495,40 @@ public class ServicioPartidaImpl implements ServicioPartida {
         em.flush();
         em.clear();
 
-        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaDeRival(idPartida, jugador);
+        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoRespuestaDeRivalPorOrden(idPartida, jugador, resultado.getOrden());
 
-        if (resultadoRival == null ||
-                resultado.getRespuestaSeleccionada() == null ||
-                resultadoRival.getRespuestaSeleccionada() == null ||
-                !resultado.getRespuestaSeleccionada().getId().equals(resultadoRival.getRespuestaSeleccionada().getId())) {
 
-            if(resultado.getRespuestaSeleccionada() != null && resultado.getRespuestaSeleccionada().getId().equals(resultado.getRespuestaCorrecta().getId())) {
-                int xpActual = jugador.getExperiencia() != null ? jugador.getExperiencia() : 0;
-                jugador.setExperiencia(xpActual + 150);
-                resultado.getPartida().setGanador(jugador);
 
-                repositorioPartida.actualizarPartida(resultado.getPartida());
-                repositorioUsuario.modificar(jugador);
-                em.flush();
-            }
+        Long idRespJugador = resultado.getRespuestaSeleccionada().getId();
+        Long idRespRival = resultadoRival.getRespuestaSeleccionada().getId();
+        Long idRespCorrecta = resultado.getRespuestaCorrecta().getId();
+
+        boolean jugadorCorrecto = idRespJugador.equals(idRespCorrecta);
+        boolean rivalCorrecto = idRespRival.equals(idRespCorrecta);
+
+        // CASO: uno acierta y el otro no → termina
+        if (jugadorCorrecto && !rivalCorrecto) {
+            jugador.setExperiencia((jugador.getExperiencia() != null ? jugador.getExperiencia() : 0) + 150);
+            resultado.getPartida().setGanador(jugador);
+            repositorioPartida.actualizarPartida(resultado.getPartida());
+            repositorioUsuario.modificar(jugador);
+            em.flush();
             finalizarPartida(idPartida);
             return null;
         }
 
+        if (rivalCorrecto && !jugadorCorrecto) {
+            Usuario rival = resultadoRival.getUsuario();
+            rival.setExperiencia((rival.getExperiencia() != null ? rival.getExperiencia() : 0) + 150);
+            resultado.getPartida().setGanador(rival);
+            repositorioPartida.actualizarPartida(resultado.getPartida());
+            repositorioUsuario.modificar(rival);
+            em.flush();
+            finalizarPartida(idPartida);
+            return null;
+        }
+
+        // CASO: ambos correctos o ambos incorrectos → seguir con siguiente pregunta
         SiguientePreguntaSupervivencia siguientePregunta = obtenerPreguntaSupervivencia(idPartida, jugador, resultado);
         if (siguientePregunta == null) {
             finalizarPartida(idPartida);
@@ -438,7 +538,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
         Pregunta pregunta = siguientePregunta.getSiguientePregunta();
         int nuevoOrden = siguientePregunta.getOrden();
 
-        // Crear resultados vacíos para orden anterior de ambos jugadores si faltan
+        // Crear resultados vacíos para orden anterior si faltan
         int ordenAnterior = nuevoOrden - 1;
         if (ordenAnterior > 0) {
             List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);
@@ -472,13 +572,27 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
 
 
+
     @Override
     public boolean chequearAmbosRespondieron(Long p, Usuario jugador, Integer orden) {
         Partida partida = buscarPartidaPorId(p);
 
+        // 1. Validar cantidad
+        List<Usuario> jugadores = obtenerJugadoresEnPartida(p);
+        if (jugadores.size() != 2) {
+            throw new IllegalStateException("Partida " + p + " debe tener 2 jugadores, tiene: " + jugadores.size());
+        }
 
-        ResultadoRespuesta resultado = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaPorJugador(p, jugador);
-        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerUltimoResultadoRespuestaEnPartidaDeRival(p, resultado.getUsuario());
+        // 2. Obtener rival
+        Usuario rival = jugadores.stream()
+                .filter(u -> !u.equals(jugador))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No se encontró rival para " + jugador.getEmail()));
+
+        // 3. Traer resultados por orden
+        ResultadoRespuesta resultado = repositorioPartida.obtenerResultadoPorOrden(p, jugador, orden);
+        ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoPorOrden(p, rival, orden);
+
 
 
         if(resultadoRival == null || resultado == null) {
