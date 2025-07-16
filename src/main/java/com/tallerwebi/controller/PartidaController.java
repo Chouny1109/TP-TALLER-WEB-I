@@ -232,26 +232,50 @@ public class PartidaController {
         List<Respuesta> respuestasParaVista;
 
         Long trampaActiva = (Long) session.getAttribute("trampaActiva");
-        if (trampaActiva != null && trampaActiva == 1L) {
+
+        if (trampaActiva != null) {
             List<Respuesta> originales = new ArrayList<>(p.getRespuestas());
             List<Respuesta> incorrectas = originales.stream()
                     .filter(r -> !r.getOpcionCorrecta())
                     .collect(Collectors.toList());
 
-            Collections.shuffle(incorrectas);
-            respuestasParaVista = new ArrayList<>();
-            respuestasParaVista.addAll(incorrectas.subList(0, Math.min(2, incorrectas.size())));
+            respuestasParaVista = new ArrayList<>(originales); // default
 
-            originales.stream()
-                    .filter(Respuesta::getOpcionCorrecta)
-                    .findFirst()
-                    .ifPresent(respuestasParaVista::add);
+            switch (trampaActiva.intValue()) {
+                case 1: // Elimina 1 respuesta incorrecta
+                    Collections.shuffle(incorrectas);
+                    if (!incorrectas.isEmpty()) {
+                        respuestasParaVista.remove(incorrectas.get(0));
+                    }
+                    break;
+                case 2: // Elimina 2 respuestas incorrectas
+                    Collections.shuffle(incorrectas);
+                    for (int i = 0; i < Math.min(2, incorrectas.size()); i++) {
+                        respuestasParaVista.remove(incorrectas.get(i));
+                    }
+                    break;
+                case 3: // Elimina 3 respuestas incorrectas
+                    Collections.shuffle(incorrectas);
+                    for (int i = 0; i < Math.min(3, incorrectas.size()); i++) {
+                        respuestasParaVista.remove(incorrectas.get(i));
+                    }
+                    break;
+                case 4: // Agrega 5 segundos
+                    modelo.put("tiempoExtra", 5);
+                    break;
+                case 5: // Agrega 10 segundos
+                    modelo.put("tiempoExtra", 10);
+                    break;
+                default:
+                    break;
+            }
 
             Collections.shuffle(respuestasParaVista);
             session.removeAttribute("trampaActiva");
         } else {
             respuestasParaVista = new ArrayList<>(p.getRespuestas());
         }
+
 
 
         modelo.put("respuestasVista", respuestasParaVista);
