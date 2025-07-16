@@ -84,8 +84,13 @@ public class ServicioPartidaTransaccional {
             return guardarResultadoConFlush(resultado);
         } catch (PersistenceException e) {
             em.clear();
-            return repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, ordenFijo, pregunta);
-        }
+            System.out.println("⚠️ Error al guardar resultado fijo: " + e.getMessage());
+            // Evitar rollback propagado: NO relanzar la excepción
+            ResultadoRespuesta existenteRetry = repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, ordenFijo, pregunta);
+            if (existenteRetry == null) {
+                throw new IllegalStateException("No se pudo guardar ni recuperar el resultado fijo.");
+            }
+            return existenteRetry; }
     }
 
 }

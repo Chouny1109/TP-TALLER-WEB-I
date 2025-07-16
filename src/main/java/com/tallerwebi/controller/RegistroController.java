@@ -50,6 +50,7 @@ public class RegistroController {
         usuario.setPassword(datosRegistro.getPassword());
         usuario.setNombreUsuario(datosRegistro.getNombreUsuario());
         usuario.setRol(ROL_USUARIO.JUGADOR);
+        usuario.setMonedas(5000);
 
         try {
             servicioRegistro.registrar(usuario, datosRegistro.getConfirmarPassword());  // Registra el usuario
@@ -63,6 +64,8 @@ public class RegistroController {
             model.put("error", "Las contraseñas no coinciden");
             return new ModelAndView("nuevo-usuario", model);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error al registrar el nuevo usuario: " + e.getMessage());
             model.put("error", "Error al registrar el nuevo usuario");
             return new ModelAndView("nuevo-usuario", model);  // Regresa al formulario con mensaje de error
         }

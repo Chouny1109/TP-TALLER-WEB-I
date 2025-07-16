@@ -1,11 +1,9 @@
 package com.tallerwebi.controller;
 
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
-import com.tallerwebi.model.JugadorDTO;
-import com.tallerwebi.model.Partida;
-import com.tallerwebi.model.PartidaDTO;
-import com.tallerwebi.model.Usuario;
+import com.tallerwebi.model.*;
 import com.tallerwebi.service.IServicioUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import com.tallerwebi.service.ServicioPartida;
 import com.tallerwebi.service.ServicioRecovery;
 import com.tallerwebi.service.impl.ServicioUsuario;
@@ -36,11 +34,13 @@ public class HomeController {
 
     private final IServicioUsuario servicioUsuario;
     private final ServicioPartida servicioPartida;
+    private final ServicioNivel servicioNivel;
 
     @Autowired
-    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida) {
+    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida, ServicioNivel servicioNivel) {
         this.servicioUsuario = servicioUsuario;
         this.servicioPartida = servicioPartida;
+        this.servicioNivel = servicioNivel;
     }
 
     @GetMapping
@@ -48,7 +48,8 @@ public class HomeController {
         ModelAndView mav = new ModelAndView("home");
 
         Usuario usuario = (Usuario) request.getSession().getAttribute("USUARIO");
-        
+
+
         if (usuario != null) {
             servicioUsuario.regenerarVidasSiCorresponde(usuario);
             request.getSession().setAttribute("USUARIO", usuario);
@@ -58,6 +59,13 @@ public class HomeController {
             mav.addObject("monedas", usuario.getMonedas());
             mav.addObject("vidas", usuario.getVidas());
             mav.addObject("nivel", 1);
+
+            Usuario usuariobd = servicioUsuario.buscarUsuarioPorId(usuario.getId());
+
+            NivelUsuarioDTO nivelUsuarioDTO = this.servicioNivel.construirInfoDeNivel(usuariobd);
+
+            servicioNivel.verificarSiSubeDeNivel(usuariobd);
+            mav.addObject("nivelUsuarioDTO", nivelUsuarioDTO);
 
 
             if (usuario.getVidas() < 5 && usuario.getUltimaRegeneracionVida() != null) {
@@ -69,7 +77,6 @@ public class HomeController {
                     mav.addObject("tiempoRestanteVida", 0);
                 }
             }
-
 
 
         } else {
@@ -115,12 +122,12 @@ public class HomeController {
 
         mav.addObject("usuarioId", usuario.getId());
 
-        String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
-        mav.addObject("avatarImg", avatarImg);
+       // String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
+        mav.addObject("avatarImg", usuario.getAvatarActual().getLink());
         mav.addObject("modos", TIPO_PARTIDA.values());
 
 
-         session = request.getSession();
+        session = request.getSession();
         Boolean mostrarPopup = (Boolean) session.getAttribute("mostrarPopupVidas");
         String mensajeVidas = (String) session.getAttribute("mensajeVidas");
 

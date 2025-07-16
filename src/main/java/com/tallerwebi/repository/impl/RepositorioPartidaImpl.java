@@ -201,17 +201,20 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
     @Override
-    public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDate fecha) {
+    public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDateTime fecha) {
 
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
 
+        LocalDateTime desde = fecha.toLocalDate().atStartOfDay();
+        LocalDateTime hasta = fecha.toLocalDate().plusDays(1).atStartOfDay();
+
         query.select(builder.countDistinct(root))
                 .where(
                         builder.and(
                                 builder.equal(root.get("usuario").get("id"), id),
-                                builder.equal(root.get("fecha"), fecha),
+                                builder.between(root.get("fecha"), desde, hasta),
                                 builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA)
                         )
                 );
@@ -432,5 +435,41 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
                 .collect(Collectors.toList());
 
         return partidas;
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoPorOrden(Long p, Usuario jugador, Integer orden) {
+        String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
+                "WHERE rr.partida.id = :idPartida " +
+                "AND rr.usuario = :usuario " +
+                "AND rr.orden = :orden ";
+
+        try {
+            return em.createQuery(jpql, ResultadoRespuesta.class)
+                    .setParameter("idPartida", p)
+                    .setParameter("usuario", jugador)
+                    .setParameter("orden", orden)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public ResultadoRespuesta obtenerResultadoRespuestaDeRivalPorOrden(Long idPartida, Usuario jugador, Integer orden) {
+        String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
+                "WHERE rr.partida.id = :idPartida " +
+                "AND rr.usuario.id <> :idUsuario" +
+                 " AND rr.orden = :orden ";
+
+        try {
+            return em.createQuery(jpql, ResultadoRespuesta.class)
+                    .setParameter("idPartida", idPartida)
+                    .setParameter("idUsuario", jugador.getId())
+                    .setParameter("orden", orden)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }
