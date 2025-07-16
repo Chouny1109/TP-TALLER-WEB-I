@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ServicioNivelImpl implements ServicioNivel {
 
     private final RepositorioNivel repositorioNivel;

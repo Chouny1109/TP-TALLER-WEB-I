@@ -25,7 +25,7 @@
                     <img th:src="@{'/resources/imgs/Avatares/' + ${avatarImg}}" alt="Perfil" class="profile-pic">
                     <div class="score-badge">
                         <span class="material-symbols--star-rounded"></span>
-                        <span class="badge-number">1</span>
+                        <span class="badge-number" th:text="${nivelUsuario.nivelActual}"></span>
 
                         <!--<span class="badge-number" th:text="${jugador.nivel}">27</span>-->
 
