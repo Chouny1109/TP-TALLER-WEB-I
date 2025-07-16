@@ -90,8 +90,7 @@ public class PartidaController {
         Partida partida = servicioPartida.crearOUnirsePartida(jugador, modoJuego);
         modelo.put("partida", partida);
         modelo.put("idPartida", partida.getId());
-        String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(jugador.getId());
-        modelo.put("avatarImg", avatarImg);
+         modelo.put("avatarImg", servicioUsuario.buscarUsuarioPorId(jugador.getId()).getAvatarActual().getLink());
 
         if (modoJuego.equals(TIPO_PARTIDA.SUPERVIVENCIA)) {
             scheduler.schedule(() -> {
@@ -370,7 +369,8 @@ public class PartidaController {
             @RequestParam("idUsuario") Long idUsuario,HttpServletRequest request) throws UsuarioNoExistente {
         ModelMap modelo = new ModelMap();
 
-        Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
+        HttpSession session = request.getSession();
+         Pregunta preguntaResp = servicioPartida.buscarPreguntaPorId(preguntaRespondida);
         Usuario usuario = servicioUsuario.buscarUsuarioPorId(idUsuario);
 
         Respuesta respuestaSeleccionada = (idRespuestaSeleccionada != -1)
@@ -407,6 +407,17 @@ public class PartidaController {
             modelo.put("respuestasVista", respuestasParaVista);
         } else if (servicioPartida.partidaTerminada(idPartida)) {
             // Partida finalizada
+            Partida partida = servicioPartida.buscarPartidaPorId(idPartida);
+
+            if (partida.getGanador() != null && partida.getGanador().getId().equals(usuario.getId())) {
+                session.setAttribute("xpAcumuladoTurno", 150);
+                modelo.put("ganador", true);
+            }else {
+                modelo.put("ganador", false);
+            }
+
+            session.setAttribute("xpGanadoUltimoTurno", session.getAttribute("xpAcumuladoTurno"));
+            session.removeAttribute("xpAcumuladoTurno");
 
             modelo.put("terminoPartida", true);
             modelo.put("mensajeFinal", "¡La partida ha finalizado!");

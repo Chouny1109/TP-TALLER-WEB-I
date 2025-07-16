@@ -48,7 +48,7 @@ public class HomeController {
         ModelAndView mav = new ModelAndView("home");
 
         Usuario usuario = (Usuario) request.getSession().getAttribute("USUARIO");
-
+        Usuario usuariobd = null;
 
         if (usuario != null) {
             servicioUsuario.regenerarVidasSiCorresponde(usuario);
@@ -60,7 +60,7 @@ public class HomeController {
             mav.addObject("vidas", usuario.getVidas());
             mav.addObject("nivel", 1);
 
-            Usuario usuariobd = servicioUsuario.buscarUsuarioPorId(usuario.getId());
+             usuariobd = servicioUsuario.buscarUsuarioPorId(usuario.getId());
 
             NivelUsuarioDTO nivelUsuarioDTO = this.servicioNivel.construirInfoDeNivel(usuariobd);
 
@@ -123,7 +123,7 @@ public class HomeController {
         mav.addObject("usuarioId", usuario.getId());
 
        // String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
-        mav.addObject("avatarImg", usuario.getAvatarActual().getLink());
+        mav.addObject("avatarImg", usuariobd.getAvatarActual().getLink());
         mav.addObject("modos", TIPO_PARTIDA.values());
 
 

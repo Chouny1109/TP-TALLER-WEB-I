@@ -121,8 +121,8 @@ public class ServicioPartidaImpl implements ServicioPartida {
             Usuario rival = repositorioPartida.obtenerRivalDePartida(partida.getId(), jugador.getId());
 
             if (rival != null) {
-                String avatarRival = repositorioUsuario.obtenerImagenAvatarSeleccionado(rival.getId());
-                String avatarJugador = repositorioUsuario.obtenerImagenAvatarSeleccionado(jugador.getId());
+                String avatarRival = rival.getAvatarActual().getLink();
+                String avatarJugador =jugador.getAvatarActual().getLink();
 
                 UsuarioDTO rivalDTO = new UsuarioDTO(rival, avatarRival);
                 UsuarioDTO jugadorDTO = new UsuarioDTO(jugador, avatarJugador);
@@ -509,22 +509,26 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
         // CASO: uno acierta y el otro no → termina
         if (jugadorCorrecto && !rivalCorrecto) {
-            jugador.setExperiencia((jugador.getExperiencia() != null ? jugador.getExperiencia() : 0) + 150);
-            resultado.getPartida().setGanador(jugador);
-            repositorioPartida.actualizarPartida(resultado.getPartida());
-            repositorioUsuario.modificar(jugador);
-            em.flush();
+            if(resultado.getPartida().getGanador() == null) {
+                jugador.setExperiencia((jugador.getExperiencia() != null ? jugador.getExperiencia() : 0) + 150);
+                resultado.getPartida().setGanador(jugador);
+                repositorioPartida.actualizarPartida(resultado.getPartida());
+                repositorioUsuario.modificar(jugador);
+                em.flush();
+            }
             finalizarPartida(idPartida);
             return null;
         }
 
         if (rivalCorrecto && !jugadorCorrecto) {
-            Usuario rival = resultadoRival.getUsuario();
-            rival.setExperiencia((rival.getExperiencia() != null ? rival.getExperiencia() : 0) + 150);
-            resultado.getPartida().setGanador(rival);
-            repositorioPartida.actualizarPartida(resultado.getPartida());
-            repositorioUsuario.modificar(rival);
-            em.flush();
+            if(resultado.getPartida().getGanador() == null) {
+                Usuario rival = resultadoRival.getUsuario();
+                rival.setExperiencia((rival.getExperiencia() != null ? rival.getExperiencia() : 0) + 150);
+                resultado.getPartida().setGanador(rival);
+                repositorioPartida.actualizarPartida(resultado.getPartida());
+                repositorioUsuario.modificar(rival);
+                em.flush();
+            }
             finalizarPartida(idPartida);
             return null;
         }

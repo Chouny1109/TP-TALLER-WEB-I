@@ -22,7 +22,7 @@
                 <div class="player-card"></div>
                 <div class="player-avatar"
                      style="position: absolute; top: -75px; left: 50%; transform: translateX(-50%);">
-                    <img th:src="${avatarImg}" alt="Perfil" class="profile-pic">
+                    <img th:src="@{'/resources/imgs/Avatares/' + ${avatarImg}}" alt="Perfil" class="profile-pic">
                     <div class="score-badge">
                         <span class="material-symbols--star-rounded"></span>
                         <span class="badge-number">1</span>
@@ -95,6 +95,12 @@
     </div>
 </div>
 <script th:inline="javascript">
+    const contextPath = /*[[@{/}]]*/ "/";
+    // Asegurar barra al final si no la pone automáticamente
+    const basePath = contextPath.endsWith("/") ? contextPath : contextPath + "/";
+</script>
+
+<script th:inline="javascript">
     /*<![CDATA[*/
     let stompClient = null;
     let rivalEncontrado = false;
@@ -132,7 +138,7 @@
                 document.querySelector('.question-mark').style.display = 'none';
 
                 const rivalAvatar = document.getElementById('rival-avatar');
-                rivalAvatar.src = rival.linkAvatar;
+                rivalAvatar.src = basePath + 'resources/imgs/Avatares/' + rival.linkAvatar;
                 rivalAvatar.style.display = 'block';
 
                 const rivalLevelBadge = document.querySelector('.player-container:last-child .badge-number');
