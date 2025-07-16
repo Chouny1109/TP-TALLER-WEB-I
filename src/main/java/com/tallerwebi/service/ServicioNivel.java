@@ -10,5 +10,7 @@ public interface ServicioNivel {
 
     Integer obtenerExperienciaRestanteParaElSiguienteNivel(Integer experiencia);
 
+    void verificarSiSubeDeNivel(Usuario usuario);
+
     void otorgarExperiencia(Usuario usuario, Mision mision);
 }

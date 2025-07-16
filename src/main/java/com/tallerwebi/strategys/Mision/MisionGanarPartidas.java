@@ -26,7 +26,7 @@ public class MisionGanarPartidas extends MisionPlantilla {
     }
 
     private Integer obtenerCantidadDePartidasGanadas(Usuario usuario) {
-        LocalDate fecha = LocalDate.now();
+        LocalDateTime fecha = LocalDateTime.now();
         Long id = usuario.getId();
         return this.repositorioPartida.obtenerCantidadDePartidasGanadasParaLaFecha(id, fecha);
     }

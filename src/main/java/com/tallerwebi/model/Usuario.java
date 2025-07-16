@@ -73,15 +73,17 @@ Usuario {
     @ManyToOne
     private Avatar avatarActual;
 
+    private Integer nivel;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "UsuarioAvatar",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "avatar_id")
     )
+
     private List<Avatar> avataresEnPropiedad = new ArrayList<>();
-
-
+    
     public Usuario(String nombreUsuario, String email, String password) {
         this.nombreUsuario = nombreUsuario;
         this.email = email;
@@ -91,12 +93,13 @@ Usuario {
         this.monedas = 5000;
         this.amigos = new HashSet<>();
         this.baneado = false;
+        this.nivel = 1;
         this.activo = false;
         this.experiencia = 0;
         this.copas = 0;
+        this.rol = ROL_USUARIO.JUGADOR;
         this.ultimaRegeneracionVida = LocalDateTime.now();
         this.avatarActual = new Avatar("Lia.jpg", 0);
-
     }
 
     public Avatar getAvatarActual() {
@@ -124,6 +127,25 @@ Usuario {
     }
 
     public Usuario() {
+        this.misiones = new ArrayList<>();
+        this.vidas = 5;
+        this.monedas = 5000;
+        this.amigos = new HashSet<>();
+        this.baneado = false;
+        this.activo = false;
+        this.experiencia = 0;
+        this.copas = 0;
+        this.nivel = 1;
+        this.rol = ROL_USUARIO.JUGADOR;
+        this.ultimaRegeneracionVida = LocalDateTime.now();
+    }
+
+    public Integer getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(Integer nivel) {
+        this.nivel = nivel;
     }
 
     public Integer getExperiencia() {
@@ -134,13 +156,21 @@ Usuario {
         this.experiencia = experiencia;
     }
 
-    public Integer getVidas() {return vidas;}
+    public Integer getVidas() {
+        return vidas;
+    }
 
-    public void setVidas(Integer vidas) {this.vidas = vidas;}
+    public void setVidas(Integer vidas) {
+        this.vidas = vidas;
+    }
 
-    public String getNombreUsuario() {return nombreUsuario;}
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
 
-    public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
 
 
     public Long getId() {
@@ -235,7 +265,9 @@ Usuario {
         return ultimaRegeneracionVida;
     }
 
-    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {this.ultimaRegeneracionVida = ultimaRegeneracionVida;}
+    public void setUltimaRegeneracionVida(LocalDateTime ultimaRegeneracionVida) {
+        this.ultimaRegeneracionVida = ultimaRegeneracionVida;
+    }
 
     @Override
     public int hashCode() {

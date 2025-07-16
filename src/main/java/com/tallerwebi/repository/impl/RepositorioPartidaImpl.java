@@ -201,17 +201,20 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
     }
 
     @Override
-    public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDate fecha) {
+    public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDateTime fecha) {
 
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
 
+        LocalDateTime desde = fecha.toLocalDate().atStartOfDay();
+        LocalDateTime hasta = fecha.toLocalDate().plusDays(1).atStartOfDay();
+
         query.select(builder.countDistinct(root))
                 .where(
                         builder.and(
                                 builder.equal(root.get("usuario").get("id"), id),
-                                builder.equal(root.get("fecha"), fecha),
+                                builder.between(root.get("fecha"), desde, hasta),
                                 builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA)
                         )
                 );
