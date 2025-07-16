@@ -2,6 +2,7 @@ package com.tallerwebi.service.impl;
 
 import com.tallerwebi.model.Mision;
 import com.tallerwebi.model.Nivel;
+import com.tallerwebi.model.NivelUsuarioDTO;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.repository.RepositorioNivel;
 import com.tallerwebi.repository.RepositorioUsuario;
@@ -30,9 +31,34 @@ public class ServicioNivelImpl implements ServicioNivel {
         return this.repositorioNivel.obtenerNivelPorExperiencia(experiencia);
     }
 
+    @Transactional
     @Override
-    public Integer obtenerExperienciaRestanteParaElSiguienteNivel(Integer experiencia) {
-        return 0;
+    public Nivel obtenerNivelSiguiente(Integer nivel) {
+        return this.repositorioNivel.obtenerNivelSiguiente(nivel);
+    }
+
+    @Transactional
+    @Override
+    public NivelUsuarioDTO construirInfoDeNivel(Usuario usuario) {
+        Integer nivelActual = usuario.getNivel();
+        Integer experienciaActual = usuario.getExperiencia();
+
+        Nivel siguiente = obtenerNivelSiguiente(nivelActual);
+
+        if (siguiente == null) {
+            return new NivelUsuarioDTO(nivelActual, null, experienciaActual, null, null);
+        }
+
+        Integer experienciaNecesaria = siguiente.getExperienciaNecesaria();
+        Integer restante = Math.max(0, experienciaNecesaria - experienciaActual);
+
+        return new NivelUsuarioDTO(
+                nivelActual,
+                siguiente.getNivel(),
+                experienciaActual,
+                experienciaNecesaria,
+                restante
+        );
     }
 
     @Transactional

@@ -26,10 +26,25 @@ public class RepositorioNivelImpl implements RepositorioNivel {
 
         query.select(root)
                 .where(cb.lessThanOrEqualTo(root.get("experienciaNecesaria"), experiencia))
-                .orderBy(cb.desc(root.get("nivel"))); // Trae el más alto posible
+                .orderBy(cb.desc(root.get("nivel")));
 
         return sessionFactory.getCurrentSession().createQuery(query)
                 .setMaxResults(1)
                 .getSingleResult();
+    }
+
+    @Override
+    public Nivel obtenerSiguienteNivel(Integer nivelActual) {
+        CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+        CriteriaQuery<Nivel> query = builder.createQuery(Nivel.class);
+        Root<Nivel> root = query.from(Nivel.class);
+
+        query.select(root)
+                .where(builder.equal(root.get("nivel"), nivelActual + 1));
+
+        return sessionFactory.getCurrentSession()
+                .createQuery(query)
+                .uniqueResultOptional()
+                .orElse(null);
     }
 }
