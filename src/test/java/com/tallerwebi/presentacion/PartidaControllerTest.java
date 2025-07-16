@@ -2,6 +2,7 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.controller.PartidaController;
 import com.tallerwebi.dominio.enums.TIPO_PARTIDA;
+import com.tallerwebi.model.Avatar;
 import com.tallerwebi.model.Partida;
 import com.tallerwebi.model.Usuario;
 import com.tallerwebi.service.ServicioPartida;
@@ -46,7 +47,10 @@ public class PartidaControllerTest {
         doNothing().when(servicioUsuario).regenerarVidasSiCorresponde(any(Usuario.class));
         doNothing().when(servicioUsuario).actualizar(any(Usuario.class));
 
-        when(servicioUsuario.obtenerImagenAvatarSeleccionado(anyLong())).thenReturn("avatar.png");
+        Avatar avatar = new Avatar();
+        avatar.setLink("avatar.png");
+        jugador.setAvatarActual(avatar); // 👈 Este es el dato que se espera en el modelo
+
 
         Partida partidaMock = new Partida();
         partidaMock.setId(100L);
