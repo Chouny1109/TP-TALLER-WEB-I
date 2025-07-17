@@ -69,6 +69,7 @@
             <div class="user-profile">
                 <div class="user-top">
                     <div class="user-img">
+                        <img  th:src="@{'/resources/imgs/Avatares/' + ${usuarioLogueado.avatarActual.link}}" alt="perfil">
                     </div>
                     <div class="user-information">
                         <h2 class="user-id" th:text="${usuarioLogueado.nombreUsuario}">@</h2>
