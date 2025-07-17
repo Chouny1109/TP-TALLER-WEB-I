@@ -145,7 +145,7 @@
 <div class="container-box">
     <div class="titulo-seccion">Mis trampas</div>
     <div class="d-flex justify-content-between align-items-center">
-        <div class="flecha">&#8592;</div>
+        <div class="flecha"></div>
         <div class="mis-trampas">
             <div th:each="trampaUsuario : ${misTrampas}" class="trampa position-relative" title="[[${trampaUsuario.trampa.nombre}]]" style="margin: 0 5px;">
                 <img th:src="@{'/resources/imgs/Trampas/' + ${trampaUsuario.trampa.imagen}}" alt="trampa" style="width: 100%; height: 100%; border-radius: 50%;">
@@ -158,7 +158,7 @@
                 No tenés trampas aún.
             </div>
         </div>
-        <div class="flecha">&#8594;</div>
+        <div class="flecha"></div>
     </div>
 </div>
 
