@@ -22,6 +22,13 @@ import java.util.List;
 @RequestMapping("/misiones")
 public class MisionesController {
 
+    private final ServicioMisionesUsuario servicioMisionesUsuario;
+
+    @Autowired
+    public MisionesController(ServicioMisionesUsuario servicioMisionesUsuario) {
+        this.servicioMisionesUsuario = servicioMisionesUsuario;
+    }
+
 //    private final ServicioMisionesUsuario servicioMisionesUsuario;
 //    private final SessionUtil sessionUtil;
 //
@@ -33,7 +40,7 @@ public class MisionesController {
 
     @GetMapping
     //public ModelAndView obtenerMisiones(HttpServletRequest request)throws UsuarioNoExistente
-    public String cargarVistaMisiones() {
+    public String cargarVistaMisiones(HttpServletRequest request) throws UsuarioNoExistente {
 //        ModelMap modelMap = new ModelMap();
 //
 //        Usuario logueado = this.sessionUtil.getUsuarioLogueado(request);
@@ -44,6 +51,7 @@ public class MisionesController {
 //        modelMap.addAttribute("misiones", misionesDelUsuario);
 //
 //        return new ModelAndView("misiones", modelMap);
+        this.servicioMisionesUsuario.completarMisiones(request);
         return "misiones";
     }
 

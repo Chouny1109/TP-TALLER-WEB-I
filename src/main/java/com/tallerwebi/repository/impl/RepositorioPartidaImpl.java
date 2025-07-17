@@ -21,6 +21,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -202,25 +203,26 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
 
     @Override
     public Integer obtenerCantidadDePartidasGanadasParaLaFecha(Long id, LocalDateTime fecha) {
-
         CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<UsuarioPartida> root = query.from(UsuarioPartida.class);
 
+        Join<UsuarioPartida, Partida> partidaJoin = root.join("partida");
+
         LocalDateTime desde = fecha.toLocalDate().atStartOfDay();
         LocalDateTime hasta = fecha.toLocalDate().plusDays(1).atStartOfDay();
 
-        query.select(builder.countDistinct(root))
+        query.select(builder.countDistinct(partidaJoin.get("id")))
                 .where(
                         builder.and(
                                 builder.equal(root.get("usuario").get("id"), id),
                                 builder.between(root.get("fecha"), desde, hasta),
-                                builder.equal(root.get("estado"), ESTADO_PARTIDA_JUGADOR.VICTORIA)
+                                builder.equal(partidaJoin.get("estadoPartida"), ESTADO_PARTIDA.FINALIZADA),
+                                builder.equal(partidaJoin.get("ganador").get("id"), id)
                         )
                 );
 
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult().intValue();
-
     }
 
     @Override
@@ -460,7 +462,7 @@ public class RepositorioPartidaImpl implements RepositorioPartida {
         String jpql = "SELECT rr FROM ResultadoRespuesta rr " +
                 "WHERE rr.partida.id = :idPartida " +
                 "AND rr.usuario.id <> :idUsuario" +
-                 " AND rr.orden = :orden ";
+                " AND rr.orden = :orden ";
 
         try {
             return em.createQuery(jpql, ResultadoRespuesta.class)

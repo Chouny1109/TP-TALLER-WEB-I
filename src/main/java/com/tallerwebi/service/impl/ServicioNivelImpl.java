@@ -90,6 +90,7 @@ public class ServicioNivelImpl implements ServicioNivel {
         if (usuario == null || mision == null) {
             throw new IllegalArgumentException("El usuario o la mision no pueden ser nulos");
         }
+
         Integer expActual = Optional.ofNullable(usuario.getExperiencia()).orElse(0);
         Integer expGanada = Optional.ofNullable(mision.getExperiencia()).orElse(0);
         usuario.setExperiencia(expActual + expGanada);

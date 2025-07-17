@@ -19,6 +19,13 @@ public class UsuarioDTO {
         this.email = usuario.getEmail();
     }
 
+    public UsuarioDTO(Usuario usuario, String linkAvatar, Integer nivel) {
+        this.id = usuario.getId();
+        this.nombreUsuario = usuario.getNombreUsuario();
+        this.linkAvatar = linkAvatar;
+        this.nivel = nivel;
+    }
+
     public UsuarioDTO() {
     }
 

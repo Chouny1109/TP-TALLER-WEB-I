@@ -50,6 +50,7 @@ public class TiendaController {
 
         List<Long> avatarIdsDelUsuario = servicioUsuario.obtenerIdsAvataresDelUsuario(usuarioActualizado.getId());
         modelo.put("avatarIdsDelUsuario", avatarIdsDelUsuario);
+        modelo.put("avatarImg", usuarioActualizado.getAvatarActual().getLink());
 
         return new ModelAndView("tienda", modelo);
     }
