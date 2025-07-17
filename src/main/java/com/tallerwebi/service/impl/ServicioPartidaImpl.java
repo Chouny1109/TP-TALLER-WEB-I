@@ -10,6 +10,7 @@ import com.tallerwebi.repository.RepositorioPregunta;
 import com.tallerwebi.repository.RepositorioUsuario;
 import com.tallerwebi.service.ServicioMisiones;
 import com.tallerwebi.service.ServicioMisionesUsuario;
+import com.tallerwebi.service.ServicioNivel;
 import com.tallerwebi.service.ServicioPartida;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -40,6 +41,7 @@ public class ServicioPartidaImpl implements ServicioPartida {
     private final RepositorioPregunta repositorioPregunta;
     private final SimpMessagingTemplate messagingTemplate;
     private static final Object lock = new Object();
+    private final ServicioNivel servicioNivel;
 
     @Autowired
     private ServicioMisionesUsuario servicioMisionesUsuario;
@@ -50,11 +52,12 @@ public class ServicioPartidaImpl implements ServicioPartida {
     private ServicioPartidaTransaccional partidaTransaccional;
 
     @Autowired
-    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta, SimpMessagingTemplate messagingTemplate) {
+    public ServicioPartidaImpl(RepositorioPartida repositorioPartida, RepositorioUsuario repositorioUsuario, RepositorioPregunta repositorioPregunta, SimpMessagingTemplate messagingTemplate, ServicioNivel servicioNivel) {
         this.repositorioPartida = repositorioPartida;
         this.messagingTemplate = messagingTemplate;
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioPregunta = repositorioPregunta;
+        this.servicioNivel = servicioNivel;
     }
 
     // --------------------------------- CREAR O UNIRSE A PARTIDA --------------------------------- //
@@ -122,10 +125,10 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
             if (rival != null) {
                 String avatarRival = rival.getAvatarActual().getLink();
-                String avatarJugador =jugador.getAvatarActual().getLink();
+                String avatarJugador = jugador.getAvatarActual().getLink();
 
-                UsuarioDTO rivalDTO = new UsuarioDTO(rival, avatarRival);
-                UsuarioDTO jugadorDTO = new UsuarioDTO(jugador, avatarJugador);
+                UsuarioDTO rivalDTO = new UsuarioDTO(rival, avatarRival, rival.getNivel());
+                UsuarioDTO jugadorDTO = new UsuarioDTO(jugador, avatarJugador, jugador.getNivel());
 
 
                 messagingTemplate.convertAndSendToUser(
@@ -145,14 +148,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
             return partida;
         }
     }
-
-
-
-
-
-
-
-
 
 
     // --------------------------------- CONSULTAS, ETC --------------------------------- //
@@ -357,15 +352,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
-
-
-
-
-
-
-
-
-
     // --------------------------------- SUPERVIVENCIA / MULTIJUGADOR --------------------------------- //
     @Override
     @Transactional
@@ -499,7 +485,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
         ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoRespuestaDeRivalPorOrden(idPartida, jugador, resultado.getOrden());
 
 
-
         Long idRespJugador = resultado.getRespuestaSeleccionada().getId();
         Long idRespRival = resultadoRival.getRespuestaSeleccionada().getId();
         Long idRespCorrecta = resultado.getRespuestaCorrecta().getId();
@@ -509,10 +494,11 @@ public class ServicioPartidaImpl implements ServicioPartida {
 
         // CASO: uno acierta y el otro no → termina
         if (jugadorCorrecto && !rivalCorrecto) {
-            if(resultado.getPartida().getGanador() == null) {
+            if (resultado.getPartida().getGanador() == null) {
                 jugador.setExperiencia((jugador.getExperiencia() != null ? jugador.getExperiencia() : 0) + 150);
                 resultado.getPartida().setGanador(jugador);
                 repositorioPartida.actualizarPartida(resultado.getPartida());
+                servicioNivel.verificarSiSubeDeNivel(jugador);
                 repositorioUsuario.modificar(jugador);
                 em.flush();
             }
@@ -521,9 +507,10 @@ public class ServicioPartidaImpl implements ServicioPartida {
         }
 
         if (rivalCorrecto && !jugadorCorrecto) {
-            if(resultado.getPartida().getGanador() == null) {
+            if (resultado.getPartida().getGanador() == null) {
                 Usuario rival = resultadoRival.getUsuario();
                 rival.setExperiencia((rival.getExperiencia() != null ? rival.getExperiencia() : 0) + 150);
+                servicioNivel.verificarSiSubeDeNivel(jugador);
                 resultado.getPartida().setGanador(rival);
                 repositorioPartida.actualizarPartida(resultado.getPartida());
                 repositorioUsuario.modificar(rival);
@@ -574,10 +561,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     }
 
 
-
-
-
-
     @Override
     public boolean chequearAmbosRespondieron(Long p, Usuario jugador, Integer orden) {
         Partida partida = buscarPartidaPorId(p);
@@ -599,16 +582,15 @@ public class ServicioPartidaImpl implements ServicioPartida {
         ResultadoRespuesta resultadoRival = repositorioPartida.obtenerResultadoPorOrden(p, rival, orden);
 
 
-
-        if(resultadoRival == null || resultado == null) {
+        if (resultadoRival == null || resultado == null) {
             return false;
         }
-        if(!resultadoRival.getOrden().equals(resultado.getOrden())) {
+        if (!resultadoRival.getOrden().equals(resultado.getOrden())) {
             return false;
         }
 
         // si resultado de ambos la respuesta es nula y termino respuesta nula es false, osea q no se envio ninguna respuesta aunq sea -1
-        if((resultadoRival.getRespuestaSeleccionada() == null && resultadoRival.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE))  || (resultado.getRespuestaSeleccionada() == null && resultado.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE))){
+        if ((resultadoRival.getRespuestaSeleccionada() == null && resultadoRival.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE)) || (resultado.getRespuestaSeleccionada() == null && resultado.getTiempoTerminadoRespuestaNula().equals(Boolean.FALSE))) {
             return false;
         }
         // Chequear que ambos están respondiendo la misma pregunta
@@ -665,7 +647,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
             return repositorioPartida.obtenerResultadoPorOrdenYPregunta(idPartida, usuario, nuevoOrden, preguntaRespondida);
         }
     }
-
 
 
     @Transactional
@@ -820,7 +801,6 @@ public class ServicioPartidaImpl implements ServicioPartida {
     @Override
     @Transactional
     public void notificarEstadoPartida(Long idPartida, Usuario quienRespondio, boolean ambosRespondieron, boolean terminoPartida, TIPO_PARTIDA modoJuego) {
-
 
 
         List<Usuario> jugadores = repositorioPartida.obtenerJugadoresDePartida(idPartida);

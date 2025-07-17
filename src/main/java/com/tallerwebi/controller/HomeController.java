@@ -37,7 +37,7 @@ public class HomeController {
     private final ServicioRanking servicioRanking;
 
     @Autowired
-    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida, ServicioNivel servicioNivel, ServicioRanking servicioRanking ) {
+    public HomeController(IServicioUsuario servicioUsuario, ServicioPartida servicioPartida, ServicioNivel servicioNivel, ServicioRanking servicioRanking) {
         this.servicioUsuario = servicioUsuario;
         this.servicioPartida = servicioPartida;
         this.servicioNivel = servicioNivel;
@@ -59,13 +59,12 @@ public class HomeController {
             request.getSession().setAttribute("usuario", usuario);
             mav.addObject("monedas", usuario.getMonedas());
             mav.addObject("vidas", usuario.getVidas());
-            mav.addObject("nivel", 1);
 
-             usuariobd = servicioUsuario.buscarUsuarioPorId(usuario.getId());
-
-            NivelUsuarioDTO nivelUsuarioDTO = this.servicioNivel.construirInfoDeNivel(usuariobd);
+            usuariobd = servicioUsuario.buscarUsuarioPorId(usuario.getId());
 
             servicioNivel.verificarSiSubeDeNivel(usuariobd);
+            NivelUsuarioDTO nivelUsuarioDTO = this.servicioNivel.construirInfoDeNivel(usuariobd);
+
             mav.addObject("nivelUsuarioDTO", nivelUsuarioDTO);
 
 
@@ -78,7 +77,6 @@ public class HomeController {
                     mav.addObject("tiempoRestanteVida", 0);
                 }
             }
-
 
         } else {
             return new ModelAndView("redirect:/login");
@@ -119,12 +117,11 @@ public class HomeController {
                 .collect(Collectors.toList());
 
 
-
         mav.addObject("partidasMultijugador", partidasDTO);
 
         mav.addObject("usuarioId", usuario.getId());
 
-       // String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
+        // String avatarImg = this.servicioUsuario.obtenerImagenAvatarSeleccionado(usuario.getId());
         mav.addObject("avatarImg", usuariobd.getAvatarActual().getLink());
         mav.addObject("modos", TIPO_PARTIDA.values());
 

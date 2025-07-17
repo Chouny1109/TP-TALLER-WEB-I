@@ -28,13 +28,14 @@ public class MisionesControllerTest {
     private MisionesController misionesController;
     private final List<UsuarioMisionDTO> misionesMock = List.of(new UsuarioMisionDTO(1L, "Mision 1", 0, 5, 500, 100, false, false));
 
+
     @BeforeEach
     public void setUp() {
         servicioMisiones = mock(ServicioMisionesUsuario.class);
         sessionUtil = mock(SessionUtil.class);
         request = mock(HttpServletRequest.class);
 //        misionesController = new MisionesController(servicioMisiones, sessionUtil);
-        misionesController = new MisionesController();
+        misionesController = new MisionesController(servicioMisiones);
     }
 
     @Test

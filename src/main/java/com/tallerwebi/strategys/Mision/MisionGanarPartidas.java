@@ -39,6 +39,7 @@ public class MisionGanarPartidas extends MisionPlantilla {
     @Override
     protected void actualizarProgreso(Usuario usuario, UsuarioMision usuarioMision) {
         Integer cantidadPartidasGanadas = obtenerCantidadDePartidasGanadas(usuario);
+        System.out.println("Partidas ganadas: " + cantidadPartidasGanadas);
 
         if (cantidadPartidasGanadas > usuarioMision.getProgreso()) {
             usuarioMision.setProgreso(cantidadPartidasGanadas);

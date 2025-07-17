@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Tienda</title>
 
     <link
@@ -21,10 +21,11 @@
             font-family: 'Outfit', sans-serif;
         }
 
-        .h2-container{
+        .h2-container {
             border-bottom: 2px solid #444;
             margin-bottom: 2em;
         }
+
         .section-title {
             margin: 2rem 0 1rem;
             font-size: 2rem;
@@ -39,6 +40,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .carousel-wrapper .nav-arrow {
             background: none;
             border: none;
@@ -47,6 +49,7 @@
             width: 2rem;
             height: 2rem;
         }
+
         .carousel-wrapper .nav-arrow:disabled {
             opacity: 0.3;
         }
@@ -61,6 +64,7 @@
             position: relative;
             flex-shrink: 0;
         }
+
         .shop-card .info-icon {
             position: absolute;
             top: 0.5rem;
@@ -68,6 +72,7 @@
             color: #ddd;
             font-size: 1.2rem;
         }
+
         .shop-card .price-badge {
             position: absolute;
             bottom: 0.75rem;
@@ -124,12 +129,15 @@
             transform: translateY(-50%);
             background-color: #fff;
         }
-        .profile-pic-container{
+
+        .profile-pic-container {
             width: 5em;
         }
-        .profile-pic-container-flex{
+
+        .profile-pic-container-flex {
             align-items: center;
         }
+
         .username {
             font-weight: 600;
             font-size: 2.3rem;
@@ -144,6 +152,7 @@
 
 
         }
+
         .status-item {
             display: flex;
             align-items: center;
@@ -159,18 +168,21 @@
             padding-right: 1em;
         }
 
-        .carrousel-section-container{
+        .carrousel-section-container {
             width: 60%;
             margin: auto;
         }
+
         .carousel-wrapper .overflow-auto {
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
+
         .carousel-wrapper .overflow-auto::-webkit-scrollbar {
             display: none;
         }
+
         .shop-card {
             scroll-snap-align: start;
         }
@@ -241,8 +253,10 @@
     <div class="profile-wrapper">
         <div class="d-flex align-items-center gap-1">
             <a th:href="@{/home}">
-                <svg  xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000" class="bi bi-arrow-left-circle grid" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#000"
+                     class="bi bi-arrow-left-circle grid" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
                 </svg>
             </a>
             <h1 class="username">Tienda</h1>
@@ -250,7 +264,7 @@
 
         <div class="profile-pic-container-flex d-flex">
             <div class="profile-pic-container">
-                <img th:src="@{/resources/imgs/perfilLia.jpg}" alt="Perfil" class="profile-pic">
+                <img th:src="@{'/resources/imgs/Avatares/' + ${avatarImg}}" alt="Perfil" class="profile-pic">
             </div>
             <div class="status-icons">
                 <div class="status-item">
@@ -286,7 +300,7 @@
 
             <div class="d-flex overflow-auto px-2">
                 <div th:each="trampa : ${trampas}" class="shop-card">
-                    <img th:src="@{'/imgs/Trampas/' + ${trampa.imagen}}" alt="Imagen de trampa" class="shop-card-img" />
+                    <img th:src="@{'/imgs/Trampas/' + ${trampa.imagen}}" alt="Imagen de trampa" class="shop-card-img"/>
                     <p class="item-name" th:text="${trampa.nombre}">Nombre de la trampa</p>
                     <div class="price-badge status-icons">
                         <div class="status-item">
@@ -320,7 +334,7 @@
 
             <div class="d-flex overflow-auto px-2">
                 <div th:each="avatar : ${avatares}" class="shop-card">
-                    <img th:src="@{'/imgs/Avatares/' + ${avatar.link}}" alt="Imagen del avatar" class="shop-card-img" />
+                    <img th:src="@{'/imgs/Avatares/' + ${avatar.link}}" alt="Imagen del avatar" class="shop-card-img"/>
                     <p class="item-name" th:text="${avatar.nombre}">Nombre del avatar</p>
 
                     <div class="price-badge status-icons">
@@ -360,7 +374,7 @@
             </button>
             <div class="d-flex overflow-auto px-2">
                 <div th:each="vida : ${vidas}" class="shop-card">
-                    <img th:src="@{'/imgs/Vidas/' + ${vida.imagen}}" alt="Imagen de vida" class="shop-card-img" />
+                    <img th:src="@{'/imgs/Vidas/' + ${vida.imagen}}" alt="Imagen de vida" class="shop-card-img"/>
                     <p class="item-name" th:text="${vida.nombre}">Nombre del pack de vidas</p>
                     <div class="price-badge status-icons">
                         <div class="status-item">
@@ -392,7 +406,7 @@
             </button>
             <div class="d-flex overflow-auto px-2">
                 <div th:each="moneda : ${monedas}" id="monedas" class="shop-card">
-                    <img th:src="@{'/imgs/Monedas/' + ${moneda.imagen}}" alt="Imagen de monedas" class="shop-card-img" />
+                    <img th:src="@{'/imgs/Monedas/' + ${moneda.imagen}}" alt="Imagen de monedas" class="shop-card-img"/>
                     <p class="item-name" th:text="${moneda.nombre}">Cantidad de monedas</p>
                     <div class="price-badge status-icons">
                         <div class="status-item">
@@ -421,24 +435,24 @@
 
 
         document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
-            const track   = wrapper.querySelector('.overflow-auto');
+            const track = wrapper.querySelector('.overflow-auto');
             const prevBtn = wrapper.querySelector('.nav-arrow[aria-label="Anterior"]');
             const nextBtn = wrapper.querySelector('.nav-arrow[aria-label="Siguiente"]');
-            const card    = wrapper.querySelector('.shop-card');
+            const card = wrapper.querySelector('.shop-card');
 
             if (!track || !prevBtn || !nextBtn || !card) return;
 
-            const style     = getComputedStyle(card);
-            const marginLR  = parseInt(style.marginLeft) + parseInt(style.marginRight);
+            const style = getComputedStyle(card);
+            const marginLR = parseInt(style.marginLeft) + parseInt(style.marginRight);
             const cardWidth = card.offsetWidth + marginLR;
 
             const scrollAmount = cardWidth * VISIBLE_COUNT;
 
             prevBtn.addEventListener('click', () => {
-                track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                track.scrollBy({left: -scrollAmount, behavior: 'smooth'});
             });
             nextBtn.addEventListener('click', () => {
-                track.scrollBy({ left:  scrollAmount, behavior: 'smooth' });
+                track.scrollBy({left: scrollAmount, behavior: 'smooth'});
             });
         });
     });

@@ -26,6 +26,7 @@ public class TiendaControllerTest {
         Usuario usuarioMock = new Usuario();
         usuarioMock.setId(1L);
         usuarioMock.setMonedas(999);
+        usuarioMock.setAvatarActual(new Avatar("Lia", 200));
 
         when(session.getAttribute("USUARIO")).thenReturn(usuarioMock);
         when(servicioUsuario.buscarUsuarioPorId(1L)).thenReturn(usuarioMock);
